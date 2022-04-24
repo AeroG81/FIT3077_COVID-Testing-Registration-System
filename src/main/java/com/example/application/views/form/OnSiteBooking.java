@@ -19,10 +19,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -30,62 +35,35 @@ import java.time.format.DateTimeFormatter;
 @PageTitle("OnSiteBooking | Vaadin CRM")
 public class OnSiteBooking extends VerticalLayout {
 
-    TextField filterText = new TextField();
-    TestingSiteCollection collection = new TestingSiteCollection();
+    private final TestingSiteCollection collection = new TestingSiteCollection();
 
     private ComboBox<TestingSite> testingSite;
     private DateTimePicker startTime;
-    private final TextField notes = new TextField("Notes");
+    private final TextArea notes = new TextArea("Notes");
     private Button submit;
     private final TextField existingUserName = new TextField("Username");
     private final PasswordField existingUserPassword = new PasswordField("Password");;
-    private final TextField newUserName = new TextField("Username");
+
     private final TextField newUserGivenName = new TextField("Given Name");
     private final TextField newUserFamilyName = new TextField("Family Name");
-    private final PasswordField newUserPassword = new PasswordField("Password");
     private final TextField newUserPhoneNumber = new TextField("Phone Number");
+
     private final VerticalLayout content;
     private final Tab tabExist;
     private final Tab tabNew;
+    private final Tabs tabs;
 
     public OnSiteBooking(){
-        // First form
-        FormLayout existingUserLayout = new FormLayout();
-        existingUserLayout.add(
-                existingUserName,existingUserPassword
-        );
-
-        // Second form
-        FormLayout newUserLayout = new FormLayout();
-        newUserLayout.add(
-                newUserGivenName,newUserFamilyName,
-                newUserName, newUserPhoneNumber,
-                newUserPassword
-        );
-        newUserLayout.setColspan(newUserPassword, 2);
-
         tabExist = new Tab("Existing User");
         tabNew = new Tab("New User");
-        Tabs tabs = new Tabs(tabExist, tabNew);
+        tabs = new Tabs(tabExist, tabNew);
         content = new VerticalLayout();
-        content.setSpacing(false);
-        content.add(existingUserLayout);
-        tabs.addSelectedChangeListener(event -> {
-                    clearFields();
-                    content.removeAll();
-                    if (event.getSelectedTab().equals(tabNew)){
-                        content.add(newUserLayout);
-                    }
-                    else if (event.getSelectedTab().equals(tabExist)){
-                        content.add(existingUserLayout);
-                    }
-                }
-        );
 
-        configureDateTimePicker();
-        configureComboBox();
-        populateComboBox();
-        configureButton();
+        this.configureTabs();
+        this.configureDateTimePicker();
+        this.configureComboBox();
+        this.populateComboBox();
+        this.configureButton();
 
         FormLayout commonForm = new FormLayout();
         commonForm.setColspan(notes, 2);
@@ -105,19 +83,100 @@ public class OnSiteBooking extends VerticalLayout {
         setJustifyContentMode(JustifyContentMode.CENTER);
     }
 
+    private void configureTabs(){
+        // First form
+        FormLayout existingUserLayout = new FormLayout();
+        existingUserLayout.add(
+                existingUserName, existingUserPassword
+        );
+
+        // Second form
+        FormLayout newUserLayout = new FormLayout();
+
+        content.setSpacing(false);
+        content.add(existingUserLayout);
+        tabs.addSelectedChangeListener(event -> {
+                    this.clearFields();
+                    content.removeAll();
+                    newUserLayout.removeAll();
+                    existingUserLayout.removeAll();
+                    if (event.getSelectedTab().equals(tabNew)){
+                        newUserLayout.add(
+                                newUserGivenName,newUserFamilyName,
+                                existingUserName, newUserPhoneNumber,
+                                existingUserPassword
+                        );
+                        newUserLayout.setColspan(existingUserPassword, 2);
+                        content.add(newUserLayout);
+                    }
+                    else if (event.getSelectedTab().equals(tabExist)){
+                        existingUserLayout.add(
+                                existingUserName, existingUserPassword
+                        );
+                        existingUserLayout.setColspan(existingUserPassword, 1);
+                        content.add(existingUserLayout);
+                    }
+                }
+        );
+    }
+
     private void configureButton(){
         submit = new Button("Submit");
+        submit.setEnabled(false);
         submit.addClickListener(e -> {
-            if (testingSite.getValue() == null){
+            if (!validateFields()){
                 Notification.show("Site must not be empty");
             }
             else {
                 // Get User ID via http request
                 // if statement here to check the tab, post to verify or post to create
-                Booking booking = new FacilityBooking(new OnSiteTesting(testingSite.getValue()),startTime.getValue().toString(),existingUserName.getValue(),notes.getValue());
-                Notification.show("Site ID: " + testingSite.getValue().getId()+"| "+startTime.getValue().toString()+"  |  "+startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME));
+                try {
+                    submit();
+                }
+                catch (Exception exception){
+                    Notification.show(exception.toString());
+                }
+                // Booking booking = new FacilityBooking(new OnSiteTesting(testingSite.getValue()),startTime.getValue().toString(),existingUserName.getValue(),notes.getValue());
+                Notification.show(existingUserName.getValue()+" "+existingUserPassword.getValue()+" "+newUserFamilyName.getValue()+" "+newUserGivenName.getValue()+" "+newUserPhoneNumber.getValue());
             }
         });
+    }
+
+    // Should be exist in UserCollection
+    private void submit() throws Exception{
+        String jsonString = "";
+        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
+        String url = "";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder(URI.create(url))
+                .setHeader("Authorization", myApiKey)
+                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if(tabs.getSelectedTab().equals(tabExist)){
+            url = "https://fit3077.com/api/v1/user/login?jwt=false";
+        }
+        else if (tabs.getSelectedTab().equals(tabNew)){
+            url = "https://fit3077.com/api/v1/user";
+        }
+    }
+
+    private boolean validateFields(){
+        boolean validation = false;
+        if(tabs.getSelectedTab().equals(tabExist)){
+            if(!existingUserName.isEmpty() && !existingUserPassword.isEmpty()){
+                validation = true;
+            }
+        }
+        else if (tabs.getSelectedTab().equals(tabNew)){
+            if(!existingUserName.isEmpty() && !existingUserPassword.isEmpty() && !newUserGivenName.isEmpty() && !newUserFamilyName.isEmpty() && !newUserPhoneNumber.isEmpty()){
+                validation = true;
+            }
+        }
+        return validation;
     }
 
     private void clearFields(){
@@ -125,13 +184,20 @@ public class OnSiteBooking extends VerticalLayout {
         existingUserPassword.clear();
         newUserFamilyName.clear();
         newUserGivenName.clear();
-        newUserName.clear();
-        newUserPassword.clear();
         newUserPhoneNumber.clear();
     }
 
     private void configureComboBox(){
         testingSite = new ComboBox<>("TestingSite");
+        testingSite.setRequired(true);
+        testingSite.addValueChangeListener(event -> {
+            if (testingSite.getValue() != null){
+                submit.setEnabled(true);
+            }
+            else {
+                submit.setEnabled(false);
+            }
+        });
     }
 
     private void configureDateTimePicker() {
@@ -139,7 +205,8 @@ public class OnSiteBooking extends VerticalLayout {
         startTime.setLabel("Appointment Date and Time");
         startTime.setAutoOpen(true);
         startTime.setMin(LocalDateTime.now());
-        startTime.setValue(LocalDateTime.now().plusDays(7));
+        startTime.setValue(LocalDateTime.now());
+        startTime.setMax(LocalDateTime.now().plusDays(90));
     }
 
     private void populateComboBox(){
