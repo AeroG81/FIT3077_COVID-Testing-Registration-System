@@ -23,6 +23,50 @@ public class TestingSiteCollection {
         }
     }
 
+    public void addSitesService(String name,String description, String websiteUrl, String phoneNumber, int latitude, int longitude, String unitNumber, String street, String street2, String suburb, String state, String postcode, String facilityType, String openTime, String closeTime, String waitingTime) throws Exception{
+        if (description!=null)
+            description = "\""+description+ "\"";
+        if (websiteUrl!=null)
+            websiteUrl = "\""+websiteUrl+ "\"";
+        if (phoneNumber!=null)
+            phoneNumber = "\""+phoneNumber+ "\"";
+        if (street2!=null)
+            street2 = "\""+street2+ "\"";
+        String jsonString = "{" +
+                "\"name\":\"" + name + "\"," +
+                "\"description\":" + description + "," +
+                "\"websiteUrl\":" + websiteUrl + "," +
+                "\"phoneNumber\":" + phoneNumber + "," +
+                "\"address\": {"+
+                "\"latitude\":" + latitude  +
+                ",\"longitude\":" + longitude  +
+                ",\"unitNumber\":\"" + unitNumber + "\"" +
+                ",\"street\":\"" + street + "\"" +
+                ",\"street2\":" + street2 +
+                ",\"suburb\":\"" + suburb + "\"" +
+                ",\"state\":\"" + state + "\"" +
+                ",\"postcode\":\"" + postcode + "\"" +
+                "},"+
+                "\"additionalInfo\": {" +
+                "\"facilityType\":\"" + facilityType + "\"" +
+                ",\"openTime\":\"" + openTime + "\"" +
+                ",\"closeTime\":\"" + closeTime + "\"" +
+                ",\"waitingTime\":\"" + waitingTime + "\"" +
+                "}"+
+                "}";
+        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
+        String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder(URI.create(testingSiteUrl))
+                .setHeader("Authorization", myApiKey)
+                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     public void getSitesService() throws Exception{
         String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
         String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
@@ -44,7 +88,7 @@ public class TestingSiteCollection {
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
 
         for (ObjectNode node: jsonNodes) {
-            TestingSite site = new TestingSite(node.get("id").asText(),node.get("name").asText(),node.get("description").asText(),node.get("websiteUrl").asText(),node.get("phoneNumber").asText(),node.get("address").get("latitude").asDouble(),node.get("address").get("longitude").asDouble(),node.get("address").get("unitNumber").asInt(),node.get("address").get("street").asText(),node.get("address").get("street2").asText(),node.get("address").get("suburb").asText(),node.get("address").get("state").asText(),node.get("address").get("postcode").asText(),node.get("additionalInfo").asText());
+            TestingSite site = new TestingSite(node.get("id").asText(),node.get("name").asText(),node.get("description").asText(),node.get("websiteUrl").asText(),node.get("phoneNumber").asText(),node.get("address").get("latitude").asDouble(),node.get("address").get("longitude").asDouble(),node.get("address").get("unitNumber").asInt(),node.get("address").get("street").asText(),node.get("address").get("street2").asText(),node.get("address").get("suburb").asText(),node.get("address").get("state").asText(),node.get("address").get("postcode").asText(),node.get("additionalInfo").get("facilityType").asText(),node.get("additionalInfo").get("openTime").asText(),node.get("additionalInfo").get("closeTime").asText(),node.get("additionalInfo").get("waitingTime").asText());
             collection.add(site);
         }
     }
@@ -69,7 +113,7 @@ public class TestingSiteCollection {
         List<TestingSite> result = new ArrayList<TestingSite>();
 
         collection.forEach(testingSite -> {
-            if (testingSite.getName().contains(keyword)) {
+            if (testingSite.getAddress().getSuburb().contains(keyword)||testingSite.getFacilityType().contains(keyword)) {
                 result.add(testingSite);
             }
         });

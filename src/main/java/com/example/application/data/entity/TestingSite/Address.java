@@ -55,9 +55,17 @@ public class Address {
 
     @Override
     public String toString() {
-        return street + " "+ street2 + ", " +
-                postcode + ", " +
-                suburb + ", " +
-                state;
+        if (street2 == "null"){
+            return street + ", " +
+                    postcode + ", " +
+                    suburb + ", " +
+                    state;
+        }
+        else {
+            return street + " "+ street2 + ", " +
+                    postcode + ", " +
+                    suburb + ", " +
+                    state;
+        }
     }
 }

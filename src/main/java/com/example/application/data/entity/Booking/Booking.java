@@ -14,6 +14,22 @@ public abstract class Booking {
     private String smsPin;
     private String additionalInfo;
 
+    public Booking(CovidTest testingMethod, String startTime, String user, String notes) {
+        this.testingMethod = testingMethod;
+        this.startTime = Instant.parse(startTime);
+        this.user = user;
+        this.notes = notes;
+    }
+
+    public Booking(CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
+        this.testingMethod = testingMethod;
+        this.startTime = Instant.parse(startTime);
+        this.user = user;
+        this.status = status;
+        this.smsPin = smsPin;
+        this.additionalInfo = additionalInfo;
+    }
+
     public Booking(String bookingId,CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
         this.bookingId = bookingId;
         this.testingMethod = testingMethod;
@@ -66,4 +82,6 @@ public abstract class Booking {
     public String getAdditionalInfo() {
         return additionalInfo;
     }
+
+    public abstract void addBooking() throws Exception;
 }

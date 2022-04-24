@@ -31,10 +31,11 @@ public class TestingSiteView extends VerticalLayout {
     private void configureGrid() {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
-        grid.setColumns("name", "description", "websiteUrl");
+        grid.setColumns("name", "description");
         grid.getColumns().forEach(col -> col.setWidth("22%"));
-        grid.addColumn(site -> site.getPhoneNumber()).setHeader("Phone Number").setWidth("10%");
-        grid.addColumn(site -> site.getAddress()).setHeader("Address").setWidth("20%");
+        grid.addColumn(site -> site.getAddress().toString()).setHeader("Address").setWidth("20%");
+        grid.addColumn(site -> site.getFacilityType()).setHeader("Facility Type").setWidth("15%");
+        grid.addColumn(site -> site.getOperationTime()).setHeader("Operation Time").setWidth("10%");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
