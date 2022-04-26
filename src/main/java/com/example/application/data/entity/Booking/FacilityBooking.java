@@ -1,48 +1,41 @@
 package com.example.application.data.entity.Booking;
 
+import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.Registration.CovidTest;
+import com.example.application.data.entity.User.User;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class FacilityBooking extends Booking{
-    public FacilityBooking(CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
+    private int pin;
+    public FacilityBooking(CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
         super(testingMethod, startTime, user, status, smsPin, additionalInfo);
     }
 
-    public FacilityBooking(String bookingId, CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
+    public FacilityBooking(String bookingId, CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
         super(bookingId, testingMethod, startTime, user, status, smsPin, additionalInfo);
     }
 
-    public FacilityBooking(String bookingId, CovidTest testingMethod, String startTime, String user, String notes, String status, String smsPin, String additionalInfo) {
+    public FacilityBooking(String bookingId, CovidTest testingMethod, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
         super(bookingId, testingMethod, startTime, user, notes, status, smsPin, additionalInfo);
     }
 
-    public FacilityBooking(CovidTest testingMethod, String startTime, String user, String notes){
+    public FacilityBooking(CovidTest testingMethod, String startTime, User user, String notes){
         super(testingMethod,startTime,user,notes);
     }
 
     @Override
-    public void addBooking() throws Exception{
+    public HttpResponse<String> addBooking() throws Exception{
         String jsonString = "{" +
-                "\"customerId\":\"" + super.getUser() + "\"," +
-                "\"testingSiteId\":" + super.getTestingMethod().getDetails() + "," +
-                "\"startTime\":" + super.getStartTime() + "," +
-                "\"notes\":" + super.getNotes() + "," +
-                "\"additionalInfo\": {"+ "}"+
-                "}";
-        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
-        String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder(URI.create(testingSiteUrl))
-                .setHeader("Authorization", myApiKey)
-                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
-                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                "\"customerId\":\"" + super.getUser().getId() + "\"," +
+                "\"testingSiteId\":\"" + super.getTestingMethod().getId() + "\"," +
+                "\"startTime\":\"" + super.getStartTime() + "\"";
+        if (super.getNotes() != null && !super.getNotes().isBlank())
+            jsonString += ",\"notes\":\"" + super.getNotes() + "\"";
+        if (super.getAdditionalInfo() != null && !super.getAdditionalInfo().isBlank())
+            jsonString += ",\"additionalInfo\":" + super.getAdditionalInfo();
+        jsonString += "}";
+        String url = "https://fit3077.com/api/v1/booking";
+        return new HttpHelper().postService(url,jsonString);
     }
 }

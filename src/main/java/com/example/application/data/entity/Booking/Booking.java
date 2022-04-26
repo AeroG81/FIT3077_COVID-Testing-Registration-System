@@ -1,49 +1,58 @@
 package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.Registration.CovidTest;
+import com.example.application.data.entity.User.User;
 
-import java.time.Instant;
+import java.net.http.HttpResponse;
 
 public abstract class Booking {
     private String bookingId;
-    private String user;
+    private User user;
     private CovidTest testingMethod;
-    private Instant startTime;
+    private String startTime;
     private String notes;
     private String status;
     private String smsPin;
-    private String additionalInfo;
+    private String additionalInfo; // additionalInfo should be store in { } form with {} included
 
-    public Booking(CovidTest testingMethod, String startTime, String user, String notes) {
+
+    public Booking(CovidTest testingMethod, String startTime, User user, String notes) {
         this.testingMethod = testingMethod;
-        this.startTime = Instant.parse(startTime);
+        this.startTime = startTime;
         this.user = user;
         this.notes = notes;
+        this.bookingId = null;
+        this.status = null;
+        this.smsPin = null;
+        this.additionalInfo = null;
     }
 
-    public Booking(CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
+    public Booking(CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
+        this.bookingId = null;
         this.testingMethod = testingMethod;
-        this.startTime = Instant.parse(startTime);
+        this.startTime = startTime;
         this.user = user;
+        this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
         this.additionalInfo = additionalInfo;
     }
 
-    public Booking(String bookingId,CovidTest testingMethod, String startTime, String user, String status, String smsPin, String additionalInfo) {
+    public Booking(String bookingId, CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
         this.bookingId = bookingId;
         this.testingMethod = testingMethod;
-        this.startTime = Instant.parse(startTime);
+        this.startTime = startTime;
         this.user = user;
+        this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
         this.additionalInfo = additionalInfo;
     }
 
-    public Booking(String bookingId, CovidTest testingMethod, String startTime, String user, String notes, String status, String smsPin, String additionalInfo) {
+    public Booking(String bookingId, CovidTest testingMethod, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
         this.bookingId = bookingId;
         this.testingMethod = testingMethod;
-        this.startTime = Instant.parse(startTime);
+        this.startTime = startTime;
         this.user = user;
         this.notes = notes;
         this.status = status;
@@ -55,7 +64,7 @@ public abstract class Booking {
         return bookingId;
     }
 
-    public String getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -63,7 +72,7 @@ public abstract class Booking {
         return testingMethod;
     }
 
-    public Instant getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
@@ -83,5 +92,37 @@ public abstract class Booking {
         return additionalInfo;
     }
 
-    public abstract void addBooking() throws Exception;
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setTestingMethod(CovidTest testingMethod) {
+        this.testingMethod = testingMethod;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setSmsPin(String smsPin) {
+        this.smsPin = smsPin;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
+
+    public abstract HttpResponse<String> addBooking() throws Exception;
 }

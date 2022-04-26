@@ -8,12 +8,8 @@ public class OnSiteTesting extends CovidTest{
         this.testingSite = testingSite;
     }
 
-    public OnSiteTesting(String testingSiteId){
-        System.out.println("sdds");
-    }
-
     @Override
-    public String getDetails() {
-        return testingSite.toString();
+    public String getId() {
+        return testingSite.getId();
     }
 }

@@ -21,7 +21,7 @@ public class TestingSiteCollection {
         }
     }
 
-    public void addSitesService(String name,String description, String websiteUrl, String phoneNumber, int latitude, int longitude, String unitNumber, String street, String street2, String suburb, String state, String postcode, String facilityType, String openTime, String closeTime, String waitingTime) throws Exception{
+    public void addSiteService(String name, String description, String websiteUrl, String phoneNumber, int latitude, int longitude, String unitNumber, String street, String street2, String suburb, String state, String postcode, String facilityType, String openTime, String closeTime, String waitingTime) throws Exception{
         if (description!=null)
             description = "\""+description+ "\"";
         if (websiteUrl!=null)

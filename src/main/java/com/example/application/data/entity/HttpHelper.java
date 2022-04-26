@@ -6,10 +6,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class HttpHelper {
-    private final String APIKEY = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
+    private final String APIKEY;
 
     public HttpHelper(){
-
+        APIKEY = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
     }
 
     public HttpResponse<String> postService(String url, String jsonString) throws Exception{

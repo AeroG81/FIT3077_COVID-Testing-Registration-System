@@ -4,19 +4,16 @@ import com.example.application.data.entity.HttpHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 public class UserCollection {
-    private List<String> collection = new ArrayList<>();
+    private List<User> collection = new ArrayList<User>();
 
     public UserCollection(){
-
         try {
             getUsersService();
         }
@@ -25,16 +22,24 @@ public class UserCollection {
         }
     }
 
+    public List<User> getCollection() {
+        return collection;
+    }
 
-
-    public String searchUserId(String username, String password){
-        // if (verifyUser(username,password)) {
-        //     collection.forEach(user->{
-        //         if (user.getUsername() == username && user.getPassword() == password) {
-        //             return user.getUserId();
-        //         }
-        //     });
-        // }
+    public User searchUserId(String username, String password){
+        User user = null;
+        if (verifyUser(username,password)) {
+            int i = 0;
+            boolean endLoop = false;
+            while (i<collection.size() && !endLoop){
+                if (collection.get(i).getUserName().equals(username)) {
+                    user = collection.get(i);
+                    endLoop = true;
+                }
+                i++;
+            }
+        }
+        return user;
     }
 
     public void getUsersService() throws Exception{
@@ -51,13 +56,20 @@ public class UserCollection {
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
 
         for (ObjectNode node: jsonNodes) {
-            //TestingSite site = new TestingSite(node.get("id").asText(),node.get("name").asText(),node.get("description").asText(),node.get("websiteUrl").asText(),node.get("phoneNumber").asText(),node.get("address").get("latitude").asDouble(),node.get("address").get("longitude").asDouble(),node.get("address").get("unitNumber").asInt(),node.get("address").get("street").asText(),node.get("address").get("street2").asText(),node.get("address").get("suburb").asText(),node.get("address").get("state").asText(),node.get("address").get("postcode").asText(),node.get("additionalInfo").get("facilityType").asText(),node.get("additionalInfo").get("openTime").asText(),node.get("additionalInfo").get("closeTime").asText(),node.get("additionalInfo").get("waitingTime").asText());
-            //collection.add(site); Add User
+            User user = null;
+            if(node.get("isCustomer").asBoolean())
+                user = new Resident(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            else if (node.get("isReceptionist").asBoolean())
+                user = new FacilityStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            else if (node.get("isHealthcareWorker").asBoolean())
+                user = new ExpertStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            if(user!=null)
+                collection.add(user);
         }
     }
 
-    public boolean verifyUser(String username, String password){
-        boolean userIsValid = false;
+    private boolean verifyUser(String username, String password){
+        boolean userIsValid;
         String jsonString = "{"+
                 "\"userName\":\"" + username + "\"," +
                 "\"password\":\"" + password + "\""+
@@ -76,9 +88,54 @@ public class UserCollection {
         }
         catch (Exception e){
             System.out.println(e);
+            userIsValid = false;
         }
         return userIsValid;
     }
 
+    public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker, String additionalInfo) throws Exception{
+        String url = "https://fit3077.com/api/v1/user";
+        String jsonString = "{" +
+                "\"givenName\":\"" + givenName + "\"," +
+                "\"familyName\":\"" + familyName + "\"," +
+                "\"userName\":\"" + userName + "\"," +
+                "\"password\":\"" + password + "\"," +
+                "\"phoneNumber\":\"" + phoneNumber + "\"," +
+                "\"isCustomer\":" + isCustomer + "," +
+                "\"isAdmin\":" + isAdmin + "," +
+                "\"isHealthCareWorker\":" + isHealthCareWorker + "," +
+                "\"additionalInfo\":" + additionalInfo +
+                "}";
+        HttpResponse<String> response = new HttpHelper().postService(url,jsonString);
+        ObjectNode mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
+        return createUser(mappedResponse);
+    }
 
+    public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker) throws Exception{
+        String url = "https://fit3077.com/api/v1/user";
+        String jsonString = "{" +
+                "\"givenName\":\"" + givenName + "\"," +
+                "\"familyName\":\"" + familyName + "\"," +
+                "\"userName\":\"" + userName + "\"," +
+                "\"password\":\"" + password + "\"," +
+                "\"phoneNumber\":\"" + phoneNumber + "\"," +
+                "\"isCustomer\":" + isCustomer + "," +
+                "\"isAdmin\":" + isAdmin + "," +
+                "\"isHealthCareWorker\":" + isHealthCareWorker +
+                "}";
+        HttpResponse<String> response = new HttpHelper().postService(url,jsonString);
+        ObjectNode mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
+        return createUser(mappedResponse);
+    }
+
+    private User createUser(ObjectNode mappedResponse){
+        User user = null;
+        if(mappedResponse.get("isCustomer").asBoolean())
+            user = new Resident(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+        else if (mappedResponse.get("isReceptionist").asBoolean())
+            user = new FacilityStaff(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+        else if (mappedResponse.get("isHealthcareWorker").asBoolean())
+            user = new ExpertStaff(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+        return user;
+    }
 }

@@ -7,7 +7,7 @@ public class OnlineTesting extends CovidTest{
     }
 
     @Override
-    public String getDetails() {
+    public String getId() {
         return null;
     }
 }
