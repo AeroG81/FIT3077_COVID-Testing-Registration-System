@@ -1,11 +1,9 @@
 package com.example.application.data.entity.TestingSite;
 
+import com.example.application.data.entity.HttpHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import java.util.ArrayList;
@@ -54,30 +52,15 @@ public class TestingSiteCollection {
                 ",\"waitingTime\":\"" + waitingTime + "\"" +
                 "}"+
                 "}";
-        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
         String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder(URI.create(testingSiteUrl))
-                .setHeader("Authorization", myApiKey)
-                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
-                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = new HttpHelper().postService(testingSiteUrl,jsonString);
     }
 
     public void getSitesService() throws Exception{
-        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
         String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder(URI.create(testingSiteUrl))
-                .setHeader("Authorization", myApiKey)
-                .GET()
-                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = new HttpHelper().getService(testingSiteUrl);
 
         // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
         if (response.statusCode() != 200) {

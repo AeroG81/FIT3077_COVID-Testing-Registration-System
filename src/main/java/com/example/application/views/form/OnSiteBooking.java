@@ -144,18 +144,7 @@ public class OnSiteBooking extends VerticalLayout {
 
     // Should be exist in UserCollection
     private void submit() throws Exception{
-        String jsonString = "";
-        String myApiKey = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
-        String url = "";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest
-                .newBuilder(URI.create(url))
-                .setHeader("Authorization", myApiKey)
-                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
-                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if(tabs.getSelectedTab().equals(tabExist)){
             url = "https://fit3077.com/api/v1/user/login?jwt=false";
         }
