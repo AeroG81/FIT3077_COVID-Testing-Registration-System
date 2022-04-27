@@ -1,10 +1,6 @@
 package com.example.application.views.form;
 
-
-import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.FacilityBooking;
-import com.example.application.data.entity.Registration.OnSiteTesting;
+import com.example.application.data.entity.BookingMethod.FacilityBookingMethod;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.User;
@@ -35,8 +31,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Route(value = "/onsitebooking")
-@PageTitle("OnSiteBooking | Vaadin CRM")
-public class OnSiteBooking extends VerticalLayout {
+@PageTitle("OnSiteBooking")
+public class OnSiteBookingView extends VerticalLayout {
 
     private final TestingSiteCollection collection = new TestingSiteCollection();
 
@@ -48,9 +44,8 @@ public class OnSiteBooking extends VerticalLayout {
     private final TextField userGivenName = new TextField("Given Name");
     private final TextField userFamilyName = new TextField("Family Name");
     private final IntegerField userPhoneNumber = new IntegerField("Phone Number");
-    private final IntegerField verifyPin = new IntegerField("PIN");
     private Button submitRegistration;
-    private Button submitVerification;
+
 
     private final FormLayout registrationCommonForm = new FormLayout();
     private final Dialog dialog = new Dialog();
@@ -61,11 +56,11 @@ public class OnSiteBooking extends VerticalLayout {
     private final Tabs registrationSubTabs = new Tabs(tabExist, tabNew);
 
     private final Tab tabRegistration = new Tab("Registration");
-    private final Tab tabVerifyPin = new Tab("Verification") ;
+    private final Tab tabVerifyPin = new Tab("Verify PIN") ;
     private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin);
     private final VerticalLayout mainLayout = new VerticalLayout();
 
-    public OnSiteBooking(){
+    public OnSiteBookingView(){
         this.configureRegistrationNoti();
         this.configureRegistrationTabs();
         this.configureDateTimePicker();
@@ -73,7 +68,6 @@ public class OnSiteBooking extends VerticalLayout {
         this.populateComboBox();
         this.configureRegistrationButton();
         this.configureRegistrationForm();
-        this.configureVerifyButton();
 
         mainLayout.add(registrationSubTabs,content,registrationCommonForm);
         mainTabs.addSelectedChangeListener(event -> {
@@ -83,7 +77,7 @@ public class OnSiteBooking extends VerticalLayout {
                 mainLayout.add(registrationSubTabs,content,registrationCommonForm);
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
-                mainLayout.add(verifyPin, submitVerification);
+                mainLayout.add(new PinVerifyLayout());
             }
         });
 
@@ -155,7 +149,7 @@ public class OnSiteBooking extends VerticalLayout {
         submitRegistration.setEnabled(false);
         submitRegistration.addClickListener(e -> {
             if (!validateFields()){
-                Notification.show("Site must not be empty");
+                Notification.show("Site must not be empty or Booking time is not within operation hour");
             }
             else {
                 // Get User ID via http request
@@ -174,8 +168,7 @@ public class OnSiteBooking extends VerticalLayout {
                 HttpResponse<String> response = null;
                 ObjectNode mappedResponse = null;
                 try {
-                    OnSiteTesting testingMethod = new OnSiteTesting(testingSite.getValue());
-                    response = new FacilityBooking(testingMethod,startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue()).addBooking();
+                    response = new FacilityBookingMethod().addBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue());
                     mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
                 } catch (Exception exception){
                     System.out.println("Error creating: " + exception.toString());
@@ -191,48 +184,20 @@ public class OnSiteBooking extends VerticalLayout {
         });
     }
 
-    private void configureVerifyButton(){
-        verifyPin.addValueChangeListener(e -> {
-            if (!verifyPin.isEmpty() && !verifyPin.isInvalid())
-                submitVerification.setEnabled(true);
-            else
-                submitVerification.setEnabled(false);
-        });
-        submitVerification = new Button("Verify");
-        submitVerification.setEnabled(false);
-        submitVerification.addClickListener(e -> {
-            if (!verifyPin.isEmpty() && !verifyPin.isInvalid()){
-                BookingCollection collection = new BookingCollection();
-                Booking userBooking = collection.verifyPin(verifyPin.getValue().toString());
-                label.removeAll();
-                if (userBooking!=null){
-                    label.add(userBooking.toString());
-                    dialog.open();
-                }
-                else {
-                    Notification noti = Notification.show("Error! Invalid PIN");
-                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                }
-            }
-            else {
-                Notification noti = Notification.show("Error! Invalid PIN");
-                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-    }
-
     private boolean validateFields(){
-        boolean validation = false;
+        boolean validation = true;
         if(registrationSubTabs.getSelectedTab().equals(tabExist)){
-            if(!userName.isEmpty() && !userPassword.isEmpty()){
-                validation = true;
+            if(userName.isEmpty() || userPassword.isEmpty()){
+                validation = false;
             }
         }
         else if (registrationSubTabs.getSelectedTab().equals(tabNew)){
-            if(!userName.isEmpty() && !userPassword.isEmpty() && !userGivenName.isEmpty() && !userFamilyName.isEmpty() && !userPhoneNumber.isEmpty()){
-                validation = true;
+            if(userName.isEmpty() || userPassword.isEmpty() || userGivenName.isEmpty() || userFamilyName.isEmpty() || userPhoneNumber.isEmpty()){
+                validation = false;
             }
         }
+        if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() > Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9)))
+            validation = false;
         return validation;
     }
 

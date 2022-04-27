@@ -1,23 +1,20 @@
 package com.example.application.data.entity.Booking;
 
-import com.example.application.data.entity.Registration.CovidTest;
-import com.example.application.data.entity.User.User;
 
-import java.net.http.HttpResponse;
+import com.example.application.data.entity.TestingType.TestingType;
+import com.example.application.data.entity.User.User;
 
 public abstract class Booking {
     private String bookingId;
     private User user;
-    private CovidTest testingMethod;
     private String startTime;
     private String notes;
     private String status;
     private String smsPin;
     private String additionalInfo; // additionalInfo should be store in { } form with {} included
+    private TestingType testType;
 
-
-    public Booking(CovidTest testingMethod, String startTime, User user, String notes) {
-        this.testingMethod = testingMethod;
+    public Booking(String startTime, User user, String notes) {
         this.startTime = startTime;
         this.user = user;
         this.notes = notes;
@@ -25,39 +22,40 @@ public abstract class Booking {
         this.status = null;
         this.smsPin = null;
         this.additionalInfo = null;
+        this.testType = null;
     }
 
-    public Booking(CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
+    public Booking(String startTime, User user, String status, String smsPin, String additionalInfo) {
         this.bookingId = null;
-        this.testingMethod = testingMethod;
         this.startTime = startTime;
         this.user = user;
         this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
         this.additionalInfo = additionalInfo;
+        this.testType = null;
     }
 
-    public Booking(String bookingId, CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
+    public Booking(String bookingId, String startTime, User user, String status, String smsPin, String additionalInfo) {
         this.bookingId = bookingId;
-        this.testingMethod = testingMethod;
         this.startTime = startTime;
         this.user = user;
         this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
         this.additionalInfo = additionalInfo;
+        this.testType = null;
     }
 
-    public Booking(String bookingId, CovidTest testingMethod, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
+    public Booking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
         this.bookingId = bookingId;
-        this.testingMethod = testingMethod;
         this.startTime = startTime;
         this.user = user;
         this.notes = notes;
         this.status = status;
         this.smsPin = smsPin;
         this.additionalInfo = additionalInfo;
+        this.testType = null;
     }
 
     public String getBookingId() {
@@ -66,10 +64,6 @@ public abstract class Booking {
 
     public User getUser() {
         return user;
-    }
-
-    public CovidTest getTestingMethod() {
-        return testingMethod;
     }
 
     public String getStartTime() {
@@ -92,37 +86,23 @@ public abstract class Booking {
         return additionalInfo;
     }
 
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
+    public TestingType getTestType() {
+        return testType;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setTestType(TestingType testType) {
+        this.testType = testType;
     }
 
-    public void setTestingMethod(CovidTest testingMethod) {
-        this.testingMethod = testingMethod;
+    @Override
+    public String toString() {
+        return "bookingId='" + bookingId + '\'' +
+                ", user=" + user.toString() +
+                ", startTime='" + startTime + '\'' +
+                ", notes='" + notes + '\'' +
+                ", status='" + status + '\'' +
+                ", smsPin='" + smsPin + '\'' +
+                ", additionalInfo='" + additionalInfo + '\'' +
+                ", testType=" + testType;
     }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSmsPin(String smsPin) {
-        this.smsPin = smsPin;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
-
-    public abstract HttpResponse<String> addBooking() throws Exception;
 }
