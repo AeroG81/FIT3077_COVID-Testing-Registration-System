@@ -62,4 +62,19 @@ public class TestingSite {
     public void setWaitingTime(String waitingTime){
         this.waitingTime = waitingTime;
     }
+
+    @Override
+    public String toString() {
+        return "TestingSite{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", address=" + address +
+                ", facilityType='" + facilityType + '\'' +
+                ", operationTime='" + operationTime + '\'' +
+                ", waitingTime='" + waitingTime + '\'' +
+                '}';
+    }
 }

@@ -1,9 +1,8 @@
 package com.example.application.data.entity.Booking;
 
+import com.example.application.data.entity.BookingMethod.BookingMethod;
+import com.example.application.data.entity.BookingMethod.FacilityBookingMethod;
 import com.example.application.data.entity.HttpHelper;
-import com.example.application.data.entity.Registration.CovidTest;
-import com.example.application.data.entity.Registration.OnSiteTesting;
-import com.example.application.data.entity.Registration.OnlineTesting;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.User.ExpertStaff;
 import com.example.application.data.entity.User.FacilityStaff;
@@ -25,6 +24,7 @@ public class BookingCollection {
             getBookingsService();
         }
         catch (Exception e){
+            System.out.println("BC error");
             System.out.println(e);
         }
     }
@@ -43,13 +43,10 @@ public class BookingCollection {
 
         // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
-
         for (ObjectNode node : jsonNodes) {
             JsonNode userNode = node.get("customer");
             User user = null;
-            CovidTest covidTest = null;
-
-
+            Booking booking;
             if (userNode.get("isCustomer").asBoolean())
                 user = new Resident(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
             else if (userNode.get("isReceptionist").asBoolean())
@@ -57,7 +54,7 @@ public class BookingCollection {
             else if (userNode.get("isHealthcareWorker").asBoolean())
                 user = new ExpertStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
 
-            if (userNode.has("address")) {
+            if (!node.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = node.get("testingSite");
                 TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(),
                         testingSiteNode.get("name").asText(),
@@ -77,40 +74,28 @@ public class BookingCollection {
                         testingSiteNode.get("additionalInfo").get("closeTime").asText(),
                         testingSiteNode.get("additionalInfo").get("waitingTime").asText()
                 );
-
-                covidTest = new OnSiteTesting(testingSite);
+                booking = new OnSiteTesting(node.get("id").asText(),testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").asText());
             } else {
-                covidTest = new OnlineTesting();
+                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").asText());
             }
-
-            Booking booking = new FacilityBooking(
-                    node.get("id").asText(),
-                    covidTest,
-                    node.get("startTime").asText(),
-                    user,
-                    node.get("notes").asText(),
-                    node.get("status").asText(),
-                    node.get("smsPin").asText(),
-                    node.get("additionalInfo").asText());
-
             collection.add(booking);
         }
     }
 
     /**
-     * Verify PIN which will return Booking
+     * Verify PIN which will return BookingMethod
      * */
     public Booking verifyPin(String pin) {
-        Booking userBooking = null;
+        Booking userBookingMethod = null;
         int i = 0;
         boolean endLoop = false;
         while (i<collection.size() && !endLoop){
             if (collection.get(i).getSmsPin().equals(pin)) {
-                userBooking = collection.get(i);
+                userBookingMethod = collection.get(i);
                 endLoop = true;
             }
             i++;
         }
-        return userBooking;
+        return userBookingMethod;
     }
 }
