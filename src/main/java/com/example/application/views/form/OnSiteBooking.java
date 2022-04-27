@@ -1,6 +1,8 @@
 package com.example.application.views.form;
 
 
+import com.example.application.data.entity.Booking.Booking;
+import com.example.application.data.entity.Booking.BookingCollection;
 import com.example.application.data.entity.Booking.FacilityBooking;
 import com.example.application.data.entity.Registration.OnSiteTesting;
 import com.example.application.data.entity.TestingSite.TestingSite;
@@ -46,51 +48,66 @@ public class OnSiteBooking extends VerticalLayout {
     private final TextField userGivenName = new TextField("Given Name");
     private final TextField userFamilyName = new TextField("Family Name");
     private final IntegerField userPhoneNumber = new IntegerField("Phone Number");
-    private Button submit;
+    private final IntegerField verifyPin = new IntegerField("PIN");
+    private Button submitRegistration;
+    private Button submitVerification;
 
-    private final Dialog dialog;
-    private final Label label;
-    private final VerticalLayout content;
-    private final Tab tabExist;
-    private final Tab tabNew;
-    private final Tabs tabs;
+    private final FormLayout registrationCommonForm = new FormLayout();
+    private final Dialog dialog = new Dialog();
+    private final Label label = new Label();
+    private final VerticalLayout content = new VerticalLayout();
+    private final Tab tabExist = new Tab("Existing User");
+    private final Tab tabNew = new Tab("New User");
+    private final Tabs registrationSubTabs = new Tabs(tabExist, tabNew);
+
+    private final Tab tabRegistration = new Tab("Registration");
+    private final Tab tabVerifyPin = new Tab("Verification") ;
+    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin);
+    private final VerticalLayout mainLayout = new VerticalLayout();
 
     public OnSiteBooking(){
-        tabExist = new Tab("Existing User");
-        tabNew = new Tab("New User");
-        tabs = new Tabs(tabExist, tabNew);
-        content = new VerticalLayout();
-        dialog = new Dialog();
-        label = new Label();
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
-        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(label,closeButton);
-
-        this.configureTabs();
+        this.configureRegistrationNoti();
+        this.configureRegistrationTabs();
         this.configureDateTimePicker();
         this.configureComboBox();
         this.populateComboBox();
-        this.configureButton();
+        this.configureRegistrationButton();
+        this.configureRegistrationForm();
+        this.configureVerifyButton();
 
-        FormLayout commonForm = new FormLayout();
-        commonForm.setColspan(notes, 2);
-        commonForm.setColspan(submit, 2);
-        commonForm.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0",1),
-                new FormLayout.ResponsiveStep("30%",2)
-        );
-        commonForm.add(
-                testingSite, startTime,
-                notes,
-                submit
-        );
-        add(tabs,content,commonForm);
+        mainLayout.add(registrationSubTabs,content,registrationCommonForm);
+        mainTabs.addSelectedChangeListener(event -> {
+            this.clearFields();
+            mainLayout.removeAll();
+            if (event.getSelectedTab().equals(tabRegistration)) {
+                mainLayout.add(registrationSubTabs,content,registrationCommonForm);
+            }
+            else if (event.getSelectedTab().equals(tabVerifyPin)) {
+                mainLayout.add(verifyPin, submitVerification);
+            }
+        });
+
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
+        add(mainTabs,mainLayout);
     }
 
-    private void configureTabs(){
+    private void configureRegistrationForm(){
+        registrationCommonForm.setColspan(notes, 2);
+        registrationCommonForm.setColspan(submitRegistration, 2);
+        registrationCommonForm.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0",1),
+                new FormLayout.ResponsiveStep("30%",2)
+        );
+        registrationCommonForm.add(
+                testingSite, startTime,
+                notes,
+                submitRegistration
+        );
+    }
+
+    private void configureRegistrationTabs(){
         // First form
         FormLayout existingUserLayout = new FormLayout();
         existingUserLayout.add(
@@ -102,7 +119,7 @@ public class OnSiteBooking extends VerticalLayout {
 
         content.setSpacing(false);
         content.add(existingUserLayout);
-        tabs.addSelectedChangeListener(event -> {
+        registrationSubTabs.addSelectedChangeListener(event -> {
                     this.clearFields();
                     content.removeAll();
                     newUserLayout.removeAll();
@@ -127,10 +144,16 @@ public class OnSiteBooking extends VerticalLayout {
         );
     }
 
-    private void configureButton(){
-        submit = new Button("Submit");
-        submit.setEnabled(false);
-        submit.addClickListener(e -> {
+    private void configureRegistrationNoti(){
+        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        dialog.add(closeButton,label);
+    }
+
+    private void configureRegistrationButton(){
+        submitRegistration = new Button("Submit");
+        submitRegistration.setEnabled(false);
+        submitRegistration.addClickListener(e -> {
             if (!validateFields()){
                 Notification.show("Site must not be empty");
             }
@@ -140,8 +163,8 @@ public class OnSiteBooking extends VerticalLayout {
                 UserCollection collection = new UserCollection();
                 User user = null;
                 try {
-                    if (tabs.getSelectedTab().equals(tabExist))
-                        user = collection.searchUserId(userName.getValue(), userPassword.getValue());
+                    if (registrationSubTabs.getSelectedTab().equals(tabExist))
+                        user = collection.verifyUserId(userName.getValue(), userPassword.getValue());
                     else
                         user = collection.addUserService(userGivenName.getValue(), userFamilyName.getValue(), userName.getValue(), userPassword.getValue(), userPhoneNumber.getValue().toString(), true, false,false);
                 }
@@ -160,6 +183,7 @@ public class OnSiteBooking extends VerticalLayout {
                 if (response!=null){
                     Notification noti = Notification.show("Application submitted");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    label.removeAll();
                     label.add("PIN: "+ mappedResponse.get("smsPin").asText());
                     dialog.open();
                 }
@@ -167,14 +191,44 @@ public class OnSiteBooking extends VerticalLayout {
         });
     }
 
+    private void configureVerifyButton(){
+        verifyPin.addValueChangeListener(e -> {
+            if (!verifyPin.isEmpty() && !verifyPin.isInvalid())
+                submitVerification.setEnabled(true);
+            else
+                submitVerification.setEnabled(false);
+        });
+        submitVerification = new Button("Verify");
+        submitVerification.setEnabled(false);
+        submitVerification.addClickListener(e -> {
+            if (!verifyPin.isEmpty() && !verifyPin.isInvalid()){
+                BookingCollection collection = new BookingCollection();
+                Booking userBooking = collection.verifyPin(verifyPin.getValue().toString());
+                label.removeAll();
+                if (userBooking!=null){
+                    label.add(userBooking.toString());
+                    dialog.open();
+                }
+                else {
+                    Notification noti = Notification.show("Error! Invalid PIN");
+                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+            }
+            else {
+                Notification noti = Notification.show("Error! Invalid PIN");
+                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+    }
+
     private boolean validateFields(){
         boolean validation = false;
-        if(tabs.getSelectedTab().equals(tabExist)){
+        if(registrationSubTabs.getSelectedTab().equals(tabExist)){
             if(!userName.isEmpty() && !userPassword.isEmpty()){
                 validation = true;
             }
         }
-        else if (tabs.getSelectedTab().equals(tabNew)){
+        else if (registrationSubTabs.getSelectedTab().equals(tabNew)){
             if(!userName.isEmpty() && !userPassword.isEmpty() && !userGivenName.isEmpty() && !userFamilyName.isEmpty() && !userPhoneNumber.isEmpty()){
                 validation = true;
             }
@@ -195,10 +249,10 @@ public class OnSiteBooking extends VerticalLayout {
         testingSite.setRequired(true);
         testingSite.addValueChangeListener(event -> {
             if (testingSite.getValue() != null){
-                submit.setEnabled(true);
+                submitRegistration.setEnabled(true);
             }
             else {
-                submit.setEnabled(false);
+                submitRegistration.setEnabled(false);
             }
         });
     }

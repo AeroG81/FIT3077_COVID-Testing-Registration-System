@@ -26,9 +26,9 @@ public class UserCollection {
         return collection;
     }
 
-    public User searchUserId(String username, String password){
+    public User verifyUserId(String username, String password){
         User user = null;
-        if (verifyUser(username,password)) {
+        if (verifyUserService(username,password)) {
             int i = 0;
             boolean endLoop = false;
             while (i<collection.size() && !endLoop){
@@ -68,7 +68,7 @@ public class UserCollection {
         }
     }
 
-    private boolean verifyUser(String username, String password){
+    private boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+
                 "\"userName\":\"" + username + "\"," +
