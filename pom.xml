@@ -23,7 +23,7 @@
     <repositories>
         <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
 
-        <!-- Main Maven repository -->
+        <!-- com.example.application.test Maven repository -->
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
