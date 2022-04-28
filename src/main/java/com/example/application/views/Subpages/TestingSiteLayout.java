@@ -1,4 +1,4 @@
-package com.example.application.views.list;
+package com.example.application.views.Subpages;
 
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
@@ -13,19 +13,17 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "/testingsite")
-@PageTitle("Testing Site List")
-public class TestingSiteView extends VerticalLayout {
+@PageTitle("Site")
+public class TestingSiteLayout extends VerticalLayout {
     Grid<TestingSite> grid = new Grid<>(TestingSite.class);
     TextField filterText = new TextField();
     TestingSiteCollection collection = new TestingSiteCollection();
 
-    public TestingSiteView(){
-        addClassName("list-view");
-        setSizeFull();
+    public TestingSiteLayout(){
         configureGrid();
-
-        add(getToolbar(), grid);
         populateList();
+        add(getToolbar(), grid);
+        setSizeFull();
     }
 
     private void configureGrid() {
@@ -37,6 +35,7 @@ public class TestingSiteView extends VerticalLayout {
         grid.addColumn(site -> site.getFacilityType()).setHeader("Facility Type").setWidth("15%");
         grid.addColumn(site -> site.getOperationTime()).setHeader("Operation Time").setWidth("10%");
         grid.addColumn(site -> site.getWaitingTime()).setHeader("Waiting Time").setWidth("10%");
+        grid.setHeight("20%");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
@@ -49,10 +48,10 @@ public class TestingSiteView extends VerticalLayout {
     }
 
     private HorizontalLayout getToolbar() {
-        filterText.setPlaceholder("Search site by name...");
+        filterText.setPlaceholder("Search site by suburb or facility type");
+        filterText.setWidth("300px");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
-//        filterText.addValueChangeListener(e -> updateList(filterText.getValue()));
         Button searchButton = new Button("Search");
         searchButton.addClickListener(e -> updateList(filterText.getValue()));
         HorizontalLayout toolbar = new HorizontalLayout(filterText, searchButton);

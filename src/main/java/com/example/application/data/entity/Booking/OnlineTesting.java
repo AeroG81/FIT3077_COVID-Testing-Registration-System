@@ -21,7 +21,7 @@ public class OnlineTesting extends Booking {
     }
 
     private void generateUrl(){
-        url = new Zoom().generateUrl(super.getUser().getId()+"-"+super.getStartTime());
+        url = new Zoom().generateUrl(super.getCustomer().getId()+"-"+super.getStartTime());
     }
 
     public String getAdditionalInfo(){

@@ -18,8 +18,6 @@ public class FacilityBookingMethod implements BookingMethod {
                 "\"startTime\":\"" + startTime + "\"";
         if (notes != null && !notes.isBlank())
             jsonString += ",\"notes\":\"" + notes + "\"";
-//        if (super.getAdditionalInfo() != null && !super.getAdditionalInfo().isBlank())
-//            jsonString += ",\"additionalInfo\":" + super.getAdditionalInfo();
         // update Site waiting time
         jsonString += "}";
         String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";

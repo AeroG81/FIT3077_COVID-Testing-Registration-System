@@ -1,23 +1,22 @@
 package com.example.application.data.entity.Booking;
 
 
-import com.example.application.data.entity.TestingType.TestingType;
 import com.example.application.data.entity.User.User;
 
 import java.util.UUID;
 
 public abstract class Booking {
     private String bookingId;
-    private User user;
+    private User customer;
     private String startTime;
     private String notes;
     private String status;
     private String smsPin;
     private String qrcode;
 
-    public Booking(String startTime, User user, String notes) {
+    public Booking(String startTime, User customer, String notes) {
         this.startTime = startTime;
-        this.user = user;
+        this.customer = customer;
         this.notes = notes;
         this.bookingId = null;
         this.status = null;
@@ -25,20 +24,20 @@ public abstract class Booking {
         qrcode = UUID.randomUUID().toString();
     }
 
-    public Booking(String bookingId, String startTime, User user, String status, String smsPin, String qrcode) {
+    public Booking(String bookingId, String startTime, User customer, String status, String smsPin, String qrcode) {
         this.bookingId = bookingId;
         this.startTime = startTime;
-        this.user = user;
+        this.customer = customer;
         this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
         this.qrcode = qrcode;
     }
 
-    public Booking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode) {
+    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode) {
         this.bookingId = bookingId;
         this.startTime = startTime;
-        this.user = user;
+        this.customer = customer;
         this.notes = notes;
         this.status = status;
         this.smsPin = smsPin;
@@ -53,8 +52,8 @@ public abstract class Booking {
         return bookingId;
     }
 
-    public User getUser() {
-        return user;
+    public User getCustomer() {
+        return customer;
     }
 
     public String getStartTime() {
@@ -80,7 +79,7 @@ public abstract class Booking {
     @Override
     public String toString() {
         return "bookingId='" + bookingId + '\'' +
-                ", \nuser= " + user.toString() +
+                ", \nuser= " + customer.toString() +
                 ", \nstartTime= '" + startTime + '\'' +
                 ", \nnotes= '" + notes + '\'' +
                 ", \nstatus= '" + status + '\'' +

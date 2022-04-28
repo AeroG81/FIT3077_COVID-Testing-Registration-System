@@ -1,10 +1,10 @@
-package com.example.application.views.form;
+package com.example.application.views.Subpages;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
+import com.example.application.data.entity.Booking.OnlineTesting;
 import com.example.application.data.entity.CovidTest.CovidTest;
 import com.example.application.data.entity.CovidTest.CovidTestCollection;
-import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingType.RAT;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -50,19 +50,23 @@ public class QrVerifyLayout extends VerticalLayout {
                 if (userBooking != null){
                     CovidTestCollection covidTestCollection = new CovidTestCollection();
                     CovidTest covidTest = covidTestCollection.verifyQrCovidTest(qrString.getValue());
-                    // if covidTest was not created before (==null)
-                    if (covidTest==null){
+                    // if covidTest was created before (!=null)
+                    if (covidTest!=null){
+                        label.setWidth("500px");
+                        label.setValue(covidTest.toString());
+                        dialog.open();
                         Notification noti = Notification.show("Error! Covid Test already exist");
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
+                    // if covidTest was not created before (==null)
                     else {
-                        covidTest = new CovidTest(new RAT(), userBooking.getUser(), userBooking ,"PENDING","RAT kit redeemed", "", "");
+                        covidTest = new CovidTest(new RAT(), userBooking.getCustomer(), userBooking.getCustomer(), userBooking ,"INITIATED","RAT kit redeemed", "", "");
                         try {
-                            HttpResponse<String> response = covidTestCollection.addCovidTestService(covidTest.getTestingType().getType(), covidTest.getPatient().getId(), covidTest.getBooking().getBookingId(), covidTest.getResult(), covidTest.getStatus(), covidTest.getNotes());
-                            System.out.println(response.body());
+                            HttpResponse<String> response = covidTestCollection.addCovidTestService(covidTest.getTestingType().getType(), covidTest.getPatient().getId(), covidTest.getAdministerer().getId() , covidTest.getBooking().getBookingId(), covidTest.getResult(), covidTest.getStatus(), covidTest.getNotes());
                             label.setWidth("500px");
-                            label.setValue(response.toString());
+                            label.setValue(response.body());
                             dialog.open();
+                            Notification.show("Acknowledged user RAT kit was collected along with meeting url "+ ((OnlineTesting) covidTest.getBooking()).getUrl());
                         }
                         catch (Exception exception){
                             System.out.println(exception);

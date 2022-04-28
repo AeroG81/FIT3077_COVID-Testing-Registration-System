@@ -1,4 +1,4 @@
-package com.example.application.views.form;
+package com.example.application.views.Subpages;
 
 import com.example.application.data.entity.BookingMethod.FacilityBookingMethod;
 import com.example.application.data.entity.TestingSite.TestingSite;
@@ -13,7 +13,6 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;

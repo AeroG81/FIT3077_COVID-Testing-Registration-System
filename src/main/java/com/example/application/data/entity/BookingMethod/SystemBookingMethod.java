@@ -22,7 +22,7 @@ public class SystemBookingMethod implements BookingMethod {
     public HttpResponse<String> addBooking(String startTime, User user, String notes) throws Exception {
         Booking booking = new OnlineTesting(startTime,user,notes);
         String jsonString = "{" +
-                "\"customerId\":\"" + booking.getUser().getId() + "\"," +
+                "\"customerId\":\"" + booking.getCustomer().getId() + "\"," +
                 "\"startTime\":\"" + booking.getStartTime() + "\"";
         if (notes != null && !notes.isBlank())
             jsonString += ",\"notes\":\"" + notes + "\"";

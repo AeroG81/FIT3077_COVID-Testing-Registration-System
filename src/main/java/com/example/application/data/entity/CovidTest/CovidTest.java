@@ -117,4 +117,19 @@ public class CovidTest {
     public String getAdditionalInfo() {
         return additionalInfo;
     }
+
+    @Override
+    public String toString() {
+        return "CovidTest{" +
+                "id='" + id + '\'' +
+                "\n, testingType=" + testingType.getType() +
+                "\n, patient=" + patient.toString() +
+                "\n, administerer=" + administerer.toString() +
+                "\n, booking=" + booking.toString() +
+                "\n, result='" + result + '\'' +
+                "\n, status='" + status + '\'' +
+                "\n, notes='" + notes + '\'' +
+                "\n, additionalInfo='" + additionalInfo + '\'' +
+                '}';
+    }
 }

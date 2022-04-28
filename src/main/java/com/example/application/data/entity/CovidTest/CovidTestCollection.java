@@ -109,6 +109,7 @@ public class CovidTestCollection {
             JsonNode bookingCustomerNode =bookingNode.get("customer");
             Booking booking;
             TestingType type = null;
+
             User patient = this.createUser(patientNode);
             User administerer = this.createUser(administererNode);
             User bookingCustomer = this.createUser(bookingCustomerNode);
@@ -131,7 +132,7 @@ public class CovidTestCollection {
 
     private User createUser(JsonNode node){
         User user = null;
-        if (node!=null)
+        if (!node.asText().equals("null"))
             if (node.get("isCustomer").asBoolean())
                 user = new Resident(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
             else if (node.get("isReceptionist").asBoolean())

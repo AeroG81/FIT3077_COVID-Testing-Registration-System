@@ -1,6 +1,5 @@
-package com.example.application.views.form;
+package com.example.application.views.Subpages;
 
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -13,9 +12,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
-
-import javax.swing.text.Position;
 
 @Route(value = "/onsiteinterview")
 @PageTitle("On-Site Interview  | Vaadin CRM")

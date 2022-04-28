@@ -1,24 +1,31 @@
-package com.example.application.views.form;
+package com.example.application.views.Subpages;
 
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
+import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.Resident;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -38,7 +45,8 @@ public class HomeBookingView extends VerticalLayout {
     private final Tab tabSiteBooking = new Tab("Book for Site Testing");
     private final Tab tabHomeBooking = new Tab("Book for Home Testing");
     private final Tab tabVerifyPin = new Tab("Verify PIN");
-    private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin);
+    private final Tab tabTestingSites = new Tab("Testing Sites");
+    private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin, tabTestingSites);
 
     private final ConfirmDialog dialog = new ConfirmDialog();
 
@@ -57,6 +65,9 @@ public class HomeBookingView extends VerticalLayout {
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
+            }
+            else if (event.getSelectedTab().equals(tabTestingSites)) {
+                UI.getCurrent().navigate("testingsite");
             }
         });
         setMargin(false);
