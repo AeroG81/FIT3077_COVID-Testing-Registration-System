@@ -1,7 +1,6 @@
 package com.example.application.views.form;
 
 import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.BookingMethod.BookingMethod;
 import com.example.application.data.entity.Booking.BookingCollection;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

@@ -1,7 +1,5 @@
 package com.example.application.data.entity.Booking;
 
-import com.example.application.data.entity.BookingMethod.BookingMethod;
-import com.example.application.data.entity.BookingMethod.FacilityBookingMethod;
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.User.ExpertStaff;
@@ -28,9 +26,11 @@ public class BookingCollection {
             System.out.println(e);
         }
     }
+
     public List<Booking> getCollection() {
         return collection;
     }
+
     public void getBookingsService() throws Exception {
         String userUrl = "https://fit3077.com/api/v1/booking";
 
@@ -98,4 +98,22 @@ public class BookingCollection {
         }
         return userBookingMethod;
     }
+
+    /**
+     * Verify PIN which will return BookingMethod
+     * */
+    public Booking verifyQr(String qr) {
+        Booking userBookingMethod = null;
+        int i = 0;
+        boolean endLoop = false;
+        while (i<collection.size() && !endLoop){
+            if (collection.get(i).getQrcode().equals(qr)) {
+                userBookingMethod = collection.get(i);
+                endLoop = true;
+            }
+            i++;
+        }
+        return userBookingMethod;
+    }
+
 }

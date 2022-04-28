@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Route(value = "/onsitebooking")
-@PageTitle("OnSiteBooking")
+@PageTitle("OnSite")
 public class OnSiteBookingView extends VerticalLayout {
 
     private final TestingSiteCollection collection = new TestingSiteCollection();
@@ -57,7 +57,8 @@ public class OnSiteBookingView extends VerticalLayout {
 
     private final Tab tabRegistration = new Tab("Registration");
     private final Tab tabVerifyPin = new Tab("Verify PIN") ;
-    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin);
+    private final Tab tabScanQr = new Tab("RAT-kit verify QR");
+    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr);
     private final VerticalLayout mainLayout = new VerticalLayout();
 
     public OnSiteBookingView(){
@@ -78,6 +79,9 @@ public class OnSiteBookingView extends VerticalLayout {
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
+            }
+            else if (event.getSelectedTab().equals(tabScanQr)) {
+                mainLayout.add(new QrVerifyLayout());
             }
         });
 

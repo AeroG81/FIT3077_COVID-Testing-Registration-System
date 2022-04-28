@@ -13,7 +13,6 @@ public abstract class Booking {
     private String notes;
     private String status;
     private String smsPin;
-    private TestingType testType;
     private String qrcode;
 
     public Booking(String startTime, User user, String notes) {
@@ -23,11 +22,8 @@ public abstract class Booking {
         this.bookingId = null;
         this.status = null;
         this.smsPin = null;
-        this.testType = null;
         qrcode = UUID.randomUUID().toString();
     }
-
-
 
     public Booking(String bookingId, String startTime, User user, String status, String smsPin, String qrcode) {
         this.bookingId = bookingId;
@@ -36,7 +32,6 @@ public abstract class Booking {
         this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
-        this.testType = null;
         this.qrcode = qrcode;
     }
 
@@ -47,7 +42,6 @@ public abstract class Booking {
         this.notes = notes;
         this.status = status;
         this.smsPin = smsPin;
-        this.testType = null;
         this.qrcode = qrcode;
     }
 
@@ -83,18 +77,9 @@ public abstract class Booking {
         return qrcode;
     }
 
-    public TestingType getTestType() {
-        return testType;
-    }
-
-    public void setTestType(TestingType testType) {
-        this.testType = testType;
-    }
-
     @Override
     public String toString() {
         return "bookingId='" + bookingId + '\'' +
-                ", \ntestType=" + testType +
                 ", \nuser= " + user.toString() +
                 ", \nstartTime= '" + startTime + '\'' +
                 ", \nnotes= '" + notes + '\'' +

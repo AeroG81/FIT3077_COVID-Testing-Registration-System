@@ -15,6 +15,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -25,16 +26,14 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Route(value = "/homebooking")
-@PageTitle("SystemBookingMethod")
+@Route(value = "/systembooking")
+@PageTitle("System")
 public class HomeBookingView extends VerticalLayout {
-
-    private final TestingSiteCollection collection = new TestingSiteCollection();
 
     private DateTimePicker startTime;
     private final TextArea notes = new TextArea("Notes");
     private Button submitRegistration;
-
+    private final RadioButtonGroup<String> needTestKit = new RadioButtonGroup<>();
     private final VerticalLayout mainLayout = new VerticalLayout();
     private final Tab tabSiteBooking = new Tab("Book for Site Testing");
     private final Tab tabHomeBooking = new Tab("Book for Home Testing");
@@ -48,13 +47,13 @@ public class HomeBookingView extends VerticalLayout {
 
         this.configureDateTimePicker();
         this.configureRegistrationButton();
-
-        mainLayout.add(startTime,notes,submitRegistration);
+        this.configureRadioGroup();
+        mainLayout.add(startTime,notes,needTestKit,submitRegistration);
         mainTabs.addSelectedChangeListener(event -> {
             this.clearFields();
             mainLayout.removeAll();
             if (event.getSelectedTab().equals(tabHomeBooking)) {
-                mainLayout.add(startTime,notes,submitRegistration);
+                mainLayout.add(startTime,notes,needTestKit,submitRegistration);
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
@@ -64,6 +63,12 @@ public class HomeBookingView extends VerticalLayout {
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
         add(mainTabs,mainLayout);
+    }
+
+    private void configureRadioGroup(){
+        needTestKit.setLabel("Test Kit Needed");
+        needTestKit.setItems("Yes", "No");
+        needTestKit.setValue("No");
     }
 
     private void configureRegistrationButton(){
@@ -91,7 +96,12 @@ public class HomeBookingView extends VerticalLayout {
                         Dialog responseDialog = new Dialog();
                         label.setWidth("500px");
                         label.clear();
-                        label.setValue(mappedResponse.toPrettyString());
+                        // need QR code display to user
+                        if (needTestKit.getValue().equals("Yes"))
+                            label.setValue(mappedResponse.toPrettyString());
+                        // QR code not needed for user
+                        else
+                            label.setValue(mappedResponse.toPrettyString().replace("\"qrcode\" : \"" + mappedResponse.get("additionalInfo").get("qrcode").asText()+"\",",""));
                         Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
                         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                         responseDialog.add(closeButton,label);
