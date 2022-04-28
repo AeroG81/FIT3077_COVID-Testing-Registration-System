@@ -28,11 +28,9 @@ public class BookingCollection {
             System.out.println(e);
         }
     }
-
     public List<Booking> getCollection() {
         return collection;
     }
-
     public void getBookingsService() throws Exception {
         String userUrl = "https://fit3077.com/api/v1/booking";
 
@@ -100,56 +98,4 @@ public class BookingCollection {
         }
         return userBookingMethod;
     }
-
-    public Booking addBookingService(CovidTest testingMethod, String startTime, User user, String notes) throws Exception{
-        String url = "https://fit3077.com/api/v1/booking";
-        String jsonString = null;
-//        if (user instanceof Resident) {
-//            jsonString =
-//                    "{" +
-//                            "\"id\":\"" + testingMethod.getId() + "\"," +
-//                            "{" +
-//                                "\"customer\":\"" +
-//                                    "{" +
-//                                        "\"id\":\"" + user.getId() + "\"," +
-//                                        "\"givenName\":\"" + user.getGivenName() + "\"," +
-//                                        "\"familyName\":\"" + user.getFamilyName() + "\"," +
-//                                        "\"userName\":\"" + user.getUserName() + "\"," +
-//                                        "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
-//                                        "\"isCustomer\":\"" + true + "\"," +
-//                                        "\"isReceptionist\":\"" + false + "\"," +
-//                                        "\"isHealthcareWorker\":\"" + false + "\"," +
-//                                        "\"additionalInfo\":\"" + user.getAdditionalInfo() + "\"," +
-//                                    "}" + "\"," +
-//
-//
-//
-//                            "\"familyName\":\"" + familyName + "\"," +
-//                            "\"userName\":\"" + userName + "\"," +
-//                            "\"password\":\"" + password + "\"," +
-//                            "\"phoneNumber\":\"" + phoneNumber + "\"," +
-//                            "\"isCustomer\":" + isCustomer + "," +
-//                            "\"isAdmin\":" + isAdmin + "," +
-//                            "\"isHealthCareWorker\":" + isHealthCareWorker + "," +
-//                            "\"additionalInfo\":" + additionalInfo +
-//                            "}";
-//        }
-
-        return null;
-    }
-
-    public Booking addBookingService(CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
-        return null;
-    }
-
-    public Booking addBookingService(String bookingId, CovidTest testingMethod, String startTime, User user, String status, String smsPin, String additionalInfo) {
-        return null;
-    }
-
-    public Booking addBookingService(String bookingId, CovidTest testingMethod, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
-        return null;
-    }
-
-
 }
-
