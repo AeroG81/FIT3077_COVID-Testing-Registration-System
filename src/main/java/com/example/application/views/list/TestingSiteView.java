@@ -13,7 +13,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "/testingsite")
-@PageTitle("TestingSite | Vaadin CRM")
+@PageTitle("Testing Site List")
 public class TestingSiteView extends VerticalLayout {
     Grid<TestingSite> grid = new Grid<>(TestingSite.class);
     TextField filterText = new TextField();
@@ -32,10 +32,11 @@ public class TestingSiteView extends VerticalLayout {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
         grid.setColumns("name", "description");
-        grid.getColumns().forEach(col -> col.setWidth("22%"));
+        grid.getColumns().forEach(col -> col.setWidth("20%"));
         grid.addColumn(site -> site.getAddress().toString()).setHeader("Address").setWidth("20%");
         grid.addColumn(site -> site.getFacilityType()).setHeader("Facility Type").setWidth("15%");
         grid.addColumn(site -> site.getOperationTime()).setHeader("Operation Time").setWidth("10%");
+        grid.addColumn(site -> site.getWaitingTime()).setHeader("Waiting Time").setWidth("10%");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 

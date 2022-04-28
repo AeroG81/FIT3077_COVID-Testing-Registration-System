@@ -36,6 +36,18 @@ public class HttpHelper {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public HttpResponse<String> patchService(String url, String jsonString, String id) throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder(URI.create(url+"/"+id))
+                .setHeader("Authorization", APIKEY)
+                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
+                .method("PATCH",HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     public HttpResponse<String> deleteService(String url) throws Exception{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest

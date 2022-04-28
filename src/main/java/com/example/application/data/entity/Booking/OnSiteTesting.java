@@ -10,18 +10,13 @@ public class OnSiteTesting extends Booking {
         this.testingSite = site;
     }
 
-    public OnSiteTesting(TestingSite site, String startTime, User user, String status, String smsPin, String additionalInfo) {
-        super(startTime, user, status, smsPin, additionalInfo);
+    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String status, String smsPin, String qrcode) {
+        super(bookingId, startTime, user, status, smsPin, qrcode);
         this.testingSite = site;
     }
 
-    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String status, String smsPin, String additionalInfo) {
-        super(bookingId, startTime, user, status, smsPin, additionalInfo);
-        this.testingSite = site;
-    }
-
-    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
-        super(bookingId, startTime, user, notes, status, smsPin, additionalInfo);
+    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode);
         this.testingSite = site;
     }
 
@@ -31,9 +26,10 @@ public class OnSiteTesting extends Booking {
 
     @Override
     public String toString() {
-        return "OnSiteTesting{" +
+        return "OnSiteTesting {\n" +
                 super.toString() +
-                ",testingSite=" + testingSite.toString() +
-                '}';
+                ", \nqrcode='" + super.getQrcode() + '\'' +
+                ",\ntestingSite=" + testingSite.getInfo() +
+                "\n}";
     }
 }

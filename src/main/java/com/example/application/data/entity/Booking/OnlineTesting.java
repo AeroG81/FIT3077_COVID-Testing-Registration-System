@@ -1,32 +1,34 @@
 package com.example.application.data.entity.Booking;
 
+import com.example.application.data.entity.Meeting.Zoom;
 import com.example.application.data.entity.User.User;
 
 public class OnlineTesting extends Booking {
-    private String qrcode;
     private String url;
     public OnlineTesting(String startTime, User user, String notes) {
         super(startTime, user, notes);
+        generateUrl();
     }
 
-    public OnlineTesting(String startTime, User user, String status, String smsPin, String additionalInfo) {
-        super(startTime, user, status, smsPin, additionalInfo);
+    public OnlineTesting(String bookingId, String startTime, User user, String status, String smsPin, String qrcode, String url) {
+        super(bookingId, startTime, user, status, smsPin, qrcode);
+        this.url = url;
     }
 
-    public OnlineTesting(String bookingId, String startTime, User user, String status, String smsPin, String additionalInfo) {
-        super(bookingId, startTime, user, status, smsPin, additionalInfo);
+    public OnlineTesting(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode);
+        this.url = url;
     }
 
-    public OnlineTesting(String bookingId, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
-        super(bookingId, startTime, user, notes, status, smsPin, additionalInfo);
+    private void generateUrl(){
+        url = new Zoom().generateUrl(super.getUser().getId()+"-"+super.getStartTime());
     }
 
-    public String getQrcode() {
-        return qrcode;
-    }
-
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public String getAdditionalInfo(){
+        return "{"+
+                "\n\"qrcode\":\"" + super.getQrcode() + "\"," +
+                "\n\"url\":\"" + this.getUrl() + "\"" +
+                "}";
     }
 
     public String getUrl() {
@@ -41,8 +43,8 @@ public class OnlineTesting extends Booking {
     public String toString() {
         return "OnlineTesting{" +
                 super.toString() +
-                ",qrcode='" + qrcode + '\'' +
-                ", url='" + url + '\'' +
-                '}';
+                ", \nqrcode='" + super.getQrcode() + '\'' +
+                ", \nurl='" + url + '\'' +
+                "\n}";
     }
 }

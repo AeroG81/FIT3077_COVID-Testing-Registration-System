@@ -49,7 +49,7 @@ public class OnSiteBookingView extends VerticalLayout {
 
     private final FormLayout registrationCommonForm = new FormLayout();
     private final Dialog dialog = new Dialog();
-    private final Label label = new Label();
+    private final TextArea label = new TextArea();
     private final VerticalLayout content = new VerticalLayout();
     private final Tab tabExist = new Tab("Existing User");
     private final Tab tabNew = new Tab("New User");
@@ -170,14 +170,17 @@ public class OnSiteBookingView extends VerticalLayout {
                 try {
                     response = new FacilityBookingMethod().addBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue());
                     mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
+                    testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0,testingSite.getValue().getWaitingTime().length()-3))+10)+"min");
                 } catch (Exception exception){
-                    System.out.println("Error creating: " + exception.toString());
+                    System.out.println("Error creating: " + exception);
                 }
                 if (response!=null){
                     Notification noti = Notification.show("Application submitted");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    label.removeAll();
-                    label.add("PIN: "+ mappedResponse.get("smsPin").asText());
+                    label.setWidth("500px");
+                    label.setEnabled(false);
+                    label.clear();
+                    label.setValue("PIN: "+ mappedResponse.get("smsPin").asText());
                     dialog.open();
                 }
             }
@@ -196,7 +199,7 @@ public class OnSiteBookingView extends VerticalLayout {
                 validation = false;
             }
         }
-        if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() > Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9)))
+        if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9)))
             validation = false;
         return validation;
     }
@@ -226,8 +229,8 @@ public class OnSiteBookingView extends VerticalLayout {
         startTime = new DateTimePicker();
         startTime.setLabel("Appointment Date and Time");
         startTime.setAutoOpen(true);
-        startTime.setMin(LocalDateTime.now());
-        startTime.setValue(LocalDateTime.now());
+        startTime.setMin(LocalDateTime.now().plusDays(1));
+        startTime.setValue(LocalDateTime.now().plusDays(1));
         startTime.setMax(LocalDateTime.now().plusDays(90));
     }
 

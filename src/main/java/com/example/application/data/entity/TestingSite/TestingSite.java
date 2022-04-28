@@ -8,6 +8,8 @@ public class TestingSite {
     private String phoneNumber;
     private Address address;
     private String facilityType;
+    private String openTime;
+    private String closeTime;
     private String operationTime;
     private String waitingTime;
 
@@ -19,6 +21,8 @@ public class TestingSite {
         this.phoneNumber = phoneNumber;
         this.address = new Address(latitude, longitude, unitNumber, street, street2, suburb, state, postcode);
         this.facilityType = facilityType;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
         this.operationTime = openTime + " - " + closeTime;
         this.waitingTime = waitingTime;
     }
@@ -52,7 +56,15 @@ public class TestingSite {
     }
 
     public String getOperationTime() {
-        return operationTime;
+        return openTime + " - " + closeTime;
+    }
+
+    public String getOpenTime() {
+        return openTime;
+    }
+
+    public String getCloseTime() {
+        return closeTime;
     }
 
     public String getWaitingTime() {
@@ -66,15 +78,27 @@ public class TestingSite {
     @Override
     public String toString() {
         return "TestingSite{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", websiteUrl='" + websiteUrl + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", address=" + address +
-                ", facilityType='" + facilityType + '\'' +
-                ", operationTime='" + operationTime + '\'' +
-                ", waitingTime='" + waitingTime + '\'' +
+                "\nid= '" + id + '\'' +
+                ", \nname= '" + name + '\'' +
+                ", \ndescription= '" + description + '\'' +
+                ", \nwebsiteUrl= '" + websiteUrl + '\'' +
+                ", \nphoneNumber= '" + phoneNumber + '\'' +
+                ", \naddress=" + address.toString() +
+                ", \nfacilityType= '" + facilityType + '\'' +
+                ", \noperationTime= '" + operationTime + '\'' +
+                ", \nwaitingTime= '" + waitingTime + '\'' +
                 '}';
+    }
+
+    public String getInfo(){
+        return "TestingSite{" +
+                "\nid= '" + id + '\'' +
+                ", \nname= '" + name + '\'' +
+                ", \nphoneNumber= '" + phoneNumber + '\'' +
+                ", \naddress= '" + address.toString() + '\'' +
+                ", \nfacilityType= '" + facilityType + '\'' +
+                ", \noperationTime= '" + operationTime + '\'' +
+                ", \nwaitingTime= '" + waitingTime + '\'' +
+                "\n}";
     }
 }

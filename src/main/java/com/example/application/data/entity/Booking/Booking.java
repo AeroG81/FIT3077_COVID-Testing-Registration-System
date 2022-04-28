@@ -4,6 +4,8 @@ package com.example.application.data.entity.Booking;
 import com.example.application.data.entity.TestingType.TestingType;
 import com.example.application.data.entity.User.User;
 
+import java.util.UUID;
+
 public abstract class Booking {
     private String bookingId;
     private User user;
@@ -11,8 +13,8 @@ public abstract class Booking {
     private String notes;
     private String status;
     private String smsPin;
-    private String additionalInfo; // additionalInfo should be store in { } form with {} included
     private TestingType testType;
+    private String qrcode;
 
     public Booking(String startTime, User user, String notes) {
         this.startTime = startTime;
@@ -21,41 +23,36 @@ public abstract class Booking {
         this.bookingId = null;
         this.status = null;
         this.smsPin = null;
-        this.additionalInfo = null;
         this.testType = null;
+        qrcode = UUID.randomUUID().toString();
     }
 
-    public Booking(String startTime, User user, String status, String smsPin, String additionalInfo) {
-        this.bookingId = null;
-        this.startTime = startTime;
-        this.user = user;
-        this.notes = null;
-        this.status = status;
-        this.smsPin = smsPin;
-        this.additionalInfo = additionalInfo;
-        this.testType = null;
-    }
 
-    public Booking(String bookingId, String startTime, User user, String status, String smsPin, String additionalInfo) {
+
+    public Booking(String bookingId, String startTime, User user, String status, String smsPin, String qrcode) {
         this.bookingId = bookingId;
         this.startTime = startTime;
         this.user = user;
         this.notes = null;
         this.status = status;
         this.smsPin = smsPin;
-        this.additionalInfo = additionalInfo;
         this.testType = null;
+        this.qrcode = qrcode;
     }
 
-    public Booking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String additionalInfo) {
+    public Booking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode) {
         this.bookingId = bookingId;
         this.startTime = startTime;
         this.user = user;
         this.notes = notes;
         this.status = status;
         this.smsPin = smsPin;
-        this.additionalInfo = additionalInfo;
         this.testType = null;
+        this.qrcode = qrcode;
+    }
+
+    public String getQrcode() {
+        return qrcode;
     }
 
     public String getBookingId() {
@@ -83,7 +80,7 @@ public abstract class Booking {
     }
 
     public String getAdditionalInfo() {
-        return additionalInfo;
+        return qrcode;
     }
 
     public TestingType getTestType() {
@@ -97,12 +94,11 @@ public abstract class Booking {
     @Override
     public String toString() {
         return "bookingId='" + bookingId + '\'' +
-                ", user=" + user.toString() +
-                ", startTime='" + startTime + '\'' +
-                ", notes='" + notes + '\'' +
-                ", status='" + status + '\'' +
-                ", smsPin='" + smsPin + '\'' +
-                ", additionalInfo='" + additionalInfo + '\'' +
-                ", testType=" + testType;
+                ", \ntestType=" + testType +
+                ", \nuser= " + user.toString() +
+                ", \nstartTime= '" + startTime + '\'' +
+                ", \nnotes= '" + notes + '\'' +
+                ", \nstatus= '" + status + '\'' +
+                ", \nsmsPin= '" + smsPin + '\'';
     }
 }

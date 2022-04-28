@@ -74,9 +74,9 @@ public class BookingCollection {
                         testingSiteNode.get("additionalInfo").get("closeTime").asText(),
                         testingSiteNode.get("additionalInfo").get("waitingTime").asText()
                 );
-                booking = new OnSiteTesting(node.get("id").asText(),testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").asText());
+                booking = new OnSiteTesting(node.get("id").asText(),testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText());
             } else {
-                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").asText());
+                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText());
             }
             collection.add(booking);
         }

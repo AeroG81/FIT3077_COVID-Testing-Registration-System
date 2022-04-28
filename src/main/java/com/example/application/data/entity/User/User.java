@@ -79,13 +79,13 @@ public abstract class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "User{\n" +
                 "id='" + id + '\'' +
-                ", givenName='" + givenName + '\'' +
-                ", familyName='" + familyName + '\'' +
-                ", userName='" + userName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", additionalInfo='" + additionalInfo + '\'' +
-                '}';
+                ", \ngivenName='" + givenName + '\'' +
+                ", \nfamilyName='" + familyName + '\'' +
+                ", \nuserName='" + userName + '\'' +
+                ", \nphoneNumber='" + phoneNumber + '\'' +
+                ", \nadditionalInfo='" + additionalInfo + '\'' +
+                "\n}";
     }
 }
