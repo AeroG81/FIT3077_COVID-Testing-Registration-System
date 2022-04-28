@@ -1,13 +1,23 @@
 package com.example.application.views.form;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HtmlComponent;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.*;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@Route(value = "/interview")
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+
+import javax.swing.text.Position;
+
+@Route(value = "/onsiteinterview")
 @PageTitle("On-Site Interview  | Vaadin CRM")
 public class OnSiteInterview extends VerticalLayout {
     RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
@@ -22,15 +32,28 @@ public class OnSiteInterview extends VerticalLayout {
 
     RadioButtonGroup<String> sixthQuestion = new RadioButtonGroup<>();
 
-    public OnSiteInterview() {
-        H1 title = new H1("Interview Questions for Preferred Testing Method");
+    Button submitButton = new Button("Submit");
 
-        Hr hr1 = new Hr();
-        Hr hr2 = new Hr();
-        Hr hr3 = new Hr();
-        Hr hr4 = new Hr();
-        Hr hr5 = new Hr();
-        Hr hr6 = new Hr();
+    Button cancel = new Button("Cancel");
+
+    HtmlComponent br = new HtmlComponent("br");
+
+    HtmlComponent br2 = new HtmlComponent("br");
+
+    H1 title = new H1("Interview Questions for Preferred Testing Method");
+    Hr hr1 = new Hr();
+    Hr hr2 = new Hr();
+    Hr hr3 = new Hr();
+    Hr hr4 = new Hr();
+    Hr hr5 = new Hr();
+    Hr hr6 = new Hr();
+
+    public OnSiteInterview() {
+        this.configureSubmitButton();
+
+        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        HorizontalLayout buttons = new HorizontalLayout(submitButton, cancel);
 
         // First interview question
         Span label_first = new Span("1. Are you exhibiting 2 or more symptoms as listed below?");
@@ -51,6 +74,7 @@ public class OnSiteInterview extends VerticalLayout {
         firstQuestion.setLabel("Choose one:");
         firstQuestion.setRequired(true);
         firstQuestion.setItems("Yes", "No");
+        firstQuestion.setValue("No");
 
         // Second interview question
         Span label_second = new Span("2. Besides the above, are you exhibiting any of the symptoms listed below?");
@@ -64,6 +88,7 @@ public class OnSiteInterview extends VerticalLayout {
         secondQuestion.setLabel("Choose one:");
         secondQuestion.setRequired(true);
         secondQuestion.setItems("Yes", "No");
+        secondQuestion.setValue("No");
 
         // Third interview question
         Span label_third = new Span("3. Have you attended any event / areas associated with known COVID-19 cluster?");
@@ -71,6 +96,7 @@ public class OnSiteInterview extends VerticalLayout {
         thirdQuestion.setLabel("Choose one:");
         thirdQuestion.setRequired(true);
         thirdQuestion.setItems("Yes", "No");
+        thirdQuestion.setValue("No");
 
         // Fourth interview question
         Span label_fourth = new Span("4. Have you travelled abroad within the last 14 days?");
@@ -78,6 +104,7 @@ public class OnSiteInterview extends VerticalLayout {
         fourthQuestion.setLabel("Choose one:");
         fourthQuestion.setRequired(true);
         fourthQuestion.setItems("Yes", "No");
+        fourthQuestion.setValue("No");
 
         // Fifth interview question
         Span label_fifth = new Span("5. Have you had any close contact with any confirmed or suspected COVID-19 cases within the last 14 days?");
@@ -85,6 +112,7 @@ public class OnSiteInterview extends VerticalLayout {
         fifthQuestion.setLabel("Choose one:");
         fifthQuestion.setRequired(true);
         fifthQuestion.setItems("Yes", "No");
+        fifthQuestion.setValue("No");
 
         // Sixth interview question
         Span label_sixth = new Span("6. Are you a MOH COVID-19 volunteer in the last 14 days?");
@@ -92,6 +120,7 @@ public class OnSiteInterview extends VerticalLayout {
         sixthQuestion.setLabel("Choose one:");
         sixthQuestion.setRequired(true);
         sixthQuestion.setItems("Yes", "No");
+        sixthQuestion.setValue("No");
 
         // Extra response
         TextArea extra_question = new TextArea();
@@ -105,9 +134,42 @@ public class OnSiteInterview extends VerticalLayout {
                 label_fourth, fourthQuestion, hr4,
                 label_fifth, fifthQuestion, hr5,
                 label_sixth, sixthQuestion, hr6,
-                extra_question
+                extra_question, buttons, br, br2
+
+        );
+
+    }
+
+    private void configureSubmitButton(){
+        submitButton = new Button("Submit");
+        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        submitButton.addClickListener(e -> {
+            if (! validateFields()) {
+                Notification.show("Please answer all the questions");
+            }
+            else {
+                if (firstQuestion.getValue().equals("No") && secondQuestion.getValue().equals("No") &&
+                        thirdQuestion.getValue().equals("No") && fourthQuestion.getValue().equals("No") &&
+                        fifthQuestion.getValue().equals("No") && sixthQuestion.getValue().equals("No")){
+                    Notification.show("Customer can receive any COVID test method.");
+                }
+                else {
+                    Notification.show("Customer is AT RISK! Advise customer to do a PCR test.");
+                }
+            }
+                }
         );
     }
+
+    private boolean validateFields(){
+        return !firstQuestion.isEmpty() &&
+                !secondQuestion.isEmpty() &&
+                !thirdQuestion.isEmpty() &&
+                !fourthQuestion.isEmpty() &&
+                !fifthQuestion.isEmpty() &&
+                !sixthQuestion.isEmpty();
+    }
+
 
 
 }
