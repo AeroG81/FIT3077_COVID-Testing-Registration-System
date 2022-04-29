@@ -14,11 +14,18 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the booking collection storing a list of Booking
+ */
 public class BookingCollection {
     private List<Booking> collection = new ArrayList<Booking>();
 
+    /**
+     * Constructor of BookingCollection
+     */
     public BookingCollection(){
         try {
+            // Populate list
             getBookingsService();
         }
         catch (Exception e){
@@ -27,19 +34,22 @@ public class BookingCollection {
         }
     }
 
+    /**
+     * Getter for collection of bookings
+     * @return collection of bookings
+     */
     public List<Booking> getCollection() {
         return collection;
     }
 
+    /**
+     * HTTP request to API to populate the list of collection
+     * @throws Exception for Error in request
+     */
     public void getBookingsService() throws Exception {
         String userUrl = "https://fit3077.com/api/v1/booking";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
-        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
-        if (response.statusCode() != 200) {
-            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
-        }
 
         // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
@@ -83,7 +93,7 @@ public class BookingCollection {
     }
 
     /**
-     * Verify PIN which will return BookingMethod
+     * Verify PIN code which will return Booking
      * */
     public Booking verifyPin(String pin) {
         Booking userBookingMethod = null;
@@ -100,7 +110,7 @@ public class BookingCollection {
     }
 
     /**
-     * Verify PIN which will return BookingMethod
+     * Verify QR code which will return Booking
      * */
     public Booking verifyQr(String qr) {
         Booking userBookingMethod = null;

@@ -21,11 +21,18 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the covid test collection storing a list of CovidTest
+ */
 public class CovidTestCollection {
     private List<CovidTest> collection = new ArrayList<CovidTest>();
 
+    /**
+     * Constructor of BookingCollection
+     */
     public CovidTestCollection(){
         try {
+            // Populate list
             getCovidTestService();
         }
         catch (Exception e){
@@ -35,8 +42,8 @@ public class CovidTestCollection {
     }
 
     /**
-     *
-     * @param qr
+     * Verify the QR code for booking stored in covidTest
+     * @param qr qrcode
      * @return CovidTest,  if null means no CovidTest related to the Booking QR code was created, if there is a value means CovidTest related to the Booking QR code was created
      */
     public CovidTest verifyQrCovidTest(String qr) {
@@ -53,6 +60,18 @@ public class CovidTestCollection {
         return covidTest;
     }
 
+    /**
+     * HTTP request to API to add a new covid test
+     * @param type type string of test
+     * @param patientId patient id of the covid test
+     * @param administererId administerer id of the covid test
+     * @param bookingId booking id of the covid test
+     * @param result result of the covid test
+     * @param status status of the covid test
+     * @param notes notes of the covid test
+     * @return HTTP response from the API
+     * @throws Exception for Error in request
+     */
     public HttpResponse<String> addCovidTestService(String type, String patientId, String administererId, String bookingId, String result, String status, String notes) throws Exception{
         String jsonString = "{" +
                 "\"type\":\"" + type + "\"," +
@@ -73,28 +92,18 @@ public class CovidTestCollection {
         return new HttpHelper().postService(testingSiteUrl,jsonString);
     }
 
-    public HttpResponse<String> addCovidTestService(String type, String patientId, String bookingId, String result, String status, String notes) throws Exception{
-        String jsonString = "{" +
-                "\"type\":\"" + type + "\"," +
-                "\"patientId\":\"" + patientId + "\"";
-        if (bookingId != null && !bookingId.isBlank())
-            jsonString += ",\"bookingId\":\"" + bookingId + "\"";
-        if (result != null && !result.isBlank())
-            jsonString += ",\"result\":\"" + result + "\"" ;
-        if (status != null && !status.isBlank())
-            jsonString += ",\"status\":\"" + status + "\"";
-        if (notes != null && !notes.isBlank())
-            jsonString += ",\"notes\":\"" + notes + "\"" ;
-        jsonString += "}";
-        String testingSiteUrl = "https://fit3077.com/api/v1/covid-test";
-
-        return new HttpHelper().postService(testingSiteUrl,jsonString);
-    }
-
+    /**
+     * Getter for collection of covid tests
+     * @return collection of covid tests
+     */
     public List<CovidTest> getCollection() {
         return collection;
     }
 
+    /**
+     * HTTP request to API to populate the list of collection
+     * @throws Exception for Error in request
+     */
     public void getCovidTestService() throws Exception {
         String userUrl = "https://fit3077.com/api/v1/covid-test";
 
@@ -130,6 +139,11 @@ public class CovidTestCollection {
         }
     }
 
+    /**
+     * Helper method to create user based on the isCustomer, isReceptionist and isHealthcareWorker attribute
+     * @param node node to identify the attribute
+     * @return corresponding user
+     */
     private User createUser(JsonNode node){
         User user = null;
         if (!node.asText().equals("null"))

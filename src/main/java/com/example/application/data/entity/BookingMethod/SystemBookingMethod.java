@@ -5,7 +5,6 @@ import com.example.application.data.entity.Booking.OnlineTesting;
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.User.User;
-
 import java.net.http.HttpResponse;
 
 /**
@@ -13,11 +12,28 @@ import java.net.http.HttpResponse;
  * addBooking without TestingSite if for onlineBooking
  * */
 public class SystemBookingMethod implements BookingMethod {
+    /**
+     * addBooking with Testing site
+     * @param site site of booking
+     * @param startTime booking appointment time
+     * @param user customer for the booking
+     * @param notes notes provided for the booking
+     * @return Http response from server
+     * @throws Exception for Error in request
+     */
     @Override
     public HttpResponse<String> addBooking(TestingSite site, String startTime, User user, String notes) throws Exception {
         return null;
     }
 
+    /**
+     * addBooking without Testing site
+     * @param startTime booking appointment time
+     * @param user customer for the booking
+     * @param notes notes provided for the booking
+     * @return Http response from server
+     * @throws Exception for Error in request
+     */
     @Override
     public HttpResponse<String> addBooking(String startTime, User user, String notes) throws Exception {
         Booking booking = new OnlineTesting(startTime,user,notes);

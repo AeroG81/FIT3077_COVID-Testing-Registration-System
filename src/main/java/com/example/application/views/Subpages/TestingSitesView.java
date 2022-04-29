@@ -15,12 +15,12 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "/testingsite")
 @PageTitle("Site")
-public class TestingSiteLayout extends VerticalLayout {
+public class TestingSitesView extends VerticalLayout {
     Grid<TestingSite> grid = new Grid<>(TestingSite.class);
     TextField filterText = new TextField();
     TestingSiteCollection collection = new TestingSiteCollection();
 
-    public TestingSiteLayout(){
+    public TestingSitesView(){
         configureGrid();
         populateList();
         add(getToolbar(), grid);
