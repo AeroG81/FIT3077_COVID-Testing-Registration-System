@@ -68,6 +68,68 @@ public class UserCollection {
         }
     }
 
+    public boolean checkIsCustomer(String username) throws Exception {
+        String userUrl = "https://fit3077.com/api/v1/user";
+
+        HttpResponse<String> response = new HttpHelper().getService(userUrl);
+
+        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
+        if (response.statusCode() != 200) {
+            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
+        }
+
+        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
+        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
+
+        for (ObjectNode node: jsonNodes) {
+            if (node.get("userName").asText().equals(username)) {
+                return node.get("isCustomer").asBoolean();
+            }
+        }
+        return false;
+    }
+
+    public boolean checkIsReceptionist(String username) throws Exception {
+        String userUrl = "https://fit3077.com/api/v1/user";
+
+        HttpResponse<String> response = new HttpHelper().getService(userUrl);
+
+        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
+        if (response.statusCode() != 200) {
+            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
+        }
+
+        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
+        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
+
+        for (ObjectNode node: jsonNodes) {
+            if (node.get("userName").asText().equals(username)) {
+                return node.get("isReceptionist").asBoolean();
+            }
+        }
+        return false;
+    }
+
+    public boolean checkIsHealthcareWorker(String username) throws Exception {
+        String userUrl = "https://fit3077.com/api/v1/user";
+
+        HttpResponse<String> response = new HttpHelper().getService(userUrl);
+
+        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
+        if (response.statusCode() != 200) {
+            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
+        }
+
+        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
+        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
+
+        for (ObjectNode node: jsonNodes) {
+            if (node.get("userName").asText().equals(username)) {
+                return node.get("isHealthcareWorker").asBoolean();
+            }
+        }
+        return false;
+    }
     private boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+
