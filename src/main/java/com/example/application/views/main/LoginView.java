@@ -1,6 +1,7 @@
 package com.example.application.views.main;
 
 import com.example.application.data.entity.User.*;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinService;
 
 @PageTitle("Login | Vaadin CRM")
 @Route(value = "")
@@ -102,17 +104,22 @@ public class LoginView extends HorizontalLayout {
             else {
                 User user = uc.verifyUserId(username.getValue(), password.getValue());
                 if (user != null) {
+                    UI.getCurrent().getSession().setAttribute("userId",user.getId());
+                    UI.getCurrent().getSession().setAttribute("userGivenName",user.getGivenName());
+                    UI.getCurrent().getSession().setAttribute("userFamilyName",user.getFamilyName());
+                    UI.getCurrent().getSession().setAttribute("userName",user.getUserName());
+                    UI.getCurrent().getSession().setAttribute("userPhoneNumber",user.getPhoneNumber());
                     try {
                         if (uc.checkIsCustomer(user.getUserName())){
                             // add testing site route
                             dialogLayout.add(redirectToTestingSite);
                         }
                         if (uc.checkIsReceptionist(user.getUserName())){
-                            // add onsite interview route
+                            // add onsite booking route
                             dialogLayout.add(redirectToOnsiteBooking);
                         }
                         if (uc.checkIsHealthcareWorker(user.getUserName())){
-                            // add onsite booking route
+                            // add onsite interview route
                             dialogLayout.add(redirectToOnsiteInterview);
                         }
 

@@ -6,6 +6,8 @@ import com.example.application.data.entity.Booking.OnlineTesting;
 import com.example.application.data.entity.CovidTest.CovidTest;
 import com.example.application.data.entity.CovidTest.CovidTestCollection;
 import com.example.application.data.entity.TestingType.RAT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -63,8 +65,9 @@ public class QrVerifyLayout extends VerticalLayout {
                         covidTest = new CovidTest(new RAT(), userBooking.getCustomer(), userBooking.getCustomer(), userBooking ,"INITIATED","RAT kit redeemed", "", "");
                         try {
                             HttpResponse<String> response = covidTestCollection.addCovidTestService(covidTest.getTestingType().getType(), covidTest.getPatient().getId(), covidTest.getAdministerer().getId() , covidTest.getBooking().getBookingId(), covidTest.getResult(), covidTest.getStatus(), covidTest.getNotes());
+                            ObjectNode mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
                             label.setWidth("500px");
-                            label.setValue(response.body());
+                            label.setValue(mappedResponse.toPrettyString());
                             dialog.open();
                             Notification.show("Acknowledged user RAT kit was collected along with meeting url "+ ((OnlineTesting) covidTest.getBooking()).getUrl());
                         }

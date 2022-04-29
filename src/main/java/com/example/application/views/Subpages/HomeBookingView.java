@@ -28,6 +28,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
@@ -90,13 +91,14 @@ public class HomeBookingView extends VerticalLayout {
             }
             else {
                 dialog.setHeader("Confirm Appointment");
-                dialog.setText("Do you want to an online testing appointment at "+startTime.getValue().toLocalDate()+ " " +startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                dialog.setText("Do you want to book an online testing appointment at "+startTime.getValue().toLocalDate()+ " " +startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
                 dialog.setRejectable(true);
                 dialog.setRejectText("Discard");
                 dialog.setConfirmText("Save");
                 dialog.addConfirmListener(event -> {
                     // send POST to make booking
-                    User user = new Resident(); // retrieve from website storage
+                    VaadinSession ui = UI.getCurrent().getSession();
+                    User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
                     ObjectNode mappedResponse = null;
                     try {
                         HttpResponse<String> response = new SystemBookingMethod().addBooking(startTime.getValue().toString(),user,notes.getValue());
@@ -109,10 +111,10 @@ public class HomeBookingView extends VerticalLayout {
                         label.clear();
                         // need QR code display to user
                         if (needTestKit.getValue().equals("Yes"))
-                            label.setValue(mappedResponse.toPrettyString());
+                            label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
                         // QR code not needed for user
                         else
-                            label.setValue(mappedResponse.toPrettyString().replace("\"qrcode\" : \"" + mappedResponse.get("additionalInfo").get("qrcode").asText()+"\",",""));
+                            label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
                         Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
                         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                         responseDialog.add(closeButton,label);

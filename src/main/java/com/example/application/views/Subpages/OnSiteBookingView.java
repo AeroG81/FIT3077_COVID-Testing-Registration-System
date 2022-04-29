@@ -152,7 +152,7 @@ public class OnSiteBookingView extends VerticalLayout {
         submitRegistration.setEnabled(false);
         submitRegistration.addClickListener(e -> {
             if (!validateFields()){
-                Notification.show("Site must not be empty or Booking time is not within operation hour");
+                Notification.show("Booking time is not within operation hour");
             }
             else {
                 // Get User ID via http request

@@ -130,6 +130,7 @@ public class UserCollection {
         }
         return false;
     }
+
     private boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+

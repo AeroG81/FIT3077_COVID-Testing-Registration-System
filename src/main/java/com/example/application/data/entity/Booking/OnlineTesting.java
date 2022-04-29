@@ -41,7 +41,7 @@ public class OnlineTesting extends Booking {
 
     @Override
     public String toString() {
-        return "OnlineTesting{" +
+        return "OnlineTesting{\n" +
                 super.toString() +
                 ", \nqrcode='" + super.getQrcode() + '\'' +
                 ", \nurl='" + url + '\'' +
