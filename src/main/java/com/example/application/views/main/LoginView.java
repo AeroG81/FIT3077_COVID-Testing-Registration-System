@@ -109,11 +109,11 @@ public class LoginView extends HorizontalLayout {
                         }
                         if (uc.checkIsReceptionist(user.getUserName())){
                             // add onsite interview route
-                            dialogLayout.add(redirectToOnsiteInterview);
+                            dialogLayout.add(redirectToOnsiteBooking);
                         }
                         if (uc.checkIsHealthcareWorker(user.getUserName())){
                             // add onsite booking route
-                            dialogLayout.add(redirectToOnsiteBooking);
+                            dialogLayout.add(redirectToOnsiteInterview);
                         }
 
                         redirectOptions.add(dialogLayout);
