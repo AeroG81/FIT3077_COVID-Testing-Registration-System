@@ -141,7 +141,7 @@ public class UserCollection {
 
         try {
             HttpResponse<String> response = new HttpHelper().postService(url,jsonString);
-            if (response.statusCode()==200){;
+            if (response.statusCode()==200){
                 userIsValid = true;
             }
             else{
