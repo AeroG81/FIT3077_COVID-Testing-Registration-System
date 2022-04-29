@@ -3,6 +3,7 @@ package com.example.application.views.Subpages;
 import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,7 +16,7 @@ import com.vaadin.flow.component.notification.Notification;
 
 @Route(value = "/onsiteinterview")
 @PageTitle("On-Site Interview  | Vaadin CRM")
-public class OnSiteInterview extends VerticalLayout {
+public class OnSiteInterviewView extends VerticalLayout {
     RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
 
     RadioButtonGroup<String> secondQuestion = new RadioButtonGroup<>();
@@ -44,7 +45,7 @@ public class OnSiteInterview extends VerticalLayout {
     Hr hr5 = new Hr();
     Hr hr6 = new Hr();
 
-    public OnSiteInterview() {
+    public OnSiteInterviewView() {
         this.configureSubmitButton();
 
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -140,19 +141,73 @@ public class OnSiteInterview extends VerticalLayout {
         submitButton = new Button("Submit");
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         submitButton.addClickListener(e -> {
-            if (! validateFields()) {
-                Notification.show("Please answer all the questions");
-            }
-            else {
-                if (firstQuestion.getValue().equals("No") && secondQuestion.getValue().equals("No") &&
-                        thirdQuestion.getValue().equals("No") && fourthQuestion.getValue().equals("No") &&
-                        fifthQuestion.getValue().equals("No") && sixthQuestion.getValue().equals("No")){
-                    Notification.show("Customer can receive any COVID test method.");
-                }
-                else {
-                    Notification.show("Customer is AT RISK! Advise customer to do a PCR test.");
-                }
-            }
+                    if (! validateFields()) {
+                        Notification.show("Please answer all the questions");
+                    }
+                    else {
+                        if (firstQuestion.getValue().equals("No") &&
+                                secondQuestion.getValue().equals("No") &&
+                                thirdQuestion.getValue().equals("No") &&
+                                fourthQuestion.getValue().equals("No") &&
+                                fifthQuestion.getValue().equals("No") &&
+                                sixthQuestion.getValue().equals("No")){
+
+                            Dialog dialogSafe = new Dialog();
+                            VerticalLayout verticalLayoutNoRisk = new VerticalLayout();
+                            Button ratButton = new Button("Book a RAT test");
+                            Button closeDialogButton = new Button("Close");
+
+                            dialogSafe.setModal(true);
+                            dialogSafe.setDraggable(true);
+
+                            ratButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+                            ratButton.addClickListener(g -> {
+                                ratButton.getUI().ifPresent(ui ->
+                                        ui.navigate("systembooking"));
+                                dialogSafe.close();
+                            });
+
+                            closeDialogButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+                            closeDialogButton.addClickListener(h -> dialogSafe.close());
+
+                            verticalLayoutNoRisk.add(new H1("Customer is not at risk!"));
+                            verticalLayoutNoRisk.add(new Label("RAT test is advised"));
+                            verticalLayoutNoRisk.add(new HorizontalLayout(ratButton, closeDialogButton));
+
+                            dialogSafe.add(verticalLayoutNoRisk);
+                            dialogSafe.open();
+
+                        }
+                        else {
+                            Notification.show("Customer is AT RISK! Advise customer to do a PCR test.");
+                            Dialog dialogRisk = new Dialog();
+                            VerticalLayout verticalLayoutAtRisk = new VerticalLayout();
+                            Button pcrButton = new Button("Book a PCR test");
+                            Button closeDialogButton = new Button("Close");
+
+                            dialogRisk.setModal(true);
+                            dialogRisk.setDraggable(true);
+
+                            pcrButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+                            pcrButton.addClickListener(g -> {
+                                dialogRisk.close();
+                                pcrButton.getUI().ifPresent(ui ->
+                                        ui.navigate(""));
+                            });
+
+                            closeDialogButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+                            closeDialogButton.addClickListener(h -> dialogRisk.close());
+
+                            verticalLayoutAtRisk.add(new H1("Customer is at risk!"));
+                            verticalLayoutAtRisk.add(new Label("PCR test is advised"));
+                            verticalLayoutAtRisk.add(new HorizontalLayout(pcrButton, closeDialogButton));
+
+                            dialogRisk.add(verticalLayoutAtRisk);
+                            dialogRisk.open();
+
+                        }
+
+                    }
                 }
         );
     }
