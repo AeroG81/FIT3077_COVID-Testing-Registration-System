@@ -1,11 +1,22 @@
 package com.example.application.data.entity.User;
 
 public abstract class User {
+    // User ID
     private String id;
+
+    // User first name
     private String givenName;
+
+    // User family name
     private String familyName;
+
+    // User username
     private String userName;
+
+    // User phone no
     private String phoneNumber;
+
+    // User additional information
     private String additionalInfo;
 
     // Constructor with all parameters
@@ -77,6 +88,7 @@ public abstract class User {
         this.additionalInfo = additionalInfo;
     }
 
+    // Prints out User's attributes in JSON formatted String
     @Override
     public String toString() {
         return "User{\n" +
