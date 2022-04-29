@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserCollection {
+
+    // List of all Users from API
     private List<User> collection = new ArrayList<User>();
 
+    // Constructor which GETS all users from API and stores into collection
     public UserCollection(){
         try {
             getUsersService();
@@ -22,10 +25,12 @@ public class UserCollection {
         }
     }
 
+    // Returns collection of Users
     public List<User> getCollection() {
         return collection;
     }
 
+    // Verifies if User is in the collection using username and password
     public User verifyUserId(String username, String password){
         User user = null;
         if (verifyUserService(username,password)) {
@@ -42,6 +47,7 @@ public class UserCollection {
         return user;
     }
 
+    // GETS all users from API
     public void getUsersService() throws Exception{
         String userUrl = "https://fit3077.com/api/v1/user";
 
@@ -55,12 +61,16 @@ public class UserCollection {
         // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
 
+        // Creates Users of specific roles based on attributes of the User
         for (ObjectNode node: jsonNodes) {
             User user = null;
+            // Create Resident object if User is a Customer
             if(node.get("isCustomer").asBoolean())
                 user = new Resident(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            // Create FacilityStaff object if User is a Receptionist
             else if (node.get("isReceptionist").asBoolean())
                 user = new FacilityStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            // Create ExpertStaff object if User is a HealthcareWorker
             else if (node.get("isHealthcareWorker").asBoolean())
                 user = new ExpertStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             if(user!=null)
@@ -68,6 +78,7 @@ public class UserCollection {
         }
     }
 
+    // Checks if User is a Customer/Resident using User's username
     public boolean checkIsCustomer(String username) throws Exception {
         String userUrl = "https://fit3077.com/api/v1/user";
 
@@ -89,6 +100,7 @@ public class UserCollection {
         return false;
     }
 
+    // Checks if User is a Receptionist/FacilityStaff using User's username
     public boolean checkIsReceptionist(String username) throws Exception {
         String userUrl = "https://fit3077.com/api/v1/user";
 
@@ -110,6 +122,7 @@ public class UserCollection {
         return false;
     }
 
+    // Checks if User is a HealthcareWorker/ExpertStaff using User's username
     public boolean checkIsHealthcareWorker(String username) throws Exception {
         String userUrl = "https://fit3077.com/api/v1/user";
 
@@ -131,6 +144,7 @@ public class UserCollection {
         return false;
     }
 
+    // Verifies is User exists in collection of Users using username and password
     private boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+
@@ -156,6 +170,7 @@ public class UserCollection {
         return userIsValid;
     }
 
+    // POSTS and stores a User to the API  (with additional info)
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker, String additionalInfo) throws Exception{
         String url = "https://fit3077.com/api/v1/user";
         String jsonString = "{" +
@@ -174,6 +189,7 @@ public class UserCollection {
         return createUser(mappedResponse);
     }
 
+    // POSTS and stores a User to the API  (without additional info)
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker) throws Exception{
         String url = "https://fit3077.com/api/v1/user";
         String jsonString = "{" +
@@ -191,6 +207,7 @@ public class UserCollection {
         return createUser(mappedResponse);
     }
 
+    // Create a User using response from API
     private User createUser(ObjectNode mappedResponse){
         User user = null;
         if(mappedResponse.get("isCustomer").asBoolean())
