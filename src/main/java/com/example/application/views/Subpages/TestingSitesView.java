@@ -15,11 +15,17 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "/testingsite")
 @PageTitle("Site")
+/**
+ * This is the List view of testing sites
+ */
 public class TestingSitesView extends VerticalLayout {
     Grid<TestingSite> grid = new Grid<>(TestingSite.class);
     TextField filterText = new TextField();
     TestingSiteCollection collection = new TestingSiteCollection();
 
+    /**
+     * populate the layout with components
+     */
     public TestingSitesView(){
         configureGrid();
         populateList();
@@ -27,6 +33,9 @@ public class TestingSitesView extends VerticalLayout {
         setSizeFull();
     }
 
+    /**
+     * Configuring Grid/List
+     */
     private void configureGrid() {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
@@ -40,14 +49,23 @@ public class TestingSitesView extends VerticalLayout {
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
+    /**
+     * Populate the Grid of testing site
+     */
     private void populateList(){
         grid.setItems(collection.getCollection());
     }
 
+    /**
+     * Update the grid based on the keyword typed in the search field
+     */
     private void updateList(String keyword) {
         grid.setItems(collection.searchCollection(keyword));
     }
 
+    /**
+     * Configuring Toolbar for the grid
+     */
     private HorizontalLayout getToolbar() {
         filterText.setPlaceholder("Search site by suburb or facility type");
         filterText.setWidth("300px");

@@ -20,12 +20,18 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.net.http.HttpResponse;
 
+/**
+ * QR verification Layout that can be reused for pages
+ */
 public class QrVerifyLayout extends VerticalLayout {
     private Button submitVerification;
     private final TextField qrString = new TextField("QR string");
     private final Dialog dialog = new Dialog();
     private final TextArea label = new TextArea();
 
+    /**
+     * populate the layout with components
+     */
     public QrVerifyLayout(){
         Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -34,6 +40,9 @@ public class QrVerifyLayout extends VerticalLayout {
         add(qrString,submitVerification,dialog);
     }
 
+    /**
+     * Configuring Verify Button logic
+     */
     private void configureVerifyButton(){
         qrString.addValueChangeListener(e -> {
             if (!qrString.isEmpty() && !qrString.isInvalid())

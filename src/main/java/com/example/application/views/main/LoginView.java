@@ -19,30 +19,25 @@ import com.vaadin.flow.server.VaadinService;
 
 @PageTitle("Login | Vaadin CRM")
 @Route(value = "")
+/**
+ * This is the Landing page of user
+ */
 public class LoginView extends HorizontalLayout {
-
     private VerticalLayout loginLayout = new VerticalLayout();
-
     private VerticalLayout dialogLayout = new VerticalLayout();
-
     private Dialog redirectOptions = new Dialog();
-
     H1 title = new H1();
-
     TextField username = new TextField();
-
     PasswordField password = new PasswordField();
-
     UserCollection uc = new UserCollection();
-
     Button loginButton = new Button("Log In");
-
     Button redirectToTestingSite = new Button("Browse Testing Sites");
-
     Button redirectToOnsiteInterview = new Button("Test Recommendation");
-
     Button redirectToOnsiteBooking = new Button("Make a Booking (On-site only)");
 
+    /**
+     * Populating the Page with username field, password field and submit button
+     */
     public LoginView() {
         this.loginUser();
 
@@ -69,6 +64,9 @@ public class LoginView extends HorizontalLayout {
 
     }
 
+    /**
+     * Main logic for interaction
+     */
     public void loginUser() {
         redirectOptions = new Dialog();
 

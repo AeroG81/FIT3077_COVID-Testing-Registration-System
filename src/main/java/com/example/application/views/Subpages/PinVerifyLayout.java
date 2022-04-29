@@ -12,12 +12,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 
+/**
+ * PIN verification Layout that can be reused for pages
+ */
 public class PinVerifyLayout extends VerticalLayout {
     private Button submitVerification;
     private final IntegerField verifyPin = new IntegerField("PIN");
     private final Dialog dialog = new Dialog();
     private final TextArea label = new TextArea();
 
+    /**
+     * populate the layout with components
+     */
     public PinVerifyLayout(){
         Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -26,6 +32,9 @@ public class PinVerifyLayout extends VerticalLayout {
         add(verifyPin,submitVerification,dialog);
     }
 
+    /**
+     * Configuring Verify Button logic
+     */
     private void configureVerifyButton(){
         verifyPin.addValueChangeListener(e -> {
             if (!verifyPin.isEmpty() && !verifyPin.isInvalid())
@@ -56,5 +65,4 @@ public class PinVerifyLayout extends VerticalLayout {
             }
         });
     }
-
 }

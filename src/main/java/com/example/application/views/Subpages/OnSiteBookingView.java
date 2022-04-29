@@ -31,10 +31,11 @@ import java.time.format.DateTimeFormatter;
 
 @Route(value = "/onsitebooking")
 @PageTitle("OnSite")
+/**
+ * This is the page for Receptionist to book user at site
+ */
 public class OnSiteBookingView extends VerticalLayout {
-
     private final TestingSiteCollection collection = new TestingSiteCollection();
-
     private ComboBox<TestingSite> testingSite;
     private DateTimePicker startTime;
     private final TextArea notes = new TextArea("Notes");
@@ -44,8 +45,6 @@ public class OnSiteBookingView extends VerticalLayout {
     private final TextField userFamilyName = new TextField("Family Name");
     private final IntegerField userPhoneNumber = new IntegerField("Phone Number");
     private Button submitRegistration;
-
-
     private final FormLayout registrationCommonForm = new FormLayout();
     private final Dialog dialog = new Dialog();
     private final TextArea label = new TextArea();
@@ -53,15 +52,17 @@ public class OnSiteBookingView extends VerticalLayout {
     private final Tab tabExist = new Tab("Existing User");
     private final Tab tabNew = new Tab("New User");
     private final Tabs registrationSubTabs = new Tabs(tabExist, tabNew);
-
     private final Tab tabRegistration = new Tab("Registration");
     private final Tab tabVerifyPin = new Tab("Verify PIN") ;
     private final Tab tabScanQr = new Tab("RAT-kit verify QR");
     private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr);
     private final VerticalLayout mainLayout = new VerticalLayout();
 
+    /**
+     * Populating page with components based on tab selected
+     */
     public OnSiteBookingView(){
-        this.configureRegistrationNoti();
+        this.configureRegistrationNotification();
         this.configureRegistrationTabs();
         this.configureDateTimePicker();
         this.configureComboBox();
@@ -90,6 +91,9 @@ public class OnSiteBookingView extends VerticalLayout {
         add(mainTabs,mainLayout);
     }
 
+    /**
+     * Configuring Registration Form
+     */
     private void configureRegistrationForm(){
         registrationCommonForm.setColspan(notes, 2);
         registrationCommonForm.setColspan(submitRegistration, 2);
@@ -104,6 +108,9 @@ public class OnSiteBookingView extends VerticalLayout {
         );
     }
 
+    /**
+     * Configuring Registration Tab
+     */
     private void configureRegistrationTabs(){
         // First form
         FormLayout existingUserLayout = new FormLayout();
@@ -141,12 +148,18 @@ public class OnSiteBookingView extends VerticalLayout {
         );
     }
 
-    private void configureRegistrationNoti(){
+    /**
+     * Configuring Registration Notification
+     */
+    private void configureRegistrationNotification(){
         Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         dialog.add(closeButton,label);
     }
 
+    /**
+     * Configuring Registration Button
+     */
     private void configureRegistrationButton(){
         submitRegistration = new Button("Submit");
         submitRegistration.setEnabled(false);
@@ -190,6 +203,9 @@ public class OnSiteBookingView extends VerticalLayout {
         });
     }
 
+    /**
+     * Validate the fields in Registration tab layout
+     */
     private boolean validateFields(){
         boolean validation = true;
         if(registrationSubTabs.getSelectedTab().equals(tabExist)){
@@ -207,6 +223,9 @@ public class OnSiteBookingView extends VerticalLayout {
         return validation;
     }
 
+    /**
+     * Clear out all fields
+     */
     private void clearFields(){
         userName.clear();
         userPassword.clear();
@@ -215,6 +234,9 @@ public class OnSiteBookingView extends VerticalLayout {
         userPhoneNumber.clear();
     }
 
+    /**
+     * Configuring Combo Box of Testing Site
+     */
     private void configureComboBox(){
         testingSite = new ComboBox<>("TestingSite");
         testingSite.setRequired(true);
@@ -228,6 +250,9 @@ public class OnSiteBookingView extends VerticalLayout {
         });
     }
 
+    /**
+     * Configuring Data Time Picker
+     */
     private void configureDateTimePicker() {
         startTime = new DateTimePicker();
         startTime.setLabel("Appointment Date and Time");
@@ -237,6 +262,9 @@ public class OnSiteBookingView extends VerticalLayout {
         startTime.setMax(LocalDateTime.now().plusDays(90));
     }
 
+    /**
+     * Populate the combo box of testing site
+     */
     private void populateComboBox(){
         testingSite.setItems(collection.getCollection());
         testingSite.setItemLabelGenerator(TestingSite::getName);

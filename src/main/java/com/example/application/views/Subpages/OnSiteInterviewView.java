@@ -16,27 +16,20 @@ import com.vaadin.flow.component.notification.Notification;
 
 @Route(value = "/onsiteinterview")
 @PageTitle("On-Site Interview  | Vaadin CRM")
+/**
+ * This is the page where interview was conducted
+ */
 public class OnSiteInterviewView extends VerticalLayout {
     RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
-
     RadioButtonGroup<String> secondQuestion = new RadioButtonGroup<>();
-
     RadioButtonGroup<String> thirdQuestion = new RadioButtonGroup<>();
-
     RadioButtonGroup<String> fourthQuestion = new RadioButtonGroup<>();
-
     RadioButtonGroup<String> fifthQuestion = new RadioButtonGroup<>();
-
     RadioButtonGroup<String> sixthQuestion = new RadioButtonGroup<>();
-
     Button submitButton = new Button("Submit");
-
     Button cancel = new Button("Cancel");
-
     HtmlComponent br = new HtmlComponent("br");
-
     HtmlComponent br2 = new HtmlComponent("br");
-
     H1 title = new H1("Interview Questions for Preferred Testing Method");
     Hr hr1 = new Hr();
     Hr hr2 = new Hr();
@@ -45,6 +38,9 @@ public class OnSiteInterviewView extends VerticalLayout {
     Hr hr5 = new Hr();
     Hr hr6 = new Hr();
 
+    /**
+     * Populating page with questions and choices
+     */
     public OnSiteInterviewView() {
         this.configureSubmitButton();
 
@@ -137,6 +133,9 @@ public class OnSiteInterviewView extends VerticalLayout {
 
     }
 
+    /**
+     * Configuring Submit Interview Button logic
+     */
     private void configureSubmitButton(){
         submitButton = new Button("Submit");
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -212,6 +211,9 @@ public class OnSiteInterviewView extends VerticalLayout {
         );
     }
 
+    /**
+     * Validate the fields in choices/fields provided
+     */
     private boolean validateFields(){
         return !firstQuestion.isEmpty() &&
                 !secondQuestion.isEmpty() &&
@@ -220,7 +222,4 @@ public class OnSiteInterviewView extends VerticalLayout {
                 !fifthQuestion.isEmpty() &&
                 !sixthQuestion.isEmpty();
     }
-
-
-
 }
