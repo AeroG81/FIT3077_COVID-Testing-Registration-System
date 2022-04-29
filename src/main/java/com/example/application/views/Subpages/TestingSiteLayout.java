@@ -3,6 +3,7 @@ package com.example.application.views.Subpages;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -54,7 +55,10 @@ public class TestingSiteLayout extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         Button searchButton = new Button("Search");
         searchButton.addClickListener(e -> updateList(filterText.getValue()));
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, searchButton);
+        Button systemBookingPromptButton = new Button("Book a Test");
+        systemBookingPromptButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        systemBookingPromptButton.addClickListener(f -> systemBookingPromptButton.getUI().ifPresent(ui -> ui.navigate("systembooking")));
+        HorizontalLayout toolbar = new HorizontalLayout(filterText, searchButton, systemBookingPromptButton);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
