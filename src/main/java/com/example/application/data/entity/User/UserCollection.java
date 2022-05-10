@@ -13,7 +13,7 @@ import java.util.List;
 public class UserCollection {
 
     // List of all Users from API
-    private List<User> collection = new ArrayList<User>();
+    private List<User> collection = new ArrayList<>();
 
     // Constructor which GETS all users from API and stores into collection
     public UserCollection(){

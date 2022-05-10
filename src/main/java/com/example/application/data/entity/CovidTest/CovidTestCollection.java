@@ -25,7 +25,7 @@ import java.util.List;
  * This is the covid test collection storing a list of CovidTest
  */
 public class CovidTestCollection {
-    private List<CovidTest> collection = new ArrayList<CovidTest>();
+    private List<CovidTest> collection = new ArrayList<>();
 
     /**
      * Constructor of BookingCollection

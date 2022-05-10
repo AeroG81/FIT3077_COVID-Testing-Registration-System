@@ -134,7 +134,7 @@ public class TestingSiteCollection {
      * @return List of TestingSite that match the criteria
      */
     public List<TestingSite> searchCollection(String keyword) {
-        List<TestingSite> result = new ArrayList<TestingSite>();
+        List<TestingSite> result = new ArrayList<>();
 
         collection.forEach(testingSite -> {
             if (testingSite.getAddress().getSuburb().contains(keyword)||testingSite.getFacilityType().contains(keyword)) {

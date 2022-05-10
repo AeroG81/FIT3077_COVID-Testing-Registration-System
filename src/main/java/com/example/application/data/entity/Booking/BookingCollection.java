@@ -18,7 +18,7 @@ import java.util.List;
  * This is the booking collection storing a list of Booking
  */
 public class BookingCollection {
-    private List<Booking> collection = new ArrayList<Booking>();
+    private List<Booking> collection = new ArrayList<>();
 
     /**
      * Constructor of BookingCollection
