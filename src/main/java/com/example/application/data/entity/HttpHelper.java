@@ -1,5 +1,7 @@
 package com.example.application.data.entity;
 
+import com.example.application.APIKey;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -9,13 +11,14 @@ import java.net.http.HttpResponse;
  * This is a helper class for sending HTTP request to the API which minimise code redundancy
  */
 public class HttpHelper {
-    private final String APIKEY;
+    private String APIKEY;
 
     /**
      * Constructor of HttpHelper
      */
     public HttpHelper(){
-        APIKEY = "7WwqfjwcprP7HPqLRmnmQ8QNzg9MWj";
+        APIKey apiKeyObj = new APIKey();
+        APIKEY = apiKeyObj.getApiKey();
     }
 
     /**
