@@ -33,7 +33,7 @@ public class FacilityBookingMethod implements BookingMethod {
         jsonString += ",\"additionalInfo\": " + booking.getAdditionalInfo();
         // update Site waiting time
         jsonString += "}";
-        String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
+        String testingSiteUrl = "https://fit3077.com/api/v2/testing-site";
         String testingSiteJson = "{" +
                 "\"additionalInfo\": {"+
                     "\"facilityType\": \"" + site.getFacilityType() + "\""+
@@ -43,7 +43,7 @@ public class FacilityBookingMethod implements BookingMethod {
                 "}"+
                 "}";
         HttpResponse<String> response = new HttpHelper().patchService(testingSiteUrl,testingSiteJson, site.getId());
-        String url = "https://fit3077.com/api/v1/booking";
+        String url = "https://fit3077.com/api/v2/booking";
         return new HttpHelper().postService(url,jsonString);
     }
 

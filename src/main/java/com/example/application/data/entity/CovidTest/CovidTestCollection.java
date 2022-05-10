@@ -87,7 +87,7 @@ public class CovidTestCollection {
         if (notes != null && !notes.isBlank())
             jsonString += ",\"notes\":\"" + notes + "\"" ;
         jsonString += "}";
-        String testingSiteUrl = "https://fit3077.com/api/v1/covid-test";
+        String testingSiteUrl = "https://fit3077.com/api/v2/covid-test";
 
         return new HttpHelper().postService(testingSiteUrl,jsonString);
     }
@@ -105,7 +105,7 @@ public class CovidTestCollection {
      * @throws Exception for Error in request
      */
     public void getCovidTestService() throws Exception {
-        String userUrl = "https://fit3077.com/api/v1/covid-test";
+        String userUrl = "https://fit3077.com/api/v2/covid-test";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 

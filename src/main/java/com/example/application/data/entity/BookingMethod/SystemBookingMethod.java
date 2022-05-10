@@ -44,7 +44,7 @@ public class SystemBookingMethod implements BookingMethod {
             jsonString += ",\"notes\":\"" + notes + "\"";
         jsonString += ",\"additionalInfo\": " + booking.getAdditionalInfo();
         jsonString += "}";
-        String url = "https://fit3077.com/api/v1/booking";
+        String url = "https://fit3077.com/api/v2/booking";
         return new HttpHelper().postService(url,jsonString);
     }
 }

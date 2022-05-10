@@ -76,7 +76,7 @@ public class TestingSiteCollection {
                 ",\"waitingTime\":\"" + waitingTime + "\"" +
                 "}"+
                 "}";
-        String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
+        String testingSiteUrl = "https://fit3077.com/api/v2/testing-site";
 
         HttpResponse<String> response = new HttpHelper().postService(testingSiteUrl,jsonString);
     }
@@ -86,7 +86,7 @@ public class TestingSiteCollection {
      * @throws Exception for Error in request
      */
     public void getSitesService() throws Exception{
-        String testingSiteUrl = "https://fit3077.com/api/v1/testing-site";
+        String testingSiteUrl = "https://fit3077.com/api/v2/testing-site";
 
         HttpResponse<String> response = new HttpHelper().getService(testingSiteUrl);
 

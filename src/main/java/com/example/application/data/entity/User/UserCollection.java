@@ -49,7 +49,7 @@ public class UserCollection {
 
     // GETS all users from API
     public void getUsersService() throws Exception{
-        String userUrl = "https://fit3077.com/api/v1/user";
+        String userUrl = "https://fit3077.com/api/v2/user";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 
@@ -80,7 +80,7 @@ public class UserCollection {
 
     // Checks if User is a Customer/Resident using User's username
     public boolean checkIsCustomer(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v1/user";
+        String userUrl = "https://fit3077.com/api/v2/user";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 
@@ -102,7 +102,7 @@ public class UserCollection {
 
     // Checks if User is a Receptionist/FacilityStaff using User's username
     public boolean checkIsReceptionist(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v1/user";
+        String userUrl = "https://fit3077.com/api/v2/user";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 
@@ -124,7 +124,7 @@ public class UserCollection {
 
     // Checks if User is a HealthcareWorker/ExpertStaff using User's username
     public boolean checkIsHealthcareWorker(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v1/user";
+        String userUrl = "https://fit3077.com/api/v2/user";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 
@@ -152,7 +152,7 @@ public class UserCollection {
                 "\"password\":\"" + password + "\""+
                 "}";
 
-        String url = "https://fit3077.com/api/v1/user/login?jwt=false";
+        String url = "https://fit3077.com/api/v2/user/login?jwt=false";
 
         try {
             HttpResponse<String> response = new HttpHelper().postService(url,jsonString);
@@ -172,7 +172,7 @@ public class UserCollection {
 
     // POSTS and stores a User to the API  (with additional info)
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker, String additionalInfo) throws Exception{
-        String url = "https://fit3077.com/api/v1/user";
+        String url = "https://fit3077.com/api/v2/user";
         String jsonString = "{" +
                 "\"givenName\":\"" + givenName + "\"," +
                 "\"familyName\":\"" + familyName + "\"," +
@@ -191,7 +191,7 @@ public class UserCollection {
 
     // POSTS and stores a User to the API  (without additional info)
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker) throws Exception{
-        String url = "https://fit3077.com/api/v1/user";
+        String url = "https://fit3077.com/api/v2/user";
         String jsonString = "{" +
                 "\"givenName\":\"" + givenName + "\"," +
                 "\"familyName\":\"" + familyName + "\"," +

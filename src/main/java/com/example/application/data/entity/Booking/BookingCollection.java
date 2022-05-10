@@ -47,7 +47,7 @@ public class BookingCollection {
      * @throws Exception for Error in request
      */
     public void getBookingsService() throws Exception {
-        String userUrl = "https://fit3077.com/api/v1/booking";
+        String userUrl = "https://fit3077.com/api/v2/booking";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
 
