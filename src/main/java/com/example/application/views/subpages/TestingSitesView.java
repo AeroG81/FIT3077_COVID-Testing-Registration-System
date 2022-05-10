@@ -1,4 +1,4 @@
-package com.example.application.views.Subpages;
+package com.example.application.views.subpages;
 
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;

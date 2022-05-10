@@ -1,4 +1,4 @@
-package com.example.application.views.Subpages;
+package com.example.application.views.subpages;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;

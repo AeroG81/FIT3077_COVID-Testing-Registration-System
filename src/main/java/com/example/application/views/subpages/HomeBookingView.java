@@ -1,4 +1,4 @@
-package com.example.application.views.Subpages;
+package com.example.application.views.subpages;
 
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.User.Resident;
