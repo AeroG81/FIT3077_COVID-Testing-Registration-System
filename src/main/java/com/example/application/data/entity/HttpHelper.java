@@ -1,7 +1,5 @@
 package com.example.application.data.entity;
 
-import com.example.application.APIKey;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
