@@ -11,14 +11,14 @@ import java.net.http.HttpResponse;
  * This is a helper class for sending HTTP request to the API which minimise code redundancy
  */
 public class HttpHelper {
-    private String APIKEY;
+    private final String APIKEY;
 
     /**
      * Constructor of HttpHelper
      */
     public HttpHelper(){
         APIKey apiKeyObj = new APIKey();
-        APIKEY = apiKeyObj.getApiKey();
+        APIKEY = apiKeyObj.getAPIKey();
     }
 
     /**
