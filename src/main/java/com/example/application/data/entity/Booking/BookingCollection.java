@@ -126,4 +126,20 @@ public class BookingCollection {
         return userBookingMethod;
     }
 
+    /**
+     * Verify Booking with Booking ID and PIN which will return User who placed the booking.
+     * */
+    public Booking verifyBookingIDandPin(String bookingID, String smsPin){
+        Booking booking = null;
+        int i = 0;
+        boolean endLoop = false;
+        while (i<collection.size() && !endLoop){
+            if (collection.get(i).getBookingId().equals(bookingID) && collection.get(i).getSmsPin().equals(smsPin)) {
+                booking = collection.get(i);
+                endLoop = true;
+            }
+            i++;
+        }
+        return booking;
+    }
 }
