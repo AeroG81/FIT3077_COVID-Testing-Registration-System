@@ -15,7 +15,6 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinService;
 
 @PageTitle("Login | Vaadin CRM")
 @Route(value = "")
@@ -26,14 +25,14 @@ public class LoginView extends HorizontalLayout {
     private VerticalLayout loginLayout = new VerticalLayout();
     private VerticalLayout dialogLayout = new VerticalLayout();
     private Dialog redirectOptions = new Dialog();
-    H1 title = new H1();
-    TextField username = new TextField();
-    PasswordField password = new PasswordField();
-    UserCollection uc = new UserCollection();
-    Button loginButton = new Button("Log In");
-    Button redirectToTestingSite = new Button("Browse Testing Sites");
-    Button redirectToOnsiteInterview = new Button("Test Recommendation");
-    Button redirectToOnsiteBooking = new Button("Make a Booking (On-site only)");
+    private H1 title = new H1();
+    private TextField username = new TextField();
+    private PasswordField password = new PasswordField();
+    private UserCollection uc = new UserCollection();
+    private Button loginButton = new Button("Log In");
+    private Button redirectToTestingSite = new Button("Browse Testing Sites");
+    private Button redirectToOnsiteInterview = new Button("Test Recommendation");
+    private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site only)");
 
     /**
      * Populating the Page with username field, password field and submit button
