@@ -97,8 +97,8 @@ public class LoginView extends HorizontalLayout {
         );
 
         redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
-        redirectToOnsiteBooking.addClickListener(h -> {
-                    redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
+        redirectToSystemBooking.addClickListener(h -> {
+                    redirectToSystemBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
                     redirectOptions.close();
                 }
         );
