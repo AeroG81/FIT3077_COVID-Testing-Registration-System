@@ -20,23 +20,23 @@ import com.vaadin.flow.component.notification.Notification;
  * This is the page where interview was conducted
  */
 public class OnSiteInterviewView extends VerticalLayout {
-    RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
-    RadioButtonGroup<String> secondQuestion = new RadioButtonGroup<>();
-    RadioButtonGroup<String> thirdQuestion = new RadioButtonGroup<>();
-    RadioButtonGroup<String> fourthQuestion = new RadioButtonGroup<>();
-    RadioButtonGroup<String> fifthQuestion = new RadioButtonGroup<>();
-    RadioButtonGroup<String> sixthQuestion = new RadioButtonGroup<>();
-    Button submitButton = new Button("Submit");
-    Button cancel = new Button("Cancel");
-    HtmlComponent br = new HtmlComponent("br");
-    HtmlComponent br2 = new HtmlComponent("br");
-    H1 title = new H1("Interview Questions for Preferred Testing Method");
-    Hr hr1 = new Hr();
-    Hr hr2 = new Hr();
-    Hr hr3 = new Hr();
-    Hr hr4 = new Hr();
-    Hr hr5 = new Hr();
-    Hr hr6 = new Hr();
+    private RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
+    private RadioButtonGroup<String> secondQuestion = new RadioButtonGroup<>();
+    private RadioButtonGroup<String> thirdQuestion = new RadioButtonGroup<>();
+    private RadioButtonGroup<String> fourthQuestion = new RadioButtonGroup<>();
+    private RadioButtonGroup<String> fifthQuestion = new RadioButtonGroup<>();
+    private RadioButtonGroup<String> sixthQuestion = new RadioButtonGroup<>();
+    private Button submitButton = new Button("Submit");
+    private Button cancel = new Button("Cancel");
+    private final HtmlComponent br = new HtmlComponent("br");
+    private final HtmlComponent br2 = new HtmlComponent("br");
+    private final H1 title = new H1("Interview Questions for Preferred Testing Method");
+    private final Hr hr1 = new Hr();
+    private final Hr hr2 = new Hr();
+    private final Hr hr3 = new Hr();
+    private final Hr hr4 = new Hr();
+    private final Hr hr5 = new Hr();
+    private final Hr hr6 = new Hr();
 
     /**
      * Populating page with questions and choices
