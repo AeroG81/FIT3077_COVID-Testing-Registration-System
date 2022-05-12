@@ -1,20 +1,17 @@
 package com.example.application.views.subpages;
 
-import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.BookingMethod.FacilityBookingMethod;
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.Resident;
 import com.example.application.data.entity.User.User;
-import com.example.application.data.entity.User.UserCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -33,9 +30,9 @@ import java.time.format.DateTimeFormatter;
 public class SiteBookingLayout extends VerticalLayout {
     private Button submitVerification;
     private final IntegerField verifyPin = new IntegerField("PIN");
-    private final Dialog dialog = new Dialog();
+    private final ConfirmDialog dialog = new ConfirmDialog();
     private final TextArea label = new TextArea();
-    private final FormLayout registrationCommonForm = new FormLayout();
+    private final FormLayout siteTestingForm = new FormLayout();
     private final TextArea notes = new TextArea("Notes");
     private final TestingSiteCollection collection = new TestingSiteCollection();
     private ComboBox<TestingSite> testingSite;
@@ -45,41 +42,29 @@ public class SiteBookingLayout extends VerticalLayout {
     /**
      * populate the layout with components
      */
-    public SiteBookingLayout(){
-        this.configureRegistrationNotification();
+    public SiteBookingLayout() {
         this.configureDateTimePicker();
         this.configureComboBox();
         this.populateComboBox();
         this.configureRegistrationButton();
         this.configureRegistrationForm();
 
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
-        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(closeButton,label);
-
-        add(registrationCommonForm);
+        add(siteTestingForm);
     }
 
-    /**
-     * Configuring Registration Notification
-     */
-    private void configureRegistrationNotification(){
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
-        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(closeButton,label);
-    }
+
 
     /**
      * Configuring Registration Form
      */
-    private void configureRegistrationForm(){
-        registrationCommonForm.setColspan(notes, 2);
-        registrationCommonForm.setColspan(submitRegistration, 2);
-        registrationCommonForm.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0",1),
-                new FormLayout.ResponsiveStep("30%",2)
+    private void configureRegistrationForm() {
+        siteTestingForm.setColspan(notes, 2);
+        siteTestingForm.setColspan(submitRegistration, 2);
+        siteTestingForm.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("30%", 2)
         );
-        registrationCommonForm.add(
+        siteTestingForm.add(
                 testingSite, startTime,
                 notes,
                 submitRegistration
@@ -143,28 +128,38 @@ public class SiteBookingLayout extends VerticalLayout {
                 Notification.show("Booking time is not within operation hour");
             }
             else {
-                // Get User ID via http request
-                // if statement here to check the tab, post to verify or post to create
-                VaadinSession ui = UI.getCurrent().getSession();
-                User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
-                HttpResponse<String> response = null;
-                ObjectNode mappedResponse = null;
-                try {
-                    response = new SystemBookingMethod().addBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
-                    mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
-                    testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0,testingSite.getValue().getWaitingTime().length()-3))+10)+"min");
-                } catch (Exception exception){
-                    System.out.println("Error creating: " + exception);
-                }
-                if (response!=null){
-                    label.setWidth("500px");
-                    label.setEnabled(false);
-                    label.clear();
-                    label.setValue("PIN: "+ mappedResponse.get("smsPin").asText());
-                    dialog.open();
-                    Notification noti = Notification.show("Application submitted");
-                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                }
+                dialog.setHeader("Confirm Appointment");
+                dialog.setText("Do you want to book an online testing appointment at " + startTime.getValue().toLocalDate() + " " + startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                dialog.setRejectable(true);
+                dialog.setRejectText("Discard");
+                dialog.setConfirmText("Save");
+                dialog.addConfirmListener(event -> {
+                    VaadinSession ui = UI.getCurrent().getSession();
+                    User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
+                    HttpResponse<String> response = null;
+                    ObjectNode mappedResponse = null;
+                    try {
+                        response = new SystemBookingMethod().addBooking(testingSite.getValue(), startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
+                        mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
+                        TextArea label = new TextArea();
+                        Notification noti = Notification.show("Application submitted");
+                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        Dialog responseDialog = new Dialog();
+                        label.setWidth("500px");
+                        label.clear();
+                        label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText());
+                        testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0, testingSite.getValue().getWaitingTime().length() - 3)) + 10) + "min");
+                        Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
+                        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                        responseDialog.add(closeButton,label);
+                        responseDialog.open();
+                    } catch (Exception exception){
+                        Notification noti = Notification.show("Appointment failed");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        System.out.println(exception);
+                    }
+                });
+                dialog.open();
             }
         });
     }

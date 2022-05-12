@@ -27,11 +27,15 @@ public class ProfileLayout extends HorizontalLayout {
         SubMenu subMenu = menuItem.getSubMenu();
         subMenu.addItem("Profile", e -> {
             System.out.println("Profile selected");
-        });
-        subMenu.addItem("Settings", e -> {
-            System.out.println("Settings selected");
+            UI.getCurrent().navigate("userprofile");
         });
         subMenu.addItem("Sign out", e -> {
+            UI.getCurrent().getSession().setAttribute("userId","");
+            UI.getCurrent().getSession().setAttribute("userGivenName","");
+            UI.getCurrent().getSession().setAttribute("userFamilyName","");
+            UI.getCurrent().getSession().setAttribute("userName","");
+            UI.getCurrent().getSession().setAttribute("userPhoneNumber","");
+            UI.getCurrent().navigate("");
             System.out.println("Sign out selected");
         });
 
