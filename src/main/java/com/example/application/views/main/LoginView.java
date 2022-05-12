@@ -32,7 +32,9 @@ public class LoginView extends HorizontalLayout {
     private Button loginButton = new Button("Log In");
     private Button redirectToTestingSite = new Button("Browse Testing Sites");
     private Button redirectToOnsiteInterview = new Button("Test Recommendation");
-    private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site only)");
+    private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
+
+    private Button redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
 
     /**
      * Populating the Page with username field, password field and submit button
@@ -87,11 +89,18 @@ public class LoginView extends HorizontalLayout {
             }
         );
 
-        redirectToOnsiteBooking = new Button("Make a Booking (On-site only)");
+        redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)\"");
         redirectToOnsiteBooking.addClickListener(h -> {
                 redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("onsitebooking"));
                 redirectOptions.close();
             }
+        );
+
+        redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
+        redirectToOnsiteBooking.addClickListener(h -> {
+                    redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
+                    redirectOptions.close();
+                }
         );
 
         loginButton.addClickListener(e -> {
@@ -108,8 +117,9 @@ public class LoginView extends HorizontalLayout {
                     UI.getCurrent().getSession().setAttribute("userPhoneNumber",user.getPhoneNumber());
                     try {
                         if (uc.checkIsCustomer(user.getUserName())){
-                            // add testing site route
+                            // add testing site and system booking route
                             dialogLayout.add(redirectToTestingSite);
+                            dialogLayout.add(redirectToSystemBooking);
                         }
                         if (uc.checkIsReceptionist(user.getUserName())){
                             // add onsite booking route
