@@ -26,7 +26,6 @@ public class ProfileLayout extends HorizontalLayout {
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
         subMenu.addItem("Profile", e -> {
-            System.out.println("Profile selected");
             UI.getCurrent().navigate("userprofile");
         });
         subMenu.addItem("Sign out", e -> {
@@ -36,7 +35,6 @@ public class ProfileLayout extends HorizontalLayout {
             UI.getCurrent().getSession().setAttribute("userName","");
             UI.getCurrent().getSession().setAttribute("userPhoneNumber","");
             UI.getCurrent().navigate("");
-            System.out.println("Sign out selected");
         });
 
         add(menuBar);

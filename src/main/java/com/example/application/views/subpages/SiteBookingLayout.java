@@ -94,7 +94,7 @@ public class SiteBookingLayout extends VerticalLayout {
         startTime = new DateTimePicker();
         startTime.setLabel("Appointment Date and Time");
         startTime.setAutoOpen(true);
-        startTime.setMin(LocalDateTime.now().plusDays(1));
+        startTime.setMin(LocalDateTime.now());
         startTime.setValue(LocalDateTime.now().plusDays(1));
         startTime.setMax(LocalDateTime.now().plusDays(90));
     }

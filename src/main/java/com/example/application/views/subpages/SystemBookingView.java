@@ -33,18 +33,18 @@ import java.time.format.DateTimeFormatter;
 /**
  * This is the page for User booking via System
  */
-public class HomeBookingView extends VerticalLayout {
+public class SystemBookingView extends VerticalLayout {
     private final VerticalLayout mainLayout = new VerticalLayout();
     private final Tab tabSiteBooking = new Tab("Book for Site Testing");
     private final Tab tabHomeBooking = new Tab("Book for Home Testing");
     private final Tab tabVerifyPin = new Tab("Verify PIN");
-    private final Tab tabTestingSites = new Tab("Testing Sites");
+    private final Tab tabTestingSites = new Tab("| Testing Sites |");
     private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin, tabTestingSites);
 
     /**
      * Populating page with components based on tab selected
      */
-    public HomeBookingView(){
+    public SystemBookingView(){
 
         // Change layout based on selected tab
         mainLayout.add(new HomeBookingLayout());

@@ -1,5 +1,6 @@
 package com.example.application.views.subpages;
 
+import com.example.application.data.entity.User.Role;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -15,8 +16,8 @@ import com.vaadin.flow.router.Route;
 public class UserProfileView extends VerticalLayout {
     private final VerticalLayout mainLayout = new VerticalLayout();
     private final Tab tabUserProfile = new Tab("UserProfile");
-    private final Tab tabActiveBookings = new Tab("Active Bookings");
-    private final Tab tabHomeBooking = new Tab("Main Page");
+    private final Tab tabActiveBookings = new Tab("User Bookings");
+    private final Tab tabHomeBooking = new Tab("| Main Page |");
     private final Tabs mainTabs = new Tabs(tabUserProfile, tabActiveBookings, tabHomeBooking);
 
     public UserProfileView(){
@@ -28,12 +29,19 @@ public class UserProfileView extends VerticalLayout {
                 mainLayout.add(new UserProfileLayout());
             }
             else if (event.getSelectedTab().equals(tabActiveBookings)) {
-                mainLayout.add(new PinVerifyLayout());
+                mainLayout.add(new UserBookingsLayout());
             }
             else if (event.getSelectedTab().equals(tabHomeBooking)) {
-                UI.getCurrent().navigate("systembooking");
+                if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RESIDENT))
+                    UI.getCurrent().navigate("systembooking");
+                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.STAFF))
+                    UI.getCurrent().navigate("onsitebooking");
+                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.STAFF))
+                    UI.getCurrent().navigate("onsiteinterview");
             }
         });
+        if (!UI.getCurrent().getSession().getAttribute("role").equals(Role.RESIDENT))
+            tabActiveBookings.setEnabled(false);
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);

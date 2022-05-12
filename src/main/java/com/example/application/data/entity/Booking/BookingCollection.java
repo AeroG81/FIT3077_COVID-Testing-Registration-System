@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.awt.print.Book;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,6 +126,21 @@ public class BookingCollection {
         }
         return userBookingMethod;
     }
+
+    /**
+     * Getter for collection of bookings
+     * @return collection of bookings
+     */
+    public List<Booking> getBookingsById(String userId) {
+        List<Booking> bookings = new ArrayList<>();
+        collection.forEach(booking -> {
+            if (booking.getCustomer().getId().equals(userId)){
+                bookings.add(booking);
+            }
+        });
+        return bookings;
+    }
+
 
     /**
      * Verify Booking with Booking ID and PIN which will return User who placed the booking.
