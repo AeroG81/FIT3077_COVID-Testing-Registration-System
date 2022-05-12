@@ -13,6 +13,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @PageTitle("Phone Call Booking Modification | Vaadin CRM")
 @Route(value = "/phonecall")
 public class ModifyBookingByPhoneView extends VerticalLayout {
@@ -56,7 +60,25 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
             }
             else{
                 if (verifyBookingIDandPIN.getStatus() != "COMPLETED"){
-                    
+                    String bookingStartTime = verifyBookingIDandPIN.getStartTime();
+                    bookingStartTime = bookingStartTime.substring(0, bookingStartTime.length()-1);
+                    String[] dateTimeSplit = bookingStartTime.split("T");
+                    System.out.println(dateTimeSplit[0] + dateTimeSplit[1]);
+                    Date bookingStartDateTime= null;
+                    try {
+                        bookingStartDateTime = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss.SSS").parse(dateTimeSplit[0] + dateTimeSplit[1]);
+                    } catch (ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    Date nowDateTime = new Date();
+
+                    if (bookingStartDateTime.compareTo(nowDateTime) == 1){
+                        Notification.show("Booking can be modified");
+                    }
+                    else {
+                        Notification.show("Booking is lapsed and cannot be modified anymore.");
+                    }
                 }
             }
         });
