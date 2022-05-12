@@ -1,6 +1,7 @@
 package com.example.application.data.entity.BookingMethod;
 
 import com.example.application.data.entity.Booking.Booking;
+import com.example.application.data.entity.Booking.OnSiteTesting;
 import com.example.application.data.entity.Booking.OnlineTesting;
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
@@ -23,7 +24,28 @@ public class SystemBookingMethod implements BookingMethod {
      */
     @Override
     public HttpResponse<String> addBooking(TestingSite site, String startTime, User user, String notes) throws Exception {
-        return null;
+        Booking booking = new OnSiteTesting(site,startTime,user,notes);
+        String jsonString = "{" +
+                "\"customerId\":\"" + user.getId() + "\"," +
+                "\"testingSiteId\":\"" + site.getId() + "\"," +
+                "\"startTime\":\"" + startTime + "\"";
+        if (notes != null && !notes.isBlank())
+            jsonString += ",\"notes\":\"" + notes + "\"";
+        jsonString += ",\"additionalInfo\": " + booking.getAdditionalInfo();
+        // update Site waiting time
+        jsonString += "}";
+        String testingSiteUrl = "https://fit3077.com/api/v2/testing-site";
+        String testingSiteJson = "{" +
+                "\"additionalInfo\": {"+
+                "\"facilityType\": \"" + site.getFacilityType() + "\""+
+                ",\"openTime\": \"" + site.getOpenTime() + "\""+
+                ",\"closeTime\": \"" + site.getCloseTime() + "\""+
+                ",\"waitingTime\": \"" + (Integer.parseInt(site.getWaitingTime().substring(0,site.getWaitingTime().length()-3))+10)+ "min\""+
+                "}"+
+                "}";
+        HttpResponse<String> response = new HttpHelper().patchService(testingSiteUrl,testingSiteJson, site.getId());
+        String url = "https://fit3077.com/api/v2/booking";
+        return new HttpHelper().postService(url,jsonString);
     }
 
     /**

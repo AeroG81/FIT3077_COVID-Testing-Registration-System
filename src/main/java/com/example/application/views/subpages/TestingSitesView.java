@@ -29,7 +29,7 @@ public class TestingSitesView extends VerticalLayout {
     public TestingSitesView(){
         configureGrid();
         populateList();
-        add(getToolbar(), grid);
+        add(new ProfileLayout(), getToolbar(), grid);
         setSizeFull();
     }
 

@@ -23,6 +23,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
+import java.awt.*;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +50,6 @@ public class HomeBookingView extends VerticalLayout {
      * Populating page with components based on tab selected
      */
     public HomeBookingView(){
-        tabSiteBooking.setEnabled(false);
 
         this.configureDateTimePicker();
         this.configureRegistrationButton();
@@ -65,6 +65,9 @@ public class HomeBookingView extends VerticalLayout {
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
             }
+            else if (event.getSelectedTab().equals(tabSiteBooking)) {
+                mainLayout.add(new SiteBookingLayout());
+            }
             else if (event.getSelectedTab().equals(tabTestingSites)) {
                 UI.getCurrent().navigate("testingsite");
             }
@@ -72,7 +75,7 @@ public class HomeBookingView extends VerticalLayout {
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(mainTabs,mainLayout);
+        add(new ProfileLayout(),mainTabs,mainLayout);
     }
 
     /**

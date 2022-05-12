@@ -88,7 +88,7 @@ public class OnSiteBookingView extends VerticalLayout {
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(mainTabs,mainLayout);
+        add(new ProfileLayout(),mainTabs,mainLayout);
     }
 
     /**
