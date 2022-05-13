@@ -1,7 +1,9 @@
 package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.User.User;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.*;
 
 /**
  * This is the Booking abstract class act as the base for all bookings
@@ -14,6 +16,7 @@ public abstract class Booking {
     private String status;
     private String smsPin;
     private String qrcode;
+    private List<String> history;
 
     /**
      * Constructor of Booking
@@ -29,6 +32,7 @@ public abstract class Booking {
         this.status = null;
         this.smsPin = null;
         qrcode = UUID.randomUUID().toString();
+        this.history = Arrays.asList(new String[3]);
     }
 
     /**
@@ -41,7 +45,7 @@ public abstract class Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode) {
+    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<String> history) {
         this.bookingId = bookingId;
         this.startTime = startTime;
         this.customer = customer;
@@ -49,6 +53,7 @@ public abstract class Booking {
         this.status = status;
         this.smsPin = smsPin;
         this.qrcode = qrcode;
+        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new String[3]));
     }
 
     /**
@@ -113,6 +118,10 @@ public abstract class Booking {
      */
     public String getAdditionalInfo() {
         return qrcode;
+    }
+
+    public List<String> getHistory() {
+        return history;
     }
 
     /**

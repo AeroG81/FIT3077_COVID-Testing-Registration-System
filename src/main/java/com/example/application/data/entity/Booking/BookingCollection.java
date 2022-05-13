@@ -10,9 +10,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.awt.print.Book;
+import java.lang.reflect.Array;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -65,6 +66,16 @@ public class BookingCollection {
             else if (userNode.get("isHealthcareWorker").asBoolean())
                 user = new ExpertStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
 
+            List<String> history = Arrays.asList(new String[3]);
+            JsonNode historyNode = node.get("additionalInfo").get("history");
+            if (historyNode==null)
+                history = null;
+            else if (historyNode.isArray()) {
+                history.set(0,historyNode.get(0).toPrettyString());
+                history.set(1,historyNode.get(1).toPrettyString());
+                history.set(2,historyNode.get(2).toPrettyString());
+            }
+
             if (!node.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = node.get("testingSite");
                 TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(),
@@ -85,9 +96,10 @@ public class BookingCollection {
                         testingSiteNode.get("additionalInfo").get("closeTime").asText(),
                         testingSiteNode.get("additionalInfo").get("waitingTime").asText()
                 );
-                booking = new OnSiteTesting(node.get("id").asText(),testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText());
+
+                booking = new OnSiteTesting(node.get("id").asText(), testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), history);
             } else {
-                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText());
+                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText(), history);
             }
             collection.add(booking);
         }
@@ -141,7 +153,6 @@ public class BookingCollection {
         return bookings;
     }
 
-
     /**
      * Verify Booking with Booking ID and PIN which will return User who placed the booking.
      * */
@@ -149,7 +160,7 @@ public class BookingCollection {
         Booking booking = null;
         int i = 0;
         boolean endLoop = false;
-        while (i<collection.size() && !endLoop){
+        while (i < collection.size() && !endLoop) {
             if (collection.get(i).getBookingId().equals(bookingID) && collection.get(i).getSmsPin().equals(smsPin)) {
                 booking = collection.get(i);
                 endLoop = true;
@@ -157,5 +168,86 @@ public class BookingCollection {
             i++;
         }
         return booking;
+    }
+
+    public HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, String newTime, String newSiteId) throws Exception {
+        /*
+         * additionalInfo[0] = qrcode
+         * additionalInfo[1] = url (if exist)
+         * */
+        String jsonString = "{" +
+                "\"startTime\":\"" + newTime + "\"";
+        if (newSiteId == null)
+            jsonString += ",\"testingSiteId\":" + null;
+        else
+            jsonString += ",\"testingSiteId\":\"" + newSiteId + "\"";
+
+        jsonString += ",\"additionalInfo\": {" +
+                "\"qrcode\": \"" + additionalInfo.get(0) + "\"";
+        if (additionalInfo.size() > 1)
+            jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
+
+        if (history.get(0) == null) {
+            history.set(0, previousContent);
+        } else if ((history.get(0) != null && history.get(1) == null)) {
+            history.set(1, history.get(0));
+            history.set(0, previousContent);
+        } else {
+            history.set(2, history.get(1));
+            history.set(1, history.get(0));
+            history.set(0, previousContent);
+        }
+        jsonString += ",\"history\": " + history;
+        jsonString += "}" + "}";
+
+        String url = "https://fit3077.com/api/v2/booking";
+
+        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
+        return response;
+    }
+
+    public HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
+        /*
+         * additionalInfo[0] = qrcode
+         * additionalInfo[1] = url (if exist)
+         * */
+        ObjectNode jsonNodes = new ObjectMapper().readValue(previousContent, ObjectNode.class);
+
+        String jsonString = "{" +
+                "\"startTime\":" + jsonNodes.get("starttime");
+        if (jsonNodes.get("testingsiteid") != null && !jsonNodes.get("testingsiteid").asText().equals("null"))
+            jsonString += ",\"testingSiteId\":\"" + jsonNodes.get("testingsiteid").asText() + "\"";
+        else
+            jsonString += ",\"testingSiteId\":" + null;
+
+        jsonString += ",\"additionalInfo\": {" +
+                "\"qrcode\": \"" + additionalInfo.get(0) + "\"";
+        if (additionalInfo.size() > 1)
+            jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
+
+
+        if (index == 1) {
+            history.set(0, history.get(1));
+            history.set(1, history.get(2));
+            history.set(2, null);
+        }
+        else if (index == 2) {
+            history.set(0, history.get(2));
+            history.set(1, null);
+            history.set(2, null);
+        }
+        else {
+            history.set(2, null);
+            history.set(1, null);
+            history.set(0, null);
+        }
+
+
+        jsonString += ",\"history\": " + history;
+        jsonString += "}" + "}";
+        String url = "https://fit3077.com/api/v2/booking";
+
+        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
+        return response;
     }
 }

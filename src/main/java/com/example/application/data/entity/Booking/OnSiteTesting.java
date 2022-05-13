@@ -2,6 +2,9 @@ package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.User.User;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.List;
 
 /**
  * This is the children OnSiteTesting class extending Booking abstract class
@@ -32,8 +35,8 @@ public class OnSiteTesting extends Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode) {
-        super(bookingId, startTime, user, notes, status, smsPin, qrcode);
+    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
         this.testingSite = site;
     }
 

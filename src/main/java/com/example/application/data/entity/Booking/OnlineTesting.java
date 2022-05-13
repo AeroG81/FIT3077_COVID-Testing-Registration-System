@@ -2,6 +2,9 @@ package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.Meeting.Zoom;
 import com.example.application.data.entity.User.User;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.List;
 
 /**
  * This is the children OnlineTesting class extending Booking abstract class
@@ -31,8 +34,8 @@ public class OnlineTesting extends Booking {
      * @param qrcode QR code to verify the booking
      * @param url url for the meeting with experts
      */
-    public OnlineTesting(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url) {
-        super(bookingId, startTime, user, notes, status, smsPin, qrcode);
+    public OnlineTesting(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
         this.url = url;
     }
 

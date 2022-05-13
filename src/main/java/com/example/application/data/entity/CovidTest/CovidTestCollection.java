@@ -123,12 +123,24 @@ public class CovidTestCollection {
             User administerer = this.createUser(administererNode);
             User bookingCustomer = this.createUser(bookingCustomerNode);
 
+            List<String> history = new ArrayList<>();
+            JsonNode historyNode = node.get("additionalInfo").get("history");
+            if (historyNode==null)
+                history = null;
+            else if (historyNode.isArray()){
+                for (JsonNode obj: historyNode){
+                    history.add(obj.asText());
+                }
+            }
+            else
+                history = null;
+
             if (!bookingNode.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = bookingNode.get("testingSite");
                 TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(), testingSiteNode.get("name").asText(), testingSiteNode.get("description").asText(), testingSiteNode.get("websiteUrl").asText(), testingSiteNode.get("phoneNumber").asText(), testingSiteNode.get("address").get("latitude").asDouble(), testingSiteNode.get("address").get("longitude").asDouble(), testingSiteNode.get("address").get("unitNumber").asInt(), testingSiteNode.get("address").get("street").asText(), testingSiteNode.get("address").get("street2").asText(), testingSiteNode.get("address").get("suburb").asText(), testingSiteNode.get("address").get("state").asText(), testingSiteNode.get("address").get("postcode").asText(), testingSiteNode.get("additionalInfo").get("facilityType").asText(), testingSiteNode.get("additionalInfo").get("openTime").asText(), testingSiteNode.get("additionalInfo").get("closeTime").asText(), testingSiteNode.get("additionalInfo").get("waitingTime").asText());
-                booking = new OnSiteTesting(bookingNode.get("id").asText(), testingSite, bookingNode.get("startTime").asText(), bookingCustomer, bookingNode.get("notes").asText(), bookingNode.get("status").asText(), bookingNode.get("smsPin").asText(), bookingNode.get("additionalInfo").get("qrcode").asText());
+                booking = new OnSiteTesting(bookingNode.get("id").asText(), testingSite, bookingNode.get("startTime").asText(), bookingCustomer, bookingNode.get("notes").asText(), bookingNode.get("status").asText(), bookingNode.get("smsPin").asText(), bookingNode.get("additionalInfo").get("qrcode").asText(),history);
             } else {
-                booking = new OnlineTesting(bookingNode.get("id").asText(), bookingNode.get("startTime").asText(), bookingCustomer, bookingNode.get("notes").asText(), bookingNode.get("status").asText(), bookingNode.get("smsPin").asText(), bookingNode.get("additionalInfo").get("qrcode").asText(), bookingNode.get("additionalInfo").get("url").asText());
+                booking = new OnlineTesting(bookingNode.get("id").asText(), bookingNode.get("startTime").asText(), bookingCustomer, bookingNode.get("notes").asText(), bookingNode.get("status").asText(), bookingNode.get("smsPin").asText(), bookingNode.get("additionalInfo").get("qrcode").asText(), bookingNode.get("additionalInfo").get("url").asText(), history);
             }
             if (node.get("type").asText().equals("PCR"))
                 type = new PCR();
