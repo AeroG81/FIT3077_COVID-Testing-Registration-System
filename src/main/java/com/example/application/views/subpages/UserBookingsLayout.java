@@ -61,11 +61,9 @@ public class UserBookingsLayout extends VerticalLayout {
         Button submitUpdate = new Button("Update");
 
         startTime.setLabel("Appointment Date and Time");
-        startTime.setAutoOpen(true);
-        startTime.setMin(LocalDateTime.now());
         startTime.setValue(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime());
-        startTime.setMax(LocalDateTime.now().plusDays(90));
-        form.setColspan(submitUpdate, 3);
+
+        form.setColspan(submitUpdate, 2);
         form.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 2)
         );
@@ -77,29 +75,60 @@ public class UserBookingsLayout extends VerticalLayout {
 
         if (b.getClass().equals(OnlineTesting.class)) {
             this.configureFormForOnlineTesting(b, startTime, submitUpdate);
-            form.setColspan(startTime, 3);
+            form.setColspan(startTime, 2);
             Label link = new Label("MEETING LINK: " + ((OnlineTesting) b).getUrl());
             form.setColspan(link, 2);
-            form.add(
-                    pin,
-                    qr,
-                    link,
-                    startTime,
-                    submitUpdate
-            );
+            if (isInvalidStatus(b)){
+                form.add(
+                        pin,
+                        qr,
+                        link,
+                        startTime
+                );
+            }
+            else {
+                startTime.setAutoOpen(true);
+                startTime.setMin(LocalDateTime.now());
+                startTime.setValue(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime());
+                startTime.setMax(LocalDateTime.now().plusDays(90));
+                form.add(
+                        pin,
+                        qr,
+                        link,
+                        startTime,
+                        submitUpdate
+                );
+            }
+
         } else if (b.getClass().equals(OnSiteTesting.class)) {
             ComboBox<TestingSite> testingSite = new ComboBox<>("TestingSite");
             this.configureFormForOnSiteTesting(b, startTime, submitUpdate, testingSite);
             form.setColspan(startTime, 1);
-            form.add(
-                    pin,
-                    qr,
-                    testingSite, startTime,
-                    submitUpdate
-            );
+            if (isInvalidStatus(b)){
+                form.add(
+                        pin,
+                        qr,
+                        testingSite, startTime
+                );
+            }
+            else {
+                startTime.setAutoOpen(true);
+                startTime.setMin(LocalDateTime.now());
+
+                startTime.setMax(LocalDateTime.now().plusDays(90));
+                form.add(
+                        pin,
+                        qr,
+                        testingSite, startTime,
+                        submitUpdate
+                );
+            }
         }
 
-        this.addRevertOptions(form, b);
+        if (!this.isInvalidStatus(b)){
+            this.addCancelButton(form, b.getBookingId());
+            this.addRevertOptions(form, b);
+        }
 
         return form;
     }
@@ -120,123 +149,83 @@ public class UserBookingsLayout extends VerticalLayout {
         select.setValue("current");
 
         Button revert = new Button("Revert previous version");
-        revert.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-        if ((LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0 && b.getStatus().equals("INITIATED"))||b.getStatus().equals("COMPLETED")){
-            revert.setEnabled(false);
-        }
-        else
-            revert.addClickListener(e -> {
-            if (!select.getValue().equals("current")) {
-                List<String> additionalInfo = new ArrayList<>();
-                additionalInfo.add(0, b.getQrcode());
-                if (b.getClass().equals(OnlineTesting.class))
-                    additionalInfo.add(1, ((OnlineTesting) b).getUrl());
-                int index = history.indexOf(select.getValue());
-                ObjectNode jsonNode = null;
-                try {
-                    jsonNode = new ObjectMapper().readValue(select.getValue(), ObjectNode.class);
-                }
-                catch (Exception exception) {
-                    System.out.println("Unable to map select");
-                }
+        revert.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
-                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
-                    Notification noti = Notification.show("History date is not a future date");
-                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                }
-                else {
+            revert.addClickListener(e -> {
+                if (!select.getValue().equals("current")) {
+                    List<String> additionalInfo = new ArrayList<>();
+                    additionalInfo.add(0, b.getQrcode());
+                    if (b.getClass().equals(OnlineTesting.class))
+                        additionalInfo.add(1, ((OnlineTesting) b).getUrl());
+                    int index = history.indexOf(select.getValue());
+                    ObjectNode jsonNode = null;
                     try {
-                        HttpResponse<String> response = new BookingCollection().revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
-                        if (response.statusCode()==200){
-                            Notification noti = Notification.show("Revert Success");
-                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                        }
-                        this.reloadForm();
-                    } catch (Exception exception) {
-                        Notification noti = Notification.show("Revert Failed");
+                        jsonNode = new ObjectMapper().readValue(select.getValue(), ObjectNode.class);
+                    }
+                    catch (Exception exception) {
+                        System.out.println("Unable to map select");
+                    }
+
+                    if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
+                        Notification noti = Notification.show("History date is not a future date");
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                        System.out.println("Error Reverting History |" + exception);
+                    }
+                    else {
+                        try {
+                            HttpResponse<String> response = new BookingCollection().revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
+                            if (response.statusCode()==200){
+                                Notification noti = Notification.show("Revert Success");
+                                noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                            }
+                            this.reloadForm();
+                        } catch (Exception exception) {
+                            Notification noti = Notification.show("Revert Failed");
+                            noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                            System.out.println("Error Reverting History |" + exception);
+                        }
                     }
                 }
-            }
-            else {
-                Notification noti = Notification.show("Please select a history version");
-                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
-            }
-        });
+                else {
+                    Notification noti = Notification.show("Please select a history version");
+                    noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                }
+            });
+            form.add(select, revert);
 
-        form.add(select, revert);
     }
 
     private void configureFormForOnlineTesting(Booking b, DateTimePicker startTime, Button submitUpdate) {
-        if (!b.getStatus().equals("INITIATED") || LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0) {
+        if (isInvalidStatus(b)) {
             startTime.setEnabled(false);
+            submitUpdate.setEnabled(false);
         }
-        submitUpdate.setEnabled(false);
-        startTime.addValueChangeListener(e -> {
-            if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()))
-                submitUpdate.setEnabled(false);
-            else
-                submitUpdate.setEnabled(true);
-        });
-
-        submitUpdate.addClickListener(e -> {
-            if (startTime.getValue().toLocalTime().getHour() < 8  || startTime.getValue().toLocalTime().getHour() >= 21){
-                Notification noti = Notification.show("Online testing only available during 0800 - 2100");
-                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-            else {
-                List<String> additionalInfo = new ArrayList<>();
-                additionalInfo.add(0, b.getQrcode());
-                String content = "";
-                String newSiteId = null;
-
-                additionalInfo.add(1, ((OnlineTesting) b).getUrl());
-                content = "{" + " \"testingsiteid\":" + null + ", \"starttime\": \"" + b.getStartTime() + "\" } ";
-                List<String> history = b.getHistory();
-                try {
-                    HttpResponse<String> response = new BookingCollection().updateBooking(b.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
-                    Notification noti = Notification.show("Update Success");
-                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    this.reloadForm();
-                } catch (Exception exception) {
-                    System.out.println(exception);
-                    Notification noti = Notification.show("Update Failed");
+        else {
+            submitUpdate.addClickListener(e -> {
+                if (startTime.getValue().toLocalTime().getHour() < 8  || startTime.getValue().toLocalTime().getHour() >= 21){
+                    Notification noti = Notification.show("Online testing only available during 0800 - 2100");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
-            }
-        });
-    }
-
-    private void configureFormForOnSiteTesting(Booking b, DateTimePicker startTime, Button submitUpdate, ComboBox<TestingSite> testingSite) {
-        if (!b.getStatus().equals("INITIATED") || LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0) {
-            submitUpdate.setEnabled(false);
-            startTime.setEnabled(false);
-            testingSite.setEnabled(false);
-            testingSite.setItems(((OnSiteTesting) b).getTestingSite());
-        } else {
-            testingSite.setRequired(true);
-            TestingSiteCollection collection = new TestingSiteCollection();
-            testingSite.setItems(collection.getCollection());
-            submitUpdate.setEnabled(false);
-            submitUpdate.addClickListener(e -> {
-                if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9))){
-                    Notification noti = Notification.show("Booking time is not within operation hour");
+                else if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime())){
+                    Notification noti = Notification.show("No changes in value, Unable to update");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
                 else {
                     List<String> additionalInfo = new ArrayList<>();
                     additionalInfo.add(0, b.getQrcode());
                     String content = "";
-                    String newSiteId = "";
-                    content = "{" + " \"testingsiteid\":\"" + ((OnSiteTesting) b).getTestingSite().getId() + "\", \"starttime\": \"" + b.getStartTime() + "\" } ";
-                    newSiteId = testingSite.getValue().getId();
-                    List<String> history = b.getHistory();
+                    String newSiteId = null;
 
+                    additionalInfo.add(1, ((OnlineTesting) b).getUrl());
+                    content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + b.getStartTime() + "\" } ";
+                    List<String> history = b.getHistory();
                     try {
-                        HttpResponse<String> response = new BookingCollection().updateBooking(b.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
-                        Notification noti = Notification.show("Update Success");
-                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        HttpResponse<String> response = BookingCollection.updateBooking(b.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
+                        if (response.statusCode() == 200){
+                            Notification noti = Notification.show("Update Success");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        }
+                        else
+                            throw new Exception(response.body());
                         this.reloadForm();
                     } catch (Exception exception) {
                         System.out.println(exception);
@@ -244,23 +233,57 @@ public class UserBookingsLayout extends VerticalLayout {
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
                 }
+            });
+        }
+    }
 
+    private void configureFormForOnSiteTesting(Booking b, DateTimePicker startTime, Button submitUpdate, ComboBox<TestingSite> testingSite) {
+        if (isInvalidStatus(b)) {
+            startTime.setEnabled(false);
+            testingSite.setEnabled(false);
+            testingSite.setItems(((OnSiteTesting) b).getTestingSite());
+        } else {
+            testingSite.setRequired(true);
+            TestingSiteCollection collection = new TestingSiteCollection();
+            testingSite.setItems(collection.getCollection());
+            submitUpdate.addClickListener(e -> {
+                if (testingSite.getValue()!=null)
+                    if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9))){
+                        Notification noti = Notification.show("Booking time is not within operation hour");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    }
+                    else if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTesting) b).getTestingSite().getId())){
+                        Notification noti = Notification.show("No changes in value, Unable to update");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    }
+                    else {
+                        List<String> additionalInfo = new ArrayList<>();
+                        additionalInfo.add(0, b.getQrcode());
+                        String content = "";
+                        String newSiteId = "";
+                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTesting) b).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTesting) b).getTestingSite().getId() + "\", \"starttime\": \"" + b.getStartTime() + "\" } ";
+                        newSiteId = testingSite.getValue().getId();
+                        List<String> history = b.getHistory();
+
+                        try {
+                            HttpResponse<String> response = BookingCollection.updateBooking(b.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
+                            if (response.statusCode() == 200){
+                                Notification noti = Notification.show("Update Success");
+                                noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                            }
+                            else
+                                throw new Exception(response.body());
+                            this.reloadForm();
+                        } catch (Exception exception) {
+                            System.out.println(exception);
+                            Notification noti = Notification.show("Update Failed");
+                            noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        }
+                    }
             });
         }
         testingSite.setItemLabelGenerator(TestingSite::getName);
         testingSite.setValue(((OnSiteTesting) b).getTestingSite());
-        startTime.addValueChangeListener(e -> {
-            if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTesting) b).getTestingSite().getId()))
-                submitUpdate.setEnabled(false);
-            else
-                submitUpdate.setEnabled(true);
-        });
-        testingSite.addValueChangeListener(e -> {
-            if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTesting) b).getTestingSite().getId()))
-                submitUpdate.setEnabled(false);
-            else
-                submitUpdate.setEnabled(true);
-        });
     }
 
     private void reloadForm() {
@@ -268,5 +291,40 @@ public class UserBookingsLayout extends VerticalLayout {
         accordion = new Accordion();
         this.addAccordion();
         this.add(accordion);
+    }
+
+    /**
+     * Helper function to check if booking is COMPLETED, CANCELLED or EXPIRED
+     * @param b Booking
+     * @return true if booking is not INITIATED or booking has EXPIRED, false if booking is valid
+     */
+    private boolean isInvalidStatus(Booking b){
+        boolean valid = false;
+        if (!b.getStatus().equals("INITIATED") || LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0){
+            valid = true;
+        }
+        return valid;
+    }
+
+    private void addCancelButton(FormLayout form, String bookingId){
+        Button cancelBooking = new Button("Cancel");
+        cancelBooking.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+        cancelBooking.addClickListener(e -> {
+            try {
+                HttpResponse<String> response = BookingCollection.cancelBooking(bookingId);
+                if (response.statusCode() == 200){
+                    Notification noti = Notification.show("Cancellation Success");
+                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                }
+                else
+                    throw new Exception();
+                this.reloadForm();
+            }
+            catch (Exception exception) {
+                System.out.println("Cancellation failed " + exception);
+            }
+        });
+        form.add(cancelBooking);
+        form.setColspan(cancelBooking,2);
     }
 }

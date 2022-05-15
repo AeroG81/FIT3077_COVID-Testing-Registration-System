@@ -170,7 +170,7 @@ public class BookingCollection {
         return booking;
     }
 
-    public HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, String newTime, String newSiteId) throws Exception {
+    public static HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, String newTime, String newSiteId) throws Exception {
         /*
          * additionalInfo[0] = qrcode
          * additionalInfo[1] = url (if exist)
@@ -206,7 +206,7 @@ public class BookingCollection {
         return response;
     }
 
-    public HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
+    public static HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
         /*
          * additionalInfo[0] = qrcode
          * additionalInfo[1] = url (if exist)
@@ -247,6 +247,14 @@ public class BookingCollection {
         jsonString += "}" + "}";
         String url = "https://fit3077.com/api/v2/booking";
 
+        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
+        return response;
+    }
+
+    public static HttpResponse<String> cancelBooking(String bookingId) throws Exception {
+        String url = "https://fit3077.com/api/v2/booking";
+        String jsonString = "{" +
+                "\"status\":\"CANCELLED\" }";
         HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
         return response;
     }
