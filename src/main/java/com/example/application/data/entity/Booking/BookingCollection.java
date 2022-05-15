@@ -57,52 +57,44 @@ public class BookingCollection {
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
         for (ObjectNode node : jsonNodes) {
             JsonNode userNode = node.get("customer");
-            User user = null;
-            Booking booking;
-            if (userNode.get("isCustomer").asBoolean())
-                user = new Resident(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-            else if (userNode.get("isReceptionist").asBoolean())
-                user = new FacilityStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-            else if (userNode.get("isHealthcareWorker").asBoolean())
-                user = new ExpertStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+            User user = createUser(userNode);;
 
-            List<String> history = Arrays.asList(new String[3]);
             JsonNode historyNode = node.get("additionalInfo").get("history");
-            if (historyNode==null)
-                history = null;
-            else if (historyNode.isArray()) {
-                history.set(0,historyNode.get(0).toPrettyString());
-                history.set(1,historyNode.get(1).toPrettyString());
-                history.set(2,historyNode.get(2).toPrettyString());
-            }
+            List<String> history = createHistory(historyNode);
 
+            Booking booking;
             if (!node.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = node.get("testingSite");
-                TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(),
-                        testingSiteNode.get("name").asText(),
-                        testingSiteNode.get("description").asText(),
-                        testingSiteNode.get("websiteUrl").asText(),
-                        testingSiteNode.get("phoneNumber").asText(),
-                        testingSiteNode.get("address").get("latitude").asDouble(),
-                        testingSiteNode.get("address").get("longitude").asDouble(),
-                        testingSiteNode.get("address").get("unitNumber").asInt(),
-                        testingSiteNode.get("address").get("street").asText(),
-                        testingSiteNode.get("address").get("street2").asText(),
-                        testingSiteNode.get("address").get("suburb").asText(),
-                        testingSiteNode.get("address").get("state").asText(),
-                        testingSiteNode.get("address").get("postcode").asText(),
-                        testingSiteNode.get("additionalInfo").get("facilityType").asText(),
-                        testingSiteNode.get("additionalInfo").get("openTime").asText(),
-                        testingSiteNode.get("additionalInfo").get("closeTime").asText(),
-                        testingSiteNode.get("additionalInfo").get("waitingTime").asText()
-                );
-
+                TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(), testingSiteNode.get("name").asText(), testingSiteNode.get("description").asText(), testingSiteNode.get("websiteUrl").asText(), testingSiteNode.get("phoneNumber").asText(), testingSiteNode.get("address").get("latitude").asDouble(), testingSiteNode.get("address").get("longitude").asDouble(), testingSiteNode.get("address").get("unitNumber").asInt(), testingSiteNode.get("address").get("street").asText(), testingSiteNode.get("address").get("street2").asText(), testingSiteNode.get("address").get("suburb").asText(), testingSiteNode.get("address").get("state").asText(), testingSiteNode.get("address").get("postcode").asText(), testingSiteNode.get("additionalInfo").get("facilityType").asText(), testingSiteNode.get("additionalInfo").get("openTime").asText(), testingSiteNode.get("additionalInfo").get("closeTime").asText(), testingSiteNode.get("additionalInfo").get("waitingTime").asText());
                 booking = new OnSiteTesting(node.get("id").asText(), testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), history);
             } else {
                 booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText(), history);
             }
             collection.add(booking);
         }
+    }
+
+    private List<String> createHistory(JsonNode historyNode){
+        List<String> history = Arrays.asList(new String[3]);
+        if (historyNode==null)
+            history = null;
+        else if (historyNode.isArray()) {
+            history.set(0,historyNode.get(0).toPrettyString());
+            history.set(1,historyNode.get(1).toPrettyString());
+            history.set(2,historyNode.get(2).toPrettyString());
+        }
+        return history;
+    }
+
+    private User createUser(JsonNode userNode){
+        User user = null;
+        if (userNode.get("isCustomer").asBoolean())
+            user = new Resident(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        else if (userNode.get("isReceptionist").asBoolean())
+            user = new FacilityStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        else if (userNode.get("isHealthcareWorker").asBoolean())
+            user = new ExpertStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        return user;
     }
 
     /**
@@ -204,16 +196,8 @@ public class BookingCollection {
         if (additionalInfo.size() > 1)
             jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
 
-        if (history.get(0) == null) {
-            history.set(0, previousContent);
-        } else if ((history.get(0) != null && history.get(1) == null)) {
-            history.set(1, history.get(0));
-            history.set(0, previousContent);
-        } else {
-            history.set(2, history.get(1));
-            history.set(1, history.get(0));
-            history.set(0, previousContent);
-        }
+        updateHistory(history, previousContent);
+
         jsonString += ",\"history\": " + history;
         jsonString += "}" + "}";
 
@@ -232,6 +216,7 @@ public class BookingCollection {
 
         String jsonString = "{" +
                 "\"startTime\":" + jsonNodes.get("starttime");
+
         if (jsonNodes.get("testingsiteid") != null && !jsonNodes.get("testingsiteid").asText().equals("null"))
             jsonString += ",\"testingSiteId\":\"" + jsonNodes.get("testingsiteid").asText() + "\"";
         else
@@ -242,7 +227,29 @@ public class BookingCollection {
         if (additionalInfo.size() > 1)
             jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
 
+        revertHistory(history, index);
 
+        jsonString += ",\"history\": " + history;
+        jsonString += "}" + "}";
+        String url = "https://fit3077.com/api/v2/booking";
+
+        return new HttpHelper().patchService(url, jsonString, bookingId);
+    }
+
+    private static void updateHistory(List<String> history, String previousContent){
+        if (history.get(0) == null) {
+            history.set(0, previousContent);
+        } else if ((history.get(0) != null && history.get(1) == null)) {
+            history.set(1, history.get(0));
+            history.set(0, previousContent);
+        } else {
+            history.set(2, history.get(1));
+            history.set(1, history.get(0));
+            history.set(0, previousContent);
+        }
+    }
+
+    private static void revertHistory(List<String> history, int index){
         if (index == 1) {
             history.set(0, history.get(1));
             history.set(1, history.get(2));
@@ -258,21 +265,11 @@ public class BookingCollection {
             history.set(1, null);
             history.set(0, null);
         }
-
-
-        jsonString += ",\"history\": " + history;
-        jsonString += "}" + "}";
-        String url = "https://fit3077.com/api/v2/booking";
-
-        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
-        return response;
     }
 
     public static HttpResponse<String> cancelBooking(String bookingId) throws Exception {
         String url = "https://fit3077.com/api/v2/booking";
-        String jsonString = "{" +
-                "\"status\":\"CANCELLED\" }";
-        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
-        return response;
+        String jsonString = "{ \"status\":\"CANCELLED\" }";
+        return new HttpHelper().patchService(url, jsonString, bookingId);
     }
 }
