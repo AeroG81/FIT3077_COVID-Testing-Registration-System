@@ -38,8 +38,9 @@ public class SystemBookingView extends VerticalLayout {
     private final Tab tabSiteBooking = new Tab("Book for Site Testing");
     private final Tab tabHomeBooking = new Tab("Book for Home Testing");
     private final Tab tabVerifyPin = new Tab("Verify PIN");
+    private final Tab tabVerifyBookingId = new Tab("Verify Booking ID");
     private final Tab tabTestingSites = new Tab("| Testing Sites |");
-    private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin, tabTestingSites);
+    private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin, tabVerifyBookingId, tabTestingSites);
 
     /**
      * Populating page with components based on tab selected
@@ -56,6 +57,9 @@ public class SystemBookingView extends VerticalLayout {
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
+            }
+            else if (event.getSelectedTab().equals(tabVerifyBookingId)) {
+                mainLayout.add(new BookingIdVerifyLayout());
             }
             else if (event.getSelectedTab().equals(tabSiteBooking)) {
                 mainLayout.add(new SiteBookingLayout());

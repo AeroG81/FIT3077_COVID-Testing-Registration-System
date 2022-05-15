@@ -190,11 +190,11 @@ public class OnSiteBookingView extends VerticalLayout {
                 } catch (Exception exception){
                     System.out.println("Error creating: " + exception);
                 }
-                if (response!=null){
+                if (mappedResponse!=null){
                     label.setWidth("500px");
                     label.setEnabled(false);
                     label.clear();
-                    label.setValue("PIN: "+ mappedResponse.get("smsPin").asText());
+                    label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN: "+ mappedResponse.get("smsPin").asText());
                     dialog.open();
                     Notification noti = Notification.show("Application submitted");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);

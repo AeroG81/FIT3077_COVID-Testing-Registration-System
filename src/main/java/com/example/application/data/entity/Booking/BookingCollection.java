@@ -123,6 +123,23 @@ public class BookingCollection {
     }
 
     /**
+     * Verify Booking ID which will return Booking
+     * */
+    public Booking verifyBookingId(String bookingId) {
+        Booking userBooking = null;
+        int i = 0;
+        boolean endLoop = false;
+        while (i<collection.size() && !endLoop){
+            if (collection.get(i).getBookingId().equals(bookingId)) {
+                userBooking = collection.get(i);
+                endLoop = true;
+            }
+            i++;
+        }
+        return userBooking;
+    }
+
+    /**
      * Verify QR code which will return Booking
      * */
     public Booking verifyQr(String qr) {

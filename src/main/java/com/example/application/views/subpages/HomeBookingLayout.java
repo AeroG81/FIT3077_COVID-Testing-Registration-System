@@ -88,20 +88,22 @@ public class HomeBookingLayout extends VerticalLayout {
                         HttpResponse<String> response = new SystemBookingMethod().addBooking(startTime.getValue().toString(),user,notes.getValue());
                         mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
                         TextArea label = new TextArea();
-                        Notification noti = Notification.show("Application submitted");
-                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
                         Dialog responseDialog = new Dialog();
                         label.setWidth("500px");
                         label.clear();
                         // need QR code display to user
                         if (needTestKit.getValue().equals("Yes"))
-                            label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
+                            label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
                             // QR code not needed for user
                         else
-                            label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
+                            label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN code: "+mappedResponse.get("smsPin").asText()+"\nMeeting Url: "+mappedResponse.get("additionalInfo").get("url").asText());
                         Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
                         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                         responseDialog.add(closeButton,label);
+
+                        Notification noti = Notification.show("Application submitted");
+                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         this.clearFields();
                         responseDialog.open();
                     }

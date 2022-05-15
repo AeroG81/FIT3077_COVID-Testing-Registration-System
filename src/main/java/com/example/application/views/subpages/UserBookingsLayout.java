@@ -30,12 +30,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+
 public class UserBookingsLayout extends VerticalLayout {
     Accordion accordion = new Accordion();
 
     public UserBookingsLayout(){
         this.addAccordion();
         add(accordion);
+        getStyle().set("font-family","Roboto Mono");
     }
 
     private void addAccordion() {
@@ -48,9 +50,11 @@ public class UserBookingsLayout extends VerticalLayout {
         });
         for (Booking b : userBookings) {
             if (LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0 && b.getStatus().equals("INITIATED")) {
-                AccordionPanel panel = accordion.add(ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.RFC_1123_DATE_TIME) + " - " + "EXPIRED", this.configureForm(b));
+                AccordionPanel panel = accordion.add(ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("E dd/MM/yyyy - HH:mm z")) + " - " + "EXPIRED", this.configureForm(b));
+                panel.getSummary().getElement().getStyle().set("font-family","Roboto Mono");
             } else {
-                AccordionPanel panel = accordion.add(ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.RFC_1123_DATE_TIME) + " - " + b.getStatus(), this.configureForm(b));
+                AccordionPanel panel = accordion.add(ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("E dd/MM/yyyy - HH:mm z")) + " - " + b.getStatus(), this.configureForm(b));
+                panel.getSummary().getElement().getStyle().set("font-family","Roboto Mono");
             }
         }
     }
