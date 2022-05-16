@@ -115,11 +115,11 @@ public class LoginView extends HorizontalLayout {
                     UI.getCurrent().getSession().setAttribute("userFamilyName",user.getFamilyName());
                     UI.getCurrent().getSession().setAttribute("userName",user.getUserName());
                     UI.getCurrent().getSession().setAttribute("userPhoneNumber",user.getPhoneNumber());
-                    if (user.getClass().equals(Resident.class))
+                    if (user.getClass().equals(Customer.class))
                         UI.getCurrent().getSession().setAttribute("role",Role.RESIDENT);
-                    else if (user.getClass().equals(ExpertStaff.class))
+                    else if (user.getClass().equals(HealthcareWorker.class))
                         UI.getCurrent().getSession().setAttribute("role",Role.EXPERT);
-                    else if (user.getClass().equals(FacilityStaff.class))
+                    else if (user.getClass().equals(Receptionist.class))
                         UI.getCurrent().getSession().setAttribute("role",Role.STAFF);
                     try {
                         if (uc.checkIsCustomer(user.getUserName())){

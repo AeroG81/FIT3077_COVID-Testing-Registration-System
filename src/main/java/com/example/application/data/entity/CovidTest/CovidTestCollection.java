@@ -9,9 +9,9 @@ import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingType.PCR;
 import com.example.application.data.entity.TestingType.RAT;
 import com.example.application.data.entity.TestingType.TestingType;
-import com.example.application.data.entity.User.ExpertStaff;
-import com.example.application.data.entity.User.FacilityStaff;
-import com.example.application.data.entity.User.Resident;
+import com.example.application.data.entity.User.HealthcareWorker;
+import com.example.application.data.entity.User.Receptionist;
+import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -160,11 +160,11 @@ public class CovidTestCollection {
         User user = null;
         if (!node.asText().equals("null"))
             if (node.get("isCustomer").asBoolean())
-                user = new Resident(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
+                user = new Customer(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
             else if (node.get("isReceptionist").asBoolean())
-                user = new FacilityStaff(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
+                user = new Receptionist(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
             else if (node.get("isHealthcareWorker").asBoolean())
-                user = new ExpertStaff(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
+                user = new HealthcareWorker(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
         return user;
-    };
+    }
 }
