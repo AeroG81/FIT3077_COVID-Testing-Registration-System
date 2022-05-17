@@ -16,7 +16,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Login | Vaadin CRM")
+@PageTitle("Login")
 @Route(value = "")
 /**
  * This is the Landing page of user
@@ -33,6 +33,8 @@ public class LoginView extends HorizontalLayout {
     private Button redirectToTestingSite = new Button("Browse Testing Sites");
     private Button redirectToOnsiteInterview = new Button("Test Recommendation");
     private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
+
+    private Button redirectToPhoneCallModification = new Button("Modify a Booking");
 
     private Button redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
 
@@ -84,12 +86,12 @@ public class LoginView extends HorizontalLayout {
 
         redirectToOnsiteInterview = new Button("Test Recommendation");
         redirectToOnsiteInterview.addClickListener(g -> {
-                    redirectToOnsiteInterview.getUI().ifPresent(ui -> ui.navigate("onsiteinterview"));
-                    redirectOptions.close();
+                redirectToOnsiteInterview.getUI().ifPresent(ui -> ui.navigate("onsiteinterview"));
+                redirectOptions.close();
             }
         );
 
-        redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)\"");
+        redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
         redirectToOnsiteBooking.addClickListener(h -> {
                 redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("receptionist"));
                 redirectOptions.close();
@@ -97,10 +99,17 @@ public class LoginView extends HorizontalLayout {
         );
 
         redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
-        redirectToSystemBooking.addClickListener(h -> {
-                    redirectToSystemBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
-                    redirectOptions.close();
-                }
+        redirectToSystemBooking.addClickListener(i -> {
+                redirectToSystemBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
+                redirectOptions.close();
+            }
+        );
+
+        redirectToPhoneCallModification = new Button("Modify a Booking");
+        redirectToPhoneCallModification.addClickListener(k -> {
+                redirectToPhoneCallModification.getUI().ifPresent(ui -> ui.navigate("phonecall"));
+                redirectOptions.close();
+            }
         );
 
         loginButton.addClickListener(e -> {
@@ -130,6 +139,7 @@ public class LoginView extends HorizontalLayout {
                         if (uc.checkIsReceptionist(user.getUserName())){
                             // add onsite booking route
                             dialogLayout.add(redirectToOnsiteBooking);
+                            dialogLayout.add(redirectToPhoneCallModification);
                         }
                         if (uc.checkIsHealthcareWorker(user.getUserName())){
                             // add onsite interview route
