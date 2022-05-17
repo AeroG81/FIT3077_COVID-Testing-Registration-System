@@ -1,6 +1,9 @@
 package com.example.application.views.subpages;
 
 import com.example.application.data.entity.User.Role;
+import com.example.application.views.subpages.layout.ProfileAvatarLayout;
+import com.example.application.views.subpages.layout.UserBookingsLayout;
+import com.example.application.views.subpages.layout.UserProfileLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -45,6 +48,6 @@ public class UserProfileView extends VerticalLayout {
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(new ProfileLayout(),mainTabs,mainLayout);
+        add(new ProfileAvatarLayout(),mainTabs,mainLayout);
     }
 }

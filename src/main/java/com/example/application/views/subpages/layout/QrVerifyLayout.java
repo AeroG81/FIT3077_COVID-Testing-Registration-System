@@ -1,8 +1,8 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.OnlineTesting;
+import com.example.application.data.entity.Booking.HomeTestingBooking;
 import com.example.application.data.entity.CovidTest.CovidTest;
 import com.example.application.data.entity.CovidTest.CovidTestCollection;
 import com.example.application.data.entity.TestingType.RAT;
@@ -78,7 +78,7 @@ public class QrVerifyLayout extends VerticalLayout {
                             label.setWidth("500px");
                             label.setValue(mappedResponse.toPrettyString());
                             dialog.open();
-                            Notification.show("Acknowledged user RAT kit was collected along with meeting url "+ ((OnlineTesting) covidTest.getBooking()).getUrl());
+                            Notification.show("Acknowledged user RAT kit was collected along with meeting url "+ ((HomeTestingBooking) covidTest.getBooking()).getUrl());
                         }
                         catch (Exception exception){
                             System.out.println(exception);

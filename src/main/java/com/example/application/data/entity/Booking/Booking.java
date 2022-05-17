@@ -17,6 +17,7 @@ public abstract class Booking {
     private String smsPin;
     private String qrcode;
     private List<String> history;
+    private String lastUpdateTime;
 
     /**
      * Constructor of Booking
@@ -33,6 +34,7 @@ public abstract class Booking {
         this.smsPin = null;
         qrcode = UUID.randomUUID().toString();
         this.history = Arrays.asList(new String[3]);
+        this.lastUpdateTime = null;
     }
 
     /**
@@ -54,6 +56,29 @@ public abstract class Booking {
         this.smsPin = smsPin;
         this.qrcode = qrcode;
         this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new String[3]));
+        this.lastUpdateTime = null;
+    }
+
+    /**
+     * Constructor of Booking
+     * @param bookingId booking ID
+     * @param startTime booking appointment time
+     * @param customer customer for the booking
+     * @param notes  notes provided for the booking
+     * @param status status of the booking
+     * @param smsPin PIN code to verify the booking
+     * @param qrcode QR code to verify the booking
+     */
+    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<String> history, String lastUpdateTime) {
+        this.bookingId = bookingId;
+        this.startTime = startTime;
+        this.customer = customer;
+        this.notes = notes;
+        this.status = status;
+        this.smsPin = smsPin;
+        this.qrcode = qrcode;
+        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new String[3]));
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     /**
@@ -124,36 +149,8 @@ public abstract class Booking {
         return history;
     }
 
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public void setCustomer(User customer) {
-        this.customer = customer;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSmsPin(String smsPin) {
-        this.smsPin = smsPin;
-    }
-
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
-    }
-
-    public void setHistory(List<String> history) {
-        this.history = history;
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
     /**

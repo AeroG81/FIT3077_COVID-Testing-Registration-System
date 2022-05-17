@@ -1,5 +1,6 @@
 package com.example.application.views.subpages;
 
+import com.example.application.views.subpages.layout.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -41,7 +42,7 @@ public class SystemBookingView extends VerticalLayout {
                 mainLayout.add(new BookingIdVerifyLayout());
             }
             else if (event.getSelectedTab().equals(tabSiteBooking)) {
-                mainLayout.add(new SiteBookingLayout());
+                mainLayout.add(new OnSiteBookingLayout());
             }
             else if (event.getSelectedTab().equals(tabTestingSites)) {
                 UI.getCurrent().navigate("testingsite");
@@ -50,6 +51,6 @@ public class SystemBookingView extends VerticalLayout {
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(new ProfileLayout(),mainTabs,mainLayout);
+        add(new ProfileAvatarLayout(),mainTabs,mainLayout);
     }
 }

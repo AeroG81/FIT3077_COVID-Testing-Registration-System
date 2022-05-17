@@ -1,9 +1,9 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.OnSiteTesting;
-import com.example.application.data.entity.Booking.OnlineTesting;
+import com.example.application.data.entity.Booking.HomeTestingBooking;
+import com.example.application.data.entity.Booking.OnSiteTestingBooking;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.vaadin.flow.component.button.Button;
@@ -28,7 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class ReceptionistBookingLayout extends VerticalLayout {
+public class BookingManagementLayout extends VerticalLayout {
 
     private TestingSiteCollection collection = new TestingSiteCollection();
     private ComboBox<TestingSite> testingSite = new ComboBox<>("TestingSite");
@@ -42,10 +42,12 @@ public class ReceptionistBookingLayout extends VerticalLayout {
     private BookingCollection bookingCollection = new BookingCollection();
     private Grid<Booking> grid = null;
 
-    public ReceptionistBookingLayout() {
+    public BookingManagementLayout() {
         this.reloadForm();
         this.populateTestingSiteComboBox();
         this.configureEditorForm();
+        startTime.setMin(LocalDateTime.now());
+        startTime.setMax(LocalDateTime.now().plusDays(90));
         this.configureEditorDialog();
     }
 
@@ -62,37 +64,37 @@ public class ReceptionistBookingLayout extends VerticalLayout {
 
         Button saveButton = new Button("Save", e -> {
             if (isInvalidStatus(selectedBooking)) {
-                Notification noti = Notification.show("Booking are CANCELLED,COMPLETED or EXPIRED, unable to update");
+                Notification noti = Notification.show("Booking are CANCELLED, COMPLETED or EXPIRED, unable to update");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } else {
 
-                if (selectedBooking.getClass().equals(OnlineTesting.class) && (startTime.getValue().toLocalTime().getHour() < 8 || startTime.getValue().toLocalTime().getHour() >= 21)) {
+                if (selectedBooking.getClass().equals(HomeTestingBooking.class) && (startTime.getValue().toLocalTime().getHour() < 8 || startTime.getValue().toLocalTime().getHour() >= 21)) {
                     Notification noti = Notification.show("Online testing only available during 0800 - 2100");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (selectedBooking.getClass().equals(OnSiteTesting.class) && (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0, 2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7, 9)))) {
+                } else if (selectedBooking.getClass().equals(OnSiteTestingBooking.class) && (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0, 2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7, 9)))) {
                     Notification noti = Notification.show("Booking time is not within operation hour");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (selectedBooking.getClass().equals(OnlineTesting.class) && (testingSite.getValue()!=null)){
+                } else if (selectedBooking.getClass().equals(HomeTestingBooking.class) && (testingSite.getValue()!=null)){
                     Notification noti = Notification.show("This is an online testing, testing site should be empty");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (selectedBooking.getClass().equals(OnSiteTesting.class) && (testingSite.getValue()==null)){
+                } else if (selectedBooking.getClass().equals(OnSiteTestingBooking.class) && (testingSite.getValue()==null)){
                     Notification noti = Notification.show("This is an onsite testing, testing site should not be empty");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (selectedBooking.getClass().equals(OnlineTesting.class) && (startTime.getValue().equals(ZonedDateTime.parse(selectedBooking.getStartTime()).toLocalDateTime()))) {
+                } else if (selectedBooking.getClass().equals(HomeTestingBooking.class) && (startTime.getValue().equals(ZonedDateTime.parse(selectedBooking.getStartTime()).toLocalDateTime()))) {
                     Notification noti = Notification.show("No changes in value, Unable to update");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (selectedBooking.getClass().equals(OnSiteTesting.class) && (startTime.getValue().equals(ZonedDateTime.parse(selectedBooking.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTesting) selectedBooking).getTestingSite().getId()))) {
+                } else if (selectedBooking.getClass().equals(OnSiteTestingBooking.class) && (startTime.getValue().equals(ZonedDateTime.parse(selectedBooking.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId()))) {
                     Notification noti = Notification.show("No changes in value, Unable to update");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 } else {
                     List<String> additionalInfo = new ArrayList<>();
                     additionalInfo.add(0, selectedBooking.getQrcode());
-                    if (selectedBooking.getClass().equals(OnlineTesting.class))
-                        additionalInfo.add(1, ((OnlineTesting) selectedBooking).getUrl());
+                    if (selectedBooking.getClass().equals(HomeTestingBooking.class))
+                        additionalInfo.add(1, ((HomeTestingBooking) selectedBooking).getUrl());
                     String content;
                     String newSiteId;
-                    if (this.selectedBooking.getClass().equals(OnSiteTesting.class)){
-                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTesting) selectedBooking).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTesting) selectedBooking).getTestingSite().getId() + "\", \"starttime\": \"" + selectedBooking.getStartTime() + "\" } ";
+                    if (this.selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
+                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getId() + "\", \"starttime\": \"" + selectedBooking.getStartTime() + "\" } ";
                         newSiteId = testingSite.getValue().getId();
                     } else {
                         content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + selectedBooking.getStartTime() + "\" } ";
@@ -164,22 +166,32 @@ public class ReceptionistBookingLayout extends VerticalLayout {
         grid.addColumn(b -> b.getCustomer().getGivenName()).setHeader("Given name").setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> b.getCustomer().getFamilyName()).setHeader("Family name").setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> b.getCustomer().getUserName()).setHeader("Username").setTextAlign(ColumnTextAlign.START);
-        grid.addColumn(b -> ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("E dd/MM/yyyy - HH:mm z"))).setHeader("Booking DateTime").setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
-        grid.addColumn(b -> {
-            if (b.getClass().equals(OnSiteTesting.class)) {
-                return ((OnSiteTesting) b).getTestingSite().getName();
-            } else {
-                return "-";
+        grid.addColumn(b -> ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm"))).setHeader("Booking DateTime").setAutoWidth(true).setTextAlign(ColumnTextAlign.END).setSortable(true).setComparator(new Comparator<Booking>() {
+            @Override
+            public int compare(Booking o1, Booking o2) {
+                return ZonedDateTime.parse(o2.getStartTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getStartTime()).toLocalDateTime());
             }
-        }).setHeader("Testing site").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
+        });
+        grid.addColumn(b -> { if (b.getClass().equals(OnSiteTestingBooking.class)) { return ((OnSiteTestingBooking) b).getTestingSite().getName(); } else { return "-"; }}).setHeader("Testing site").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> b.getSmsPin()).setHeader("PIN");
         grid.addColumn(b -> b.getQrcode()).setHeader("QR").setAutoWidth(true);
-        grid.addColumn(Booking::getStatus).setHeader("Status").setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
+        grid.addColumn(b -> {
+            if (LocalDateTime.now().compareTo(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) > 0 && b.getStatus().equals("INITIATED"))
+                return "EXPIRED";
+            else
+                return b.getStatus();
+        }).setHeader("Status").setAutoWidth(true).setTextAlign(ColumnTextAlign.END).setSortable(true);
+        grid.addColumn(b -> ZonedDateTime.parse(b.getLastUpdateTime()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm"))).setHeader("Last Modified").setAutoWidth(true).setTextAlign(ColumnTextAlign.START).setSortable(true).setComparator(new Comparator<Booking>() {
+            @Override
+            public int compare(Booking o1, Booking o2) {
+                return ZonedDateTime.parse(o2.getLastUpdateTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getLastUpdateTime()).toLocalDateTime());
+            }
+        });
         List<Booking> bookings = bookingCollection.getCollection();
         bookings.sort(new Comparator<Booking>() {
             @Override
             public int compare(Booking o1, Booking o2) {
-                return ZonedDateTime.parse(o2.getStartTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getStartTime()).toLocalDateTime());
+                return ZonedDateTime.parse(o2.getLastUpdateTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getLastUpdateTime()).toLocalDateTime());
             }
         });
         grid.setItems(bookings);
@@ -189,12 +201,14 @@ public class ReceptionistBookingLayout extends VerticalLayout {
                 pin.setText("PIN CODE: " + booking.getSmsPin());
                 qr.setText("QR CODE: " + booking.getQrcode());
                 startTime.setValue(ZonedDateTime.parse(booking.getStartTime()).toLocalDateTime());
-                if (booking.getClass().equals(OnSiteTesting.class)) {
-                    testingSite.setValue(((OnSiteTesting) booking).getTestingSite());
+                if (booking.getClass().equals(OnSiteTestingBooking.class)) {
+                    testingSite.setValue(((OnSiteTestingBooking) booking).getTestingSite());
                     url.setText("URL: " + null);
+                    testingSite.setEnabled(true);
                 } else {
-                    url.setText("URL: " + ((OnlineTesting) booking).getUrl());
+                    url.setText("URL: " + ((HomeTestingBooking) booking).getUrl());
                     testingSite.setValue(null);
+                    testingSite.setEnabled(false);
                 }
                 selectedBooking = booking;
                 editorDialog.open();

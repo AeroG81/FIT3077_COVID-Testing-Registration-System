@@ -2,6 +2,7 @@ package com.example.application.views.subpages;
 
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
+import com.example.application.views.subpages.layout.ProfileAvatarLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -29,7 +30,7 @@ public class TestingSitesView extends VerticalLayout {
     public TestingSitesView(){
         configureGrid();
         populateList();
-        add(new ProfileLayout(), getToolbar(), grid);
+        add(new ProfileAvatarLayout(), getToolbar(), grid);
         setSizeFull();
     }
 

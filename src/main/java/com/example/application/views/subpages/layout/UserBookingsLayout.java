@@ -1,9 +1,9 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.OnSiteTesting;
-import com.example.application.data.entity.Booking.OnlineTesting;
+import com.example.application.data.entity.Booking.OnSiteTestingBooking;
+import com.example.application.data.entity.Booking.HomeTestingBooking;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,10 +77,10 @@ public class UserBookingsLayout extends VerticalLayout {
         form.setColspan(pin, 2);
         form.setColspan(qr, 2);
 
-        if (b.getClass().equals(OnlineTesting.class)) {
+        if (b.getClass().equals(HomeTestingBooking.class)) {
             this.configureFormForOnlineTesting(b, startTime, submitUpdate);
             form.setColspan(startTime, 2);
-            Label link = new Label("MEETING LINK: " + ((OnlineTesting) b).getUrl());
+            Label link = new Label("MEETING LINK: " + ((HomeTestingBooking) b).getUrl());
             form.setColspan(link, 2);
             if (isInvalidStatus(b)){
                 form.add(
@@ -104,7 +104,7 @@ public class UserBookingsLayout extends VerticalLayout {
                 );
             }
 
-        } else if (b.getClass().equals(OnSiteTesting.class)) {
+        } else if (b.getClass().equals(OnSiteTestingBooking.class)) {
             ComboBox<TestingSite> testingSite = new ComboBox<>("TestingSite");
             this.configureFormForOnSiteTesting(b, startTime, submitUpdate, testingSite);
             form.setColspan(startTime, 1);
@@ -158,8 +158,8 @@ public class UserBookingsLayout extends VerticalLayout {
             if (!select.getValue().equals("current")) {
                 List<String> additionalInfo = new ArrayList<>();
                 additionalInfo.add(0, b.getQrcode());
-                if (b.getClass().equals(OnlineTesting.class))
-                    additionalInfo.add(1, ((OnlineTesting) b).getUrl());
+                if (b.getClass().equals(HomeTestingBooking.class))
+                    additionalInfo.add(1, ((HomeTestingBooking) b).getUrl());
                 int index = history.indexOf(select.getValue());
                 ObjectNode jsonNode = null;
                 try {
@@ -216,7 +216,7 @@ public class UserBookingsLayout extends VerticalLayout {
                     String content = "";
                     String newSiteId = null;
 
-                    additionalInfo.add(1, ((OnlineTesting) b).getUrl());
+                    additionalInfo.add(1, ((HomeTestingBooking) b).getUrl());
                     content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + b.getStartTime() + "\" } ";
                     List<String> history = b.getHistory();
                     try {
@@ -242,7 +242,7 @@ public class UserBookingsLayout extends VerticalLayout {
         if (isInvalidStatus(b)) {
             startTime.setEnabled(false);
             testingSite.setEnabled(false);
-            testingSite.setItems(((OnSiteTesting) b).getTestingSite());
+            testingSite.setItems(((OnSiteTestingBooking) b).getTestingSite());
         } else {
             testingSite.setRequired(true);
             TestingSiteCollection collection = new TestingSiteCollection();
@@ -253,7 +253,7 @@ public class UserBookingsLayout extends VerticalLayout {
                         Notification noti = Notification.show("Booking time is not within operation hour");
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
-                    else if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTesting) b).getTestingSite().getId())){
+                    else if (startTime.getValue().equals(ZonedDateTime.parse(b.getStartTime()).toLocalDateTime()) && testingSite.getValue().getId().equals(((OnSiteTestingBooking) b).getTestingSite().getId())){
                         Notification noti = Notification.show("No changes in value, Unable to update");
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     }
@@ -262,7 +262,7 @@ public class UserBookingsLayout extends VerticalLayout {
                         additionalInfo.add(0, b.getQrcode());
                         String content = "";
                         String newSiteId = "";
-                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTesting) b).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTesting) b).getTestingSite().getId() + "\", \"starttime\": \"" + b.getStartTime() + "\" } ";
+                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTestingBooking) b).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTestingBooking) b).getTestingSite().getId() + "\", \"starttime\": \"" + b.getStartTime() + "\" } ";
                         newSiteId = testingSite.getValue().getId();
                         List<String> history = b.getHistory();
 
@@ -284,7 +284,7 @@ public class UserBookingsLayout extends VerticalLayout {
             });
         }
         testingSite.setItemLabelGenerator(TestingSite::getName);
-        testingSite.setValue(((OnSiteTesting) b).getTestingSite());
+        testingSite.setValue(((OnSiteTestingBooking) b).getTestingSite());
     }
 
     private void reloadForm() {

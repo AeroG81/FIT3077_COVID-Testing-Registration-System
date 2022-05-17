@@ -1,4 +1,4 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

@@ -1,4 +1,4 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.TestingSite.TestingSite;
@@ -27,11 +27,8 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class SiteBookingLayout extends VerticalLayout {
-    private Button submitVerification;
-    private final IntegerField verifyPin = new IntegerField("PIN");
+public class OnSiteBookingLayout extends VerticalLayout {
     private final ConfirmDialog dialog = new ConfirmDialog();
-    private final TextArea label = new TextArea();
     private final FormLayout siteTestingForm = new FormLayout();
     private final TextArea notes = new TextArea("Notes");
     private final TestingSiteCollection collection = new TestingSiteCollection();
@@ -42,7 +39,7 @@ public class SiteBookingLayout extends VerticalLayout {
     /**
      * populate the layout with components
      */
-    public SiteBookingLayout() {
+    public OnSiteBookingLayout() {
         this.configureDateTimePicker();
         this.configureComboBox();
         this.populateComboBox();
@@ -51,8 +48,6 @@ public class SiteBookingLayout extends VerticalLayout {
 
         add(siteTestingForm);
     }
-
-
 
     /**
      * Configuring Registration Form
@@ -141,23 +136,27 @@ public class SiteBookingLayout extends VerticalLayout {
                     try {
                         response = new SystemBookingMethod().addBooking(testingSite.getValue(), startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
                         mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
-                        TextArea label = new TextArea();
-                        Notification noti = Notification.show("Application submitted");
-                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                        Dialog responseDialog = new Dialog();
-                        label.setWidth("500px");
-                        label.clear();
-                        label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText());
-                        testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0, testingSite.getValue().getWaitingTime().length() - 3)) + 10) + "min");
-                        Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
-                        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                        responseDialog.add(closeButton,label);
-                        responseDialog.open();
+                        if (response.statusCode()==201){
+                            Notification noti = Notification.show("Application submitted");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        }
+                        else
+                            throw new Exception("Appointment Adding Failed");
                     } catch (Exception exception){
                         Notification noti = Notification.show("Appointment failed");
                         noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                         System.out.println(exception);
                     }
+                    TextArea label = new TextArea();
+                    Dialog responseDialog = new Dialog();
+                    label.setWidth("500px");
+                    label.clear();
+                    label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText());
+                    testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0, testingSite.getValue().getWaitingTime().length() - 3)) + 10) + "min");
+                    Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
+                    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                    responseDialog.add(closeButton,label);
+                    responseDialog.open();
                 });
                 dialog.open();
             }
