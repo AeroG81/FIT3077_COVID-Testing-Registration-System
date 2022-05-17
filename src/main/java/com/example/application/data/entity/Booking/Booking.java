@@ -124,6 +124,38 @@ public abstract class Booking {
         return history;
     }
 
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setSmsPin(String smsPin) {
+        this.smsPin = smsPin;
+    }
+
+    public void setQrcode(String qrcode) {
+        this.qrcode = qrcode;
+    }
+
+    public void setHistory(List<String> history) {
+        this.history = history;
+    }
+
     /**
      * toString method
      * @return String form of the class

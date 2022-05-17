@@ -176,7 +176,7 @@ public class UserBookingsLayout extends VerticalLayout {
                     }
                     else {
                         try {
-                            HttpResponse<String> response = new BookingCollection().revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
+                            HttpResponse<String> response = BookingCollection.revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
                             if (response.statusCode()==200){
                                 Notification noti = Notification.show("Revert Success");
                                 noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);

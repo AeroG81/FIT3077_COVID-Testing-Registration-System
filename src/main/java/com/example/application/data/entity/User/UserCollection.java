@@ -64,21 +64,21 @@ public class UserCollection {
         // Creates Users of specific roles based on attributes of the User
         for (ObjectNode node: jsonNodes) {
             User user = null;
-            // Create Resident object if User is a Customer
+            // Create Customer object if User is a Customer
             if(node.get("isCustomer").asBoolean())
-                user = new Resident(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+                user = new Customer(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             // Create FacilityStaff object if User is a Receptionist
             else if (node.get("isReceptionist").asBoolean())
-                user = new FacilityStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
-            // Create ExpertStaff object if User is a HealthcareWorker
+                user = new Receptionist(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            // Create HealthcareWorker object if User is a HealthcareWorker
             else if (node.get("isHealthcareWorker").asBoolean())
-                user = new ExpertStaff(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+                user = new HealthcareWorker(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             if(user!=null)
                 collection.add(user);
         }
     }
 
-    // Checks if User is a Customer/Resident using User's username
+    // Checks if User is a Customer/Customer using User's username
     public boolean checkIsCustomer(String username) throws Exception {
         String userUrl = "https://fit3077.com/api/v2/user";
 
@@ -122,7 +122,7 @@ public class UserCollection {
         return false;
     }
 
-    // Checks if User is a HealthcareWorker/ExpertStaff using User's username
+    // Checks if User is a HealthcareWorker/HealthcareWorker using User's username
     public boolean checkIsHealthcareWorker(String username) throws Exception {
         String userUrl = "https://fit3077.com/api/v2/user";
 
@@ -211,11 +211,11 @@ public class UserCollection {
     private User createUser(ObjectNode mappedResponse){
         User user = null;
         if(mappedResponse.get("isCustomer").asBoolean())
-            user = new Resident(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+            user = new Customer(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
         else if (mappedResponse.get("isReceptionist").asBoolean())
-            user = new FacilityStaff(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+            user = new Receptionist(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
         else if (mappedResponse.get("isHealthcareWorker").asBoolean())
-            user = new ExpertStaff(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+            user = new HealthcareWorker(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
         return user;
     }
 }

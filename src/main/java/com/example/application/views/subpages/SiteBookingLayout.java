@@ -3,7 +3,7 @@ package com.example.application.views.subpages;
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
-import com.example.application.data.entity.User.Resident;
+import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -135,7 +135,7 @@ public class SiteBookingLayout extends VerticalLayout {
                 dialog.setConfirmText("Save");
                 dialog.addConfirmListener(event -> {
                     VaadinSession ui = UI.getCurrent().getSession();
-                    User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
+                    User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
                     HttpResponse<String> response = null;
                     ObjectNode mappedResponse = null;
                     try {

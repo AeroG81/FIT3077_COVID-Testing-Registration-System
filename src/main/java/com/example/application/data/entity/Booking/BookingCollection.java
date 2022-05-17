@@ -2,15 +2,14 @@ package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
-import com.example.application.data.entity.User.ExpertStaff;
-import com.example.application.data.entity.User.FacilityStaff;
-import com.example.application.data.entity.User.Resident;
+import com.example.application.data.entity.User.Customer;
+import com.example.application.data.entity.User.Receptionist;
+import com.example.application.data.entity.User.HealthcareWorker;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.lang.reflect.Array;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +19,7 @@ import java.util.List;
  * This is the booking collection storing a list of Booking
  */
 public class BookingCollection {
-    private List<Booking> collection = new ArrayList<>();
+    private final List<Booking> collection = new ArrayList<>();
 
     /**
      * Constructor of BookingCollection
@@ -30,9 +29,8 @@ public class BookingCollection {
             // Populate list
             getBookingsService();
         }
-        catch (Exception e){
-            System.out.println("BC error");
-            System.out.println(e);
+        catch (Exception exception){
+            System.out.println("Booking Collection Populate error " + exception);
         }
     }
 
@@ -74,6 +72,17 @@ public class BookingCollection {
         }
     }
 
+    private User createUser(JsonNode userNode){
+        User user = null;
+        if (userNode.get("isCustomer").asBoolean())
+            user = new Customer(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        else if (userNode.get("isReceptionist").asBoolean())
+            user = new Receptionist(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        else if (userNode.get("isHealthcareWorker").asBoolean())
+            user = new HealthcareWorker(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        return user;
+    }
+
     private List<String> createHistory(JsonNode historyNode){
         List<String> history = Arrays.asList(new String[3]);
         if (historyNode==null)
@@ -84,17 +93,6 @@ public class BookingCollection {
             history.set(2,historyNode.get(2).toPrettyString());
         }
         return history;
-    }
-
-    private User createUser(JsonNode userNode){
-        User user = null;
-        if (userNode.get("isCustomer").asBoolean())
-            user = new Resident(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-        else if (userNode.get("isReceptionist").asBoolean())
-            user = new FacilityStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-        else if (userNode.get("isHealthcareWorker").asBoolean())
-            user = new ExpertStaff(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-        return user;
     }
 
     /**
@@ -165,12 +163,12 @@ public class BookingCollection {
     /**
      * Verify Booking with Booking ID and PIN which will return User who placed the booking.
      * */
-    public Booking verifyBookingIDandPin(String bookingID, String smsPin){
+    public Booking verifyBookingIdAndPin(String bookingId, String smsPin){
         Booking booking = null;
         int i = 0;
         boolean endLoop = false;
         while (i < collection.size() && !endLoop) {
-            if (collection.get(i).getBookingId().equals(bookingID) && collection.get(i).getSmsPin().equals(smsPin)) {
+            if (collection.get(i).getBookingId().equals(bookingId) && collection.get(i).getSmsPin().equals(smsPin)) {
                 booking = collection.get(i);
                 endLoop = true;
             }
@@ -184,6 +182,8 @@ public class BookingCollection {
          * additionalInfo[0] = qrcode
          * additionalInfo[1] = url (if exist)
          * */
+        updateHistory(history, previousContent);
+
         String jsonString = "{" +
                 "\"startTime\":\"" + newTime + "\"";
         if (newSiteId == null)
@@ -196,41 +196,9 @@ public class BookingCollection {
         if (additionalInfo.size() > 1)
             jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
 
-        updateHistory(history, previousContent);
-
         jsonString += ",\"history\": " + history;
         jsonString += "}" + "}";
 
-        String url = "https://fit3077.com/api/v2/booking";
-
-        HttpResponse<String> response = new HttpHelper().patchService(url, jsonString, bookingId);
-        return response;
-    }
-
-    public static HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
-        /*
-         * additionalInfo[0] = qrcode
-         * additionalInfo[1] = url (if exist)
-         * */
-        ObjectNode jsonNodes = new ObjectMapper().readValue(previousContent, ObjectNode.class);
-
-        String jsonString = "{" +
-                "\"startTime\":" + jsonNodes.get("starttime");
-
-        if (jsonNodes.get("testingsiteid") != null && !jsonNodes.get("testingsiteid").asText().equals("null"))
-            jsonString += ",\"testingSiteId\":\"" + jsonNodes.get("testingsiteid").asText() + "\"";
-        else
-            jsonString += ",\"testingSiteId\":" + null;
-
-        jsonString += ",\"additionalInfo\": {" +
-                "\"qrcode\": \"" + additionalInfo.get(0) + "\"";
-        if (additionalInfo.size() > 1)
-            jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
-
-        revertHistory(history, index);
-
-        jsonString += ",\"history\": " + history;
-        jsonString += "}" + "}";
         String url = "https://fit3077.com/api/v2/booking";
 
         return new HttpHelper().patchService(url, jsonString, bookingId);
@@ -247,6 +215,34 @@ public class BookingCollection {
             history.set(1, history.get(0));
             history.set(0, previousContent);
         }
+    }
+
+    public static HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
+        /*
+         * additionalInfo[0] = qrcode
+         * additionalInfo[1] = url (if exist)
+         * */
+        revertHistory(history, index);
+        ObjectNode jsonNodes = new ObjectMapper().readValue(previousContent, ObjectNode.class);
+
+        String jsonString = "{" +
+                "\"startTime\":" + jsonNodes.get("starttime");
+
+        if (jsonNodes.get("testingsiteid") != null && !jsonNodes.get("testingsiteid").asText().equals("null"))
+            jsonString += ",\"testingSiteId\":\"" + jsonNodes.get("testingsiteid").asText() + "\"";
+        else
+            jsonString += ",\"testingSiteId\":" + null;
+
+        jsonString += ",\"additionalInfo\": {" +
+                "\"qrcode\": \"" + additionalInfo.get(0) + "\"";
+        if (additionalInfo.size() > 1)
+            jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
+
+        jsonString += ",\"history\": " + history;
+        jsonString += "}" + "}";
+        String url = "https://fit3077.com/api/v2/booking";
+
+        return new HttpHelper().patchService(url, jsonString, bookingId);
     }
 
     private static void revertHistory(List<String> history, int index){

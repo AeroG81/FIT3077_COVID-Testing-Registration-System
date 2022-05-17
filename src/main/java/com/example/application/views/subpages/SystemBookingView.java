@@ -1,32 +1,11 @@
 package com.example.application.views.subpages;
 
-import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
-import com.example.application.data.entity.User.Resident;
-import com.example.application.data.entity.User.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
-
-import java.awt.*;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Route(value = "/systembooking")
 @PageTitle("System")

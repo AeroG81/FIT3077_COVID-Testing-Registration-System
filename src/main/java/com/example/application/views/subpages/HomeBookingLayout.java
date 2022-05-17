@@ -1,7 +1,7 @@
 package com.example.application.views.subpages;
 
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
-import com.example.application.data.entity.User.Resident;
+import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -82,7 +82,7 @@ public class HomeBookingLayout extends VerticalLayout {
                 dialog.addConfirmListener(event -> {
                     // send POST to make booking
                     VaadinSession ui = UI.getCurrent().getSession();
-                    User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
+                    User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
                     ObjectNode mappedResponse = null;
                     try {
                         HttpResponse<String> response = new SystemBookingMethod().addBooking(startTime.getValue().toString(),user,notes.getValue());

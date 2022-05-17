@@ -4,7 +4,6 @@ import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
-import com.example.application.data.entity.User.User;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -91,7 +90,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         changeBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         // Verify resident's identity
-        residentUserIdTextField.setLabel("Enter Resident's ID");
+        residentUserIdTextField.setLabel("Enter Customer's ID");
         residentUserIdTextField.setRequired(true);
         residentUserIdTextField.setClearButtonVisible(true);
 
@@ -118,7 +117,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
     public void checkBookingIDandPIN(){
         verifyBookingIDandPINButton.addClickListener(e -> {
-            bookingToModify = bc.verifyBookingIDandPin(bookingIDTextField.getValue(), smsPinTextField.getValue());
+            bookingToModify = bc.verifyBookingIdAndPin(bookingIDTextField.getValue(), smsPinTextField.getValue());
             if (bookingToModify == null){
                 Notification.show("Invalid Booking ID and/or PIN");
             }
@@ -153,10 +152,10 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
     public void verifyUser(){
         verifyUserButton.addClickListener(e->{
             if (Objects.equals(bookingToModify.getCustomer().getId(), residentUserIdTextField.getValue())){
-                Notification.show("Valid Resident");
+                Notification.show("Valid Customer");
             }
             else {
-                Notification.show("Invalid Resident");
+                Notification.show("Invalid Customer");
                 Notification.show(bookingToModify.getCustomer().getId());
                 Notification.show(residentUserIdTextField.getValue());
             }

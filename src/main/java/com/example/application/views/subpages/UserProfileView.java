@@ -32,15 +32,15 @@ public class UserProfileView extends VerticalLayout {
                 mainLayout.add(new UserBookingsLayout());
             }
             else if (event.getSelectedTab().equals(tabHomeBooking)) {
-                if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RESIDENT))
+                if (UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))
                     UI.getCurrent().navigate("systembooking");
-                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.STAFF))
+                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
                     UI.getCurrent().navigate("onsitebooking");
-                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.STAFF))
+                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
                     UI.getCurrent().navigate("onsiteinterview");
             }
         });
-        if (!UI.getCurrent().getSession().getAttribute("role").equals(Role.RESIDENT))
+        if (!UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))
             tabActiveBookings.setEnabled(false);
         setMargin(false);
         setPadding(true);

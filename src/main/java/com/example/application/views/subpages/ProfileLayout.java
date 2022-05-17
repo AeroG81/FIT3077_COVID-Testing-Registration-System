@@ -1,6 +1,6 @@
 package com.example.application.views.subpages;
 
-import com.example.application.data.entity.User.Resident;
+import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -15,7 +15,7 @@ public class ProfileLayout extends HorizontalLayout {
 
     public ProfileLayout() {
         VaadinSession ui = UI.getCurrent().getSession();
-        User user = new Resident(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
+        User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
 
         String name = user.getFamilyName() + " " + user.getGivenName();
         Avatar avatar = new Avatar(name);

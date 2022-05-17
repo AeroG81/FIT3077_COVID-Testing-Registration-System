@@ -29,12 +29,12 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Route(value = "/onsitebooking")
+@Route(value = "/receptionist")
 @PageTitle("OnSite")
 /**
  * This is the page for Receptionist to book user at site
  */
-public class OnSiteBookingView extends VerticalLayout {
+public class ReceptionistView extends VerticalLayout {
     private final TestingSiteCollection collection = new TestingSiteCollection();
     private ComboBox<TestingSite> testingSite;
     private DateTimePicker startTime;
@@ -55,13 +55,14 @@ public class OnSiteBookingView extends VerticalLayout {
     private final Tab tabRegistration = new Tab("Registration");
     private final Tab tabVerifyPin = new Tab("Verify PIN") ;
     private final Tab tabScanQr = new Tab("RAT-kit verify QR");
-    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr);
+    private final Tab tabBookings = new Tab("Booking Management");
+    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr,tabBookings);
     private final VerticalLayout mainLayout = new VerticalLayout();
 
     /**
      * Populating page with components based on tab selected
      */
-    public OnSiteBookingView(){
+    public ReceptionistView(){
         this.configureRegistrationNotification();
         this.configureRegistrationTabs();
         this.configureDateTimePicker();
@@ -82,6 +83,9 @@ public class OnSiteBookingView extends VerticalLayout {
             }
             else if (event.getSelectedTab().equals(tabScanQr)) {
                 mainLayout.add(new QrVerifyLayout());
+            }
+            else if (event.getSelectedTab().equals(tabBookings)) {
+                mainLayout.add(new ReceptionistBookingLayout());
             }
         });
 

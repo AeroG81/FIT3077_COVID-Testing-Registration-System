@@ -91,7 +91,7 @@ public class LoginView extends HorizontalLayout {
 
         redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)\"");
         redirectToOnsiteBooking.addClickListener(h -> {
-                redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("onsitebooking"));
+                redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("receptionist"));
                 redirectOptions.close();
             }
         );
@@ -116,11 +116,11 @@ public class LoginView extends HorizontalLayout {
                     UI.getCurrent().getSession().setAttribute("userName",user.getUserName());
                     UI.getCurrent().getSession().setAttribute("userPhoneNumber",user.getPhoneNumber());
                     if (user.getClass().equals(Customer.class))
-                        UI.getCurrent().getSession().setAttribute("role",Role.RESIDENT);
+                        UI.getCurrent().getSession().setAttribute("role",Role.CUSTOMER);
                     else if (user.getClass().equals(HealthcareWorker.class))
-                        UI.getCurrent().getSession().setAttribute("role",Role.EXPERT);
+                        UI.getCurrent().getSession().setAttribute("role",Role.HEALTHCAREWORKER);
                     else if (user.getClass().equals(Receptionist.class))
-                        UI.getCurrent().getSession().setAttribute("role",Role.STAFF);
+                        UI.getCurrent().getSession().setAttribute("role",Role.RECEPTIONIST);
                     try {
                         if (uc.checkIsCustomer(user.getUserName())){
                             // add testing site and system booking route
