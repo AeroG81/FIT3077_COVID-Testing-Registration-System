@@ -34,6 +34,7 @@ public class UserCollection {
     public User verifyUserId(String username, String password){
         User user = null;
         if (verifyUserService(username,password)) {
+            System.out.println("Hi");
             int i = 0;
             boolean endLoop = false;
             while (i<collection.size() && !endLoop){
@@ -145,7 +146,7 @@ public class UserCollection {
     }
 
     // Verifies is User exists in collection of Users using username and password
-    private boolean verifyUserService(String username, String password){
+    public boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+
                 "\"userName\":\"" + username + "\"," +

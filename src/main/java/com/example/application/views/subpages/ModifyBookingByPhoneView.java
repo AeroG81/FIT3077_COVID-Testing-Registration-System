@@ -6,6 +6,8 @@ import com.example.application.data.entity.Booking.HomeTestingBooking;
 import com.example.application.data.entity.Booking.OnSiteTestingBooking;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -17,6 +19,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -45,7 +48,9 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
     private HorizontalLayout pickDatetimeLayout = new HorizontalLayout();
 
-    private Dialog bookingIDandPINDialog = new Dialog();
+    private HorizontalLayout revertBookingLayout = new HorizontalLayout();
+
+    private Dialog bookingIDandPINDialog;
 
     private ComboBox<TestingSite> newBookingVenue = new ComboBox<>("Testing Sites");
 
@@ -65,10 +70,14 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
     private Button modifyBookingButton = new Button("Modify Booking");
 
-    private Button revertBookingButton = new Button("Revert to Last Change");
+    private Button revertBookingButton = new Button("Revert previous version");
 
     private Button verifyUserButton = new Button("Verify User");
     private MultiSelectListBox<String> bookingContent;
+
+    private ArrayList<String> history = new ArrayList<>();
+
+    private Select<String> selectPreviousBooking = new Select<>();
     private final H2 title = new H2("Modify Bookings Through Phone Calls");
 
     private final H3 bookingDetailsHeader = new H3("Booking Details");
@@ -96,6 +105,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         this.configureTimeAndVenuePicker();
         this.populateVenuePicker();
         this.modifyBooking();
+        this.revertBooking();
 
         // Verifying Booking dialog
         bookingIDandPINDialog = new Dialog();
@@ -115,6 +125,9 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         bookingIDandPINDialog.add(bookingIDandPINDialogLayout);
         bookingIDandPINDialog.open();
 
+        bookingContent = new MultiSelectListBox<>();
+        bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
+
         changeBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         // Verify customer's identity
@@ -132,11 +145,15 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
         pickVenueLayout.add(newBookingVenue);
 
-        pickDatetimeLayout.add(newBookingTime);
+        pickDatetimeLayout.add(newBookingTime, modifyBookingButton);
         pickDatetimeLayout.setAlignItems(Alignment.END);
 
-        bookingContent = new MultiSelectListBox<>();
-        bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
+        selectPreviousBooking.setLabel("(OPT) Revert booking:");
+
+        revertBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+        revertBookingLayout.add(selectPreviousBooking, revertBookingButton);
+        revertBookingLayout.setAlignItems(Alignment.END);
 
         mainLayoutPhoneCallLayout.add(
                 title,
@@ -147,10 +164,10 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 verifyUserLayout,
                 pickVenueLayout,
                 pickDatetimeLayout,
-                modifyBookingButton);
+                revertBookingLayout);
 
         mainLayoutPhoneCallLayout.setSizeFull();
-        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, title, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, modifyBookingButton);
+        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, title, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, revertBookingLayout);
 
         add(bookingIDandPINDialog, mainLayoutPhoneCallLayout);
     }
@@ -196,7 +213,6 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 bookingIDList = "Booking ID: " + bookingToModify.getBookingId();
                 customerIDList = "Customer ID: " + bookingToModify.getCustomer().getId();
                 customerFullNameList = "Customer Full Name: " + bookingToModify.getCustomer().getGivenName() + " " + bookingToModify.getCustomer().getFamilyName();
-                bookingStartTimeList = "Booking Start Time: " + bookingToModify.getStartTime();
 
                 bookingContent.clear();
 
@@ -232,6 +248,17 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 }
                 newBookingTime.setEnabled(true);
                 modifyBookingButton.setEnabled(true);
+
+                if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
+                    history.add(bookingToModify.getHistory().get(0));
+                if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
+                    history.add(bookingToModify.getHistory().get(1));
+                if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
+                    history.add(bookingToModify.getHistory().get(2));
+                history.add(0, "current");
+                selectPreviousBooking.clear();
+                selectPreviousBooking.setItems(history);
+                selectPreviousBooking.setValue("current");
             } else {
                 newBookingVenue.setEnabled(false);
                 newBookingTime.setEnabled(false);
@@ -300,11 +327,64 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
     }
 
     private void revertBooking(){
+        revertBookingButton.addClickListener(e -> {
+            if (!selectPreviousBooking.getValue().equals("current")) {
+                List<String> additionalInfo = new ArrayList<>();
+                additionalInfo.add(0, bookingToModify.getQrcode());
 
+                if (bookingToModify.getClass().equals(HomeTestingBooking.class))
+                    additionalInfo.add(1, ((HomeTestingBooking) bookingToModify).getUrl());
+
+                int index = history.indexOf(selectPreviousBooking.getValue());
+                ObjectNode jsonNode = null;
+                try {
+                    jsonNode = new ObjectMapper().readValue(selectPreviousBooking.getValue(), ObjectNode.class);
+                } catch (Exception exception) {
+                    System.out.println("Unable to map select");
+                }
+
+                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now()) < 0) {
+                    Notification noti = Notification.show("History date is not a future date");
+                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                } else {
+                    try {
+                        HttpResponse<String> response = BookingCollection.revertBooking(bookingToModify.getBookingId(), additionalInfo, bookingToModify.getHistory(), selectPreviousBooking.getValue(), index);
+                        if (response.statusCode() == 200) {
+                            Notification noti = Notification.show("Revert Success");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                            bc = new BookingCollection();
+                            bookingToModify = bc.getBookingsByBookingId(bookingToModify.getBookingId());
+
+                            bookingIDList = "Booking ID: " + bookingToModify.getBookingId();
+                            customerIDList = "Customer ID: " + bookingToModify.getCustomer().getId();
+                            customerFullNameList = "Customer Full Name: " + bookingToModify.getCustomer().getGivenName() + " " + bookingToModify.getCustomer().getFamilyName();
+
+                            bookingContent.clear();
+
+                            LocalDateTime bookingStartDateTime = ZonedDateTime.parse(bookingToModify.getStartTime()).toLocalDateTime();
+                            bookingStartTimeList = "Booking Date Time: " + bookingStartDateTime.getDayOfMonth() + "-" + bookingStartDateTime.getMonthValue() + "-" +  bookingStartDateTime.getYear() + " " +
+                                    bookingStartDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+                            bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
+
+                            newBookingTime.setValue(bookingStartDateTime);
+                        }
+                    } catch (Exception exception) {
+                        Notification noti = Notification.show("Revert Failed");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        System.out.println("Error Reverting History |" + exception);
+                    }
+                }
+            } else {
+                Notification noti = Notification.show("Please select a history version");
+                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            }
+        });
     }
 
     private void modifyBooking(){
         modifyBookingButton.addClickListener(e -> {
+            history = new ArrayList<>();
             if (bookingToModify instanceof OnSiteTestingBooking){
                 bc = new BookingCollection();
                 bookingToModify = bc.getBookingsByBookingId(bookingToModify.getBookingId());
@@ -324,6 +404,17 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
                 bookingContent.clear();
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
+
+                if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
+                    history.add(bookingToModify.getHistory().get(0));
+                if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
+                    history.add(bookingToModify.getHistory().get(1));
+                if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
+                    history.add(bookingToModify.getHistory().get(2));
+                history.add(0, "current");
+                selectPreviousBooking.clear();
+                selectPreviousBooking.setItems(history);
+                selectPreviousBooking.setValue("current");
            }
            else if (bookingToModify instanceof HomeTestingBooking){
                 bc = new BookingCollection();
@@ -343,6 +434,17 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
                 bookingContent.clear();
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
+
+                if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
+                    history.add(bookingToModify.getHistory().get(0));
+                if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
+                    history.add(bookingToModify.getHistory().get(1));
+                if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
+                    history.add(bookingToModify.getHistory().get(2));
+                history.add(0, "current");
+                selectPreviousBooking.clear();
+                selectPreviousBooking.setItems(history);
+                selectPreviousBooking.setValue("current");
            }
         });
     }
