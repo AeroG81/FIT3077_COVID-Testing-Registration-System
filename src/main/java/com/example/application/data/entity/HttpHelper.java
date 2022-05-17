@@ -75,4 +75,23 @@ public class HttpHelper {
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    /**
+     * Send DELETE request to API
+     * @param url url of the request
+     * @param id id of the data to update the content
+     * @return response from API
+     * @throws Exception for Error in request
+     */
+    public HttpResponse<String> deleteService(String url, String id) throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder(URI.create(url+"/"+id))
+                .setHeader("Authorization", APIKEY)
+                .header("Content-Type","application/json") // This header needs to be set when sending a JSON request body.
+                .DELETE()
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }

@@ -7,24 +7,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
 /**
- * This is the children OnlineTesting class extending Booking abstract class
+ * This is the children HomeTestingBooking class extending Booking abstract class
  */
-public class OnlineTesting extends Booking {
+public class HomeTestingBooking extends Booking {
     private String url;
 
     /**
-     * Constructor for OnlineTesting
+     * Constructor for HomeTestingBooking
      * @param startTime booking appointment time
      * @param user customer for the booking
      * @param notes notes provided for the booking
      */
-    public OnlineTesting(String startTime, User user, String notes) {
+    public HomeTestingBooking(String startTime, User user, String notes) {
         super(startTime, user, notes);
         generateUrl();
     }
 
     /**
-     * Constructor for OnlineTesting
+     * Constructor for HomeTestingBooking
      * @param bookingId booking ID
      * @param startTime booking appointment time
      * @param user customer for the booking
@@ -34,10 +34,16 @@ public class OnlineTesting extends Booking {
      * @param qrcode QR code to verify the booking
      * @param url url for the meeting with experts
      */
-    public OnlineTesting(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history) {
+    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
         this.url = url;
     }
+
+    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history, String lastUpdateTime) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
+        this.url = url;
+    }
+
 
     /**
      * Method to generate a URL for meeting
@@ -71,7 +77,7 @@ public class OnlineTesting extends Booking {
      */
     @Override
     public String toString() {
-        return "OnlineTesting{\n" +
+        return "HomeTestingBooking{\n" +
                 super.toString() +
                 ", \nqrcode='" + super.getQrcode() + '\'' +
                 ", \nurl='" + url + '\'' +

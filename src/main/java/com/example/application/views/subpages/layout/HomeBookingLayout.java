@@ -1,4 +1,4 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.User.Customer;
@@ -102,10 +102,15 @@ public class HomeBookingLayout extends VerticalLayout {
                         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                         responseDialog.add(closeButton,label);
 
-                        Notification noti = Notification.show("Application submitted");
-                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                        this.clearFields();
-                        responseDialog.open();
+                        if (response.statusCode()==200){
+                            Notification noti = Notification.show("Application submitted");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                            this.clearFields();
+                            responseDialog.open();
+                        }
+                        else
+                            throw new Exception("Appointment Adding Failed");
+
                     }
                     catch (Exception exception) {
                         Notification noti = Notification.show("Appointment failed");

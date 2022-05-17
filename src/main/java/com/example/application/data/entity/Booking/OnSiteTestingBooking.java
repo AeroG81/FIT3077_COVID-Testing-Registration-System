@@ -7,25 +7,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
 /**
- * This is the children OnSiteTesting class extending Booking abstract class
+ * This is the children OnSiteTestingBooking class extending Booking abstract class
  */
-public class OnSiteTesting extends Booking {
+public class OnSiteTestingBooking extends Booking {
     private TestingSite testingSite;
 
     /**
-     * Constructor for OnSiteTesting
+     * Constructor for OnSiteTestingBooking
      * @param site site of the booking
      * @param startTime booking appointment time
      * @param user customer for the booking
      * @param notes notes provided for the booking
      */
-    public OnSiteTesting(TestingSite site, String startTime, User user, String notes) {
+    public OnSiteTestingBooking(TestingSite site, String startTime, User user, String notes) {
         super(startTime, user, notes);
         this.testingSite = site;
     }
 
     /**
-     * Constructor for OnSiteTesting
+     * Constructor for OnSiteTestingBooking
      * @param bookingId booking ID
      * @param site site of the booking
      * @param startTime booking appointment time
@@ -35,8 +35,13 @@ public class OnSiteTesting extends Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public OnSiteTesting(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history) {
+    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
+        this.testingSite = site;
+    }
+
+    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history, String lastUpdateTime) {
+        super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
         this.testingSite = site;
     }
 
@@ -64,7 +69,7 @@ public class OnSiteTesting extends Booking {
      */
     @Override
     public String toString() {
-        return "OnSiteTesting {\n" +
+        return "OnSiteTestingBooking {\n" +
                 super.toString() +
                 ", \nqrcode='" + super.getQrcode() + '\'' +
                 ",\ntestingSite=" + testingSite.getInfo() +

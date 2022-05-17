@@ -1,8 +1,8 @@
 package com.example.application.data.entity.BookingMethod;
 
 import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.OnSiteTesting;
-import com.example.application.data.entity.Booking.OnlineTesting;
+import com.example.application.data.entity.Booking.OnSiteTestingBooking;
+import com.example.application.data.entity.Booking.HomeTestingBooking;
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.User.User;
@@ -24,7 +24,7 @@ public class SystemBookingMethod implements BookingMethod {
      */
     @Override
     public HttpResponse<String> addBooking(TestingSite site, String startTime, User user, String notes) throws Exception {
-        Booking booking = new OnSiteTesting(site,startTime,user,notes);
+        Booking booking = new OnSiteTestingBooking(site,startTime,user,notes);
         String jsonString = "{" +
                 "\"customerId\":\"" + user.getId() + "\"," +
                 "\"testingSiteId\":\"" + site.getId() + "\"," +
@@ -58,7 +58,7 @@ public class SystemBookingMethod implements BookingMethod {
      */
     @Override
     public HttpResponse<String> addBooking(String startTime, User user, String notes) throws Exception {
-        Booking booking = new OnlineTesting(startTime,user,notes);
+        Booking booking = new HomeTestingBooking(startTime,user,notes);
         String jsonString = "{" +
                 "\"customerId\":\"" + booking.getCustomer().getId() + "\"," +
                 "\"startTime\":\"" + booking.getStartTime() + "\"";

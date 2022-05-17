@@ -1,4 +1,4 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
@@ -11,9 +11,9 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 
-public class ProfileLayout extends HorizontalLayout {
+public class ProfileAvatarLayout extends HorizontalLayout {
 
-    public ProfileLayout() {
+    public ProfileAvatarLayout() {
         VaadinSession ui = UI.getCurrent().getSession();
         User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
 

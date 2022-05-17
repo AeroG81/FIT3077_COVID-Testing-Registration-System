@@ -25,6 +25,11 @@ public class BookingCollection {
      * Constructor of BookingCollection
      */
     public BookingCollection(){
+        this.refreshCollection();
+    }
+
+    public void refreshCollection(){
+        collection.clear();
         try {
             // Populate list
             getBookingsService();
@@ -32,7 +37,7 @@ public class BookingCollection {
         catch (Exception exception){
             System.out.println("Booking Collection Populate error " + exception);
         }
-    }
+    };
 
     /**
      * Getter for collection of bookings
@@ -64,9 +69,9 @@ public class BookingCollection {
             if (!node.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = node.get("testingSite");
                 TestingSite testingSite = new TestingSite(testingSiteNode.get("id").asText(), testingSiteNode.get("name").asText(), testingSiteNode.get("description").asText(), testingSiteNode.get("websiteUrl").asText(), testingSiteNode.get("phoneNumber").asText(), testingSiteNode.get("address").get("latitude").asDouble(), testingSiteNode.get("address").get("longitude").asDouble(), testingSiteNode.get("address").get("unitNumber").asInt(), testingSiteNode.get("address").get("street").asText(), testingSiteNode.get("address").get("street2").asText(), testingSiteNode.get("address").get("suburb").asText(), testingSiteNode.get("address").get("state").asText(), testingSiteNode.get("address").get("postcode").asText(), testingSiteNode.get("additionalInfo").get("facilityType").asText(), testingSiteNode.get("additionalInfo").get("openTime").asText(), testingSiteNode.get("additionalInfo").get("closeTime").asText(), testingSiteNode.get("additionalInfo").get("waitingTime").asText());
-                booking = new OnSiteTesting(node.get("id").asText(), testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), history);
+                booking = new OnSiteTestingBooking(node.get("id").asText(), testingSite, node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), history, node.get("updatedAt").asText());
             } else {
-                booking = new OnlineTesting(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText(), history);
+                booking = new HomeTestingBooking(node.get("id").asText(), node.get("startTime").asText(), user, node.get("notes").asText(), node.get("status").asText(), node.get("smsPin").asText(), node.get("additionalInfo").get("qrcode").asText(), node.get("additionalInfo").get("url").asText(), history, node.get("updatedAt").asText());
             }
             collection.add(booking);
         }
@@ -282,5 +287,16 @@ public class BookingCollection {
         String url = "https://fit3077.com/api/v2/booking";
         String jsonString = "{ \"status\":\"CANCELLED\" }";
         return new HttpHelper().patchService(url, jsonString, bookingId);
+    }
+
+    public static HttpResponse<String> completeBooking(String bookingId) throws Exception {
+        String url = "https://fit3077.com/api/v2/booking";
+        String jsonString = "{ \"status\":\"COMPLETED\" }";
+        return new HttpHelper().patchService(url, jsonString, bookingId);
+    }
+
+    public static HttpResponse<String> deleteBooking(String bookingId) throws Exception {
+        String url = "https://fit3077.com/api/v2/booking";
+        return new HttpHelper().deleteService(url, bookingId);
     }
 }
