@@ -154,48 +154,45 @@ public class UserBookingsLayout extends VerticalLayout {
 
         Button revert = new Button("Revert previous version");
         revert.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-
-            revert.addClickListener(e -> {
-                if (!select.getValue().equals("current")) {
-                    List<String> additionalInfo = new ArrayList<>();
-                    additionalInfo.add(0, b.getQrcode());
-                    if (b.getClass().equals(OnlineTesting.class))
-                        additionalInfo.add(1, ((OnlineTesting) b).getUrl());
-                    int index = history.indexOf(select.getValue());
-                    ObjectNode jsonNode = null;
-                    try {
-                        jsonNode = new ObjectMapper().readValue(select.getValue(), ObjectNode.class);
-                    }
-                    catch (Exception exception) {
-                        System.out.println("Unable to map select");
-                    }
-
-                    if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
-                        Notification noti = Notification.show("History date is not a future date");
-                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    }
-                    else {
-                        try {
-                            HttpResponse<String> response = BookingCollection.revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
-                            if (response.statusCode()==200){
-                                Notification noti = Notification.show("Revert Success");
-                                noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                            }
-                            this.reloadForm();
-                        } catch (Exception exception) {
-                            Notification noti = Notification.show("Revert Failed");
-                            noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                            System.out.println("Error Reverting History |" + exception);
-                        }
-                    }
+        revert.addClickListener(e -> {
+            if (!select.getValue().equals("current")) {
+                List<String> additionalInfo = new ArrayList<>();
+                additionalInfo.add(0, b.getQrcode());
+                if (b.getClass().equals(OnlineTesting.class))
+                    additionalInfo.add(1, ((OnlineTesting) b).getUrl());
+                int index = history.indexOf(select.getValue());
+                ObjectNode jsonNode = null;
+                try {
+                    jsonNode = new ObjectMapper().readValue(select.getValue(), ObjectNode.class);
+                }
+                catch (Exception exception) {
+                    System.out.println("Unable to map select");
+                }
+                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
+                    Notification noti = Notification.show("History date is not a future date");
+                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
                 else {
-                    Notification noti = Notification.show("Please select a history version");
-                    noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+                    try {
+                        HttpResponse<String> response = BookingCollection.revertBooking(b.getBookingId(), additionalInfo, b.getHistory(), select.getValue(), index);
+                        if (response.statusCode()==200){
+                            Notification noti = Notification.show("Revert Success");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        }
+                        this.reloadForm();
+                    } catch (Exception exception) {
+                        Notification noti = Notification.show("Revert Failed");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        System.out.println("Error Reverting History |" + exception);
+                    }
                 }
-            });
-            form.add(select, revert);
-
+            }
+            else {
+                Notification noti = Notification.show("Please select a history version");
+                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            }
+        });
+        form.add(select, revert);
     }
 
     private void configureFormForOnlineTesting(Booking b, DateTimePicker startTime, Button submitUpdate) {

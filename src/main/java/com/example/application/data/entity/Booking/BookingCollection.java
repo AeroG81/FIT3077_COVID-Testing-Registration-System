@@ -25,6 +25,11 @@ public class BookingCollection {
      * Constructor of BookingCollection
      */
     public BookingCollection(){
+        this.refreshCollection();
+    }
+
+    public void refreshCollection(){
+        collection.clear();
         try {
             // Populate list
             getBookingsService();
@@ -32,7 +37,7 @@ public class BookingCollection {
         catch (Exception exception){
             System.out.println("Booking Collection Populate error " + exception);
         }
-    }
+    };
 
     /**
      * Getter for collection of bookings
@@ -267,5 +272,10 @@ public class BookingCollection {
         String url = "https://fit3077.com/api/v2/booking";
         String jsonString = "{ \"status\":\"CANCELLED\" }";
         return new HttpHelper().patchService(url, jsonString, bookingId);
+    }
+
+    public static HttpResponse<String> deleteBooking(String bookingId) throws Exception {
+        String url = "https://fit3077.com/api/v2/booking";
+        return new HttpHelper().deleteService(url, bookingId);
     }
 }
