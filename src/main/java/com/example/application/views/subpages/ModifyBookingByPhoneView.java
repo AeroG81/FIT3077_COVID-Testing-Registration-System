@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@PageTitle("Phone Call Booking Modification | Vaadin CRM")
+@PageTitle("Phone Call Booking Modification")
 @Route(value = "/phonecall")
 public class ModifyBookingByPhoneView extends VerticalLayout {
     private VerticalLayout bookingIDandPINDialogLayout = new VerticalLayout();
@@ -151,6 +151,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         selectPreviousBooking.setLabel("(OPT) Revert booking:");
 
         revertBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+        revertBookingButton.setEnabled(false);
 
         revertBookingLayout.add(selectPreviousBooking, revertBookingButton);
         revertBookingLayout.setAlignItems(Alignment.END);
@@ -180,6 +181,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
             newBookingTime.setEnabled(false);
             newBookingVenue.setEnabled(false);
             modifyBookingButton.setEnabled(false);
+            revertBookingButton.setEnabled(false);
 
             bookingIDList = "Booking ID: N/A";
             customerIDList ="Customer ID: N/A";
@@ -248,6 +250,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 }
                 newBookingTime.setEnabled(true);
                 modifyBookingButton.setEnabled(true);
+                revertBookingButton.setEnabled(true);
 
                 if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
                     history.add(bookingToModify.getHistory().get(0));
@@ -263,6 +266,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 newBookingVenue.setEnabled(false);
                 newBookingTime.setEnabled(false);
                 modifyBookingButton.setEnabled(false);
+                revertBookingButton.setEnabled(false);
                 Notification noti = Notification.show("Invalid Customer");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
