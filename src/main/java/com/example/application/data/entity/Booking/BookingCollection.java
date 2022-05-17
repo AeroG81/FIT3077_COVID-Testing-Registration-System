@@ -37,7 +37,7 @@ public class BookingCollection {
         catch (Exception exception){
             System.out.println("Booking Collection Populate error " + exception);
         }
-    }
+    };
 
     /**
      * Getter for collection of bookings
@@ -134,19 +134,6 @@ public class BookingCollection {
         return userBooking;
     }
 
-    public Booking getBookingsByBookingId(String bookingId){
-        Booking userBooking = null;
-        int i = 0;
-        boolean endLoop = false;
-        while (i<collection.size() && !endLoop){
-            if (collection.get(i).getBookingId().equals(bookingId)) {
-                userBooking = collection.get(i);
-                endLoop = true;
-            }
-            i++;
-        }
-        return userBooking;
-    }
 
     /**
      * Verify QR code which will return Booking
@@ -163,6 +150,20 @@ public class BookingCollection {
             i++;
         }
         return userBookingMethod;
+    }
+
+    public Booking getBookingsByBookingId(String bookingId){
+        Booking userBooking = null;
+        int i = 0;
+        boolean endLoop = false;
+        while (i<collection.size() && !endLoop){
+            if (collection.get(i).getBookingId().equals(bookingId)) {
+                userBooking = collection.get(i);
+                endLoop = true;
+            }
+            i++;
+        }
+        return userBooking;
     }
 
     /**
@@ -182,7 +183,7 @@ public class BookingCollection {
     /**
      * Verify Booking with Booking ID and PIN which will return User who placed the booking.
      * */
-    public Booking verifyBookingIdAndPin(String bookingId, String smsPin){
+    public Booking verifyBookingIdandPin(String bookingId, String smsPin){
         Booking booking = null;
         int i = 0;
         boolean endLoop = false;

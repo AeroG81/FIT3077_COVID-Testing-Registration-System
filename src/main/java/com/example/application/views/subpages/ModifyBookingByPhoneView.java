@@ -2,8 +2,8 @@ package com.example.application.views.subpages;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.HomeTestingBooking;
-import com.example.application.data.entity.Booking.OnSiteTestingBooking;
+import com.example.application.data.entity.Booking.OnSiteTesting;
+import com.example.application.data.entity.Booking.OnlineTesting;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.vaadin.flow.component.button.Button;
@@ -178,14 +178,14 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
     private void checkBookingIDandPIN(){
         verifyBookingIDandPINButton.addClickListener(e -> {
-            bookingToModify = bc.verifyBookingIdAndPin(bookingIDTextField.getValue(), smsPinTextField.getValue());
+            bookingToModify = bc.verifyBookingIdandPin(bookingIDTextField.getValue(), smsPinTextField.getValue());
 
             if (bookingToModify == null){
                 Notification noti = Notification.show("Invalid Booking ID and/or PIN");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } else{
-                if (bookingToModify instanceof OnSiteTestingBooking){
-                    bookingTestingSiteList = "Booking Testing Site: " + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName();
+                if (bookingToModify instanceof OnSiteTesting){
+                    bookingTestingSiteList = "Booking Testing Site: " + ((OnSiteTesting) bookingToModify).getTestingSite().getName();
                 }
                 else {
                     bookingTestingSiteList = "Booking Testing Site: N/A";
@@ -227,7 +227,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         verifyUserButton.addClickListener(e -> {
             if (Objects.equals(bookingToModify.getCustomer().getId(), customerUserIdTextField.getValue())) {
                 Notification.show("Valid Customer");
-                if (bookingToModify instanceof OnSiteTestingBooking){
+                if (bookingToModify instanceof OnSiteTesting){
                     newBookingVenue.setEnabled(true);
                 }
                 newBookingTime.setEnabled(true);
@@ -305,7 +305,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
     private void modifyBooking(){
         modifyBookingButton.addClickListener(e -> {
-            if (bookingToModify instanceof OnSiteTestingBooking){
+            if (bookingToModify instanceof OnSiteTesting){
                 bc = new BookingCollection();
                 bookingToModify = bc.getBookingsByBookingId(bookingToModify.getBookingId());
 
@@ -317,15 +317,15 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 bookingIDList = "Booking ID: " + bookingToModify.getBookingId();
                 customerIDList = "Customer ID: " + bookingToModify.getCustomer().getId();
                 customerFullNameList = "Customer Full Name: " + bookingToModify.getCustomer().getGivenName() + " " + bookingToModify.getCustomer().getFamilyName();
-                bookingTestingSiteList = "Booking Testing Site: " + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName();
+                bookingTestingSiteList = "Booking Testing Site: " + ((OnSiteTesting) bookingToModify).getTestingSite().getName();
                 LocalDateTime bookingStartDateTime = ZonedDateTime.parse(bookingToModify.getStartTime()).toLocalDateTime();
                 bookingStartTimeList = "Booking Date Time: " + bookingStartDateTime.getDayOfMonth() + "-" + bookingStartDateTime.getMonthValue() + "-" +  bookingStartDateTime.getYear() + " " +
                         bookingStartDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
                 bookingContent.clear();
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
-            }
-            else if (bookingToModify instanceof HomeTestingBooking){
+           }
+           else if (bookingToModify instanceof OnlineTesting){
                 bc = new BookingCollection();
                 bookingToModify = bc.getBookingsByBookingId(bookingToModify.getBookingId());
 
@@ -343,7 +343,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
 
                 bookingContent.clear();
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
-            }
+           }
         });
     }
 
@@ -367,7 +367,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 String content = "";
                 String newSiteId = null;
 
-                additionalInfo.add(1, ((HomeTestingBooking) bookingToModify).getUrl());
+                additionalInfo.add(1, ((OnlineTesting) bookingToModify).getUrl());
                 content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + bookingToModify.getStartTime() + "\" } ";
                 List<String> history = bookingToModify.getHistory();
                 try {
@@ -396,7 +396,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 if (newBookingTime.getValue().toLocalTime().getHour() < Integer.parseInt(newBookingVenue.getValue().getOperationTime().substring(0, 2)) || newBookingTime.getValue().toLocalTime().getHour() >= Integer.parseInt(newBookingVenue.getValue().getOperationTime().substring(7, 9))) {
                     Notification noti = Notification.show("Booking time is not within operation hour");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                } else if (newBookingTime.getValue().equals(ZonedDateTime.parse(bookingToModify.getStartTime()).toLocalDateTime()) && newBookingVenue.getValue().getId().equals(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId())) {
+                } else if (newBookingTime.getValue().equals(ZonedDateTime.parse(bookingToModify.getStartTime()).toLocalDateTime()) && newBookingVenue.getValue().getId().equals(((OnSiteTesting) bookingToModify).getTestingSite().getId())) {
                     Notification noti = Notification.show("No changes in value, Unable to update");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 } else {
@@ -404,7 +404,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                     additionalInfo.add(0, bookingToModify.getQrcode());
                     String content = "";
                     String newSiteId = "";
-                    content = "{" + "\"testingsitename\":\"" + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName() + "\", \"testingsiteid\":\"" + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getId() + "\", \"starttime\": \"" + bookingToModify.getStartTime() + "\" } ";
+                    content = "{" + "\"testingsitename\":\"" + ((OnSiteTesting) bookingToModify).getTestingSite().getName() + "\", \"testingsiteid\":\"" + ((OnSiteTesting) bookingToModify).getTestingSite().getId() + "\", \"starttime\": \"" + bookingToModify.getStartTime() + "\" } ";
                     newSiteId = newBookingVenue.getValue().getId();
                     List<String> history = bookingToModify.getHistory();
 
@@ -425,5 +425,5 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         }
     }
 
-
+    
 }
