@@ -37,7 +37,7 @@ public class BookingCollection {
         catch (Exception exception){
             System.out.println("Booking Collection Populate error " + exception);
         }
-    };
+    }
 
     /**
      * Getter for collection of bookings
@@ -60,7 +60,7 @@ public class BookingCollection {
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
         for (ObjectNode node : jsonNodes) {
             JsonNode userNode = node.get("customer");
-            User user = createUser(userNode);;
+            User user = createUser(userNode);
 
             JsonNode historyNode = node.get("additionalInfo").get("history");
             List<String> history = createHistory(historyNode);
@@ -121,6 +121,20 @@ public class BookingCollection {
      * Verify Booking ID which will return Booking
      * */
     public Booking verifyBookingId(String bookingId) {
+        Booking userBooking = null;
+        int i = 0;
+        boolean endLoop = false;
+        while (i<collection.size() && !endLoop){
+            if (collection.get(i).getBookingId().equals(bookingId)) {
+                userBooking = collection.get(i);
+                endLoop = true;
+            }
+            i++;
+        }
+        return userBooking;
+    }
+
+    public Booking getBookingsByBookingId(String bookingId){
         Booking userBooking = null;
         int i = 0;
         boolean endLoop = false;
