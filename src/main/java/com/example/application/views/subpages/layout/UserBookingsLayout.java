@@ -248,6 +248,7 @@ public class UserBookingsLayout extends VerticalLayout {
 
     private void reloadForm() {
         bookingCollection.refreshCollection();
+        gridBookingData = bookingCollection.getBookingsById(UI.getCurrent().getSession().getAttribute("userId").toString());
         grid = new Grid<>(Booking.class, false);
         grid.addColumn(b -> { if (b.getClass().equals(OnSiteTestingBooking.class)) { return ((OnSiteTestingBooking) b).getTestingSite().getName(); } else { return "-"; }}).setHeader("Testing site").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm"))).setHeader("Booking DateTime").setAutoWidth(true).setTextAlign(ColumnTextAlign.END).setSortable(true).setComparator(new Comparator<Booking>() {

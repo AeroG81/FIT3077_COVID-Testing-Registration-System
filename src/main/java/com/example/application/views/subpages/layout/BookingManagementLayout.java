@@ -67,14 +67,18 @@ public class BookingManagementLayout extends VerticalLayout {
         bookingOptions.setItems("Show All", "Show Active and Cancelled");
         bookingOptions.setValue("Show Active and Cancelled");
         bookingOptions.addValueChangeListener(e->{
-            if (bookingOptions.getValue().equals("Show Active and Cancelled")){
-                gridBookingData = bookingCollection.getActiveAndCancelledBooking();
-            }
-            else{
-                gridBookingData = bookingCollection.getCollection();
-            }
+            this.refreshGridBasedOnRadio();
             this.reloadForm();
         });
+    }
+
+    private void refreshGridBasedOnRadio(){
+        if (bookingOptions.getValue().equals("Show Active and Cancelled")){
+            gridBookingData = bookingCollection.getActiveAndCancelledBooking();
+        }
+        else{
+            gridBookingData = bookingCollection.getCollection();
+        }
     }
 
     private void configureStartTime(){
@@ -281,7 +285,7 @@ public class BookingManagementLayout extends VerticalLayout {
                 return ZonedDateTime.parse(o2.getLastUpdateTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getLastUpdateTime()).toLocalDateTime());
             }
         });
-
+        this.refreshGridBasedOnRadio();
         gridBookingData.sort(new Comparator<Booking>() {
             @Override
             public int compare(Booking o1, Booking o2) {
