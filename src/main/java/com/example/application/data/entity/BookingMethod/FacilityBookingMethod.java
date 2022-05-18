@@ -22,7 +22,7 @@ public class FacilityBookingMethod implements BookingMethod {
      * @throws Exception for Error in request
      */
     @Override
-    public HttpResponse<String> addBooking(TestingSite site, String startTime, User user, String notes) throws Exception{
+    public HttpResponse<String> registerBooking(TestingSite site, String startTime, User user, String notes) throws Exception{
         Booking booking = new OnSiteTestingBooking(site,startTime,user,notes);
         String jsonString = "{" +
                 "\"customerId\":\"" + user.getId() + "\"," +
@@ -56,7 +56,7 @@ public class FacilityBookingMethod implements BookingMethod {
      * @throws Exception for Error in request
      */
     @Override
-    public HttpResponse<String> addBooking(String startTime, User user, String notes) throws Exception {
+    public HttpResponse<String> registerBooking(String startTime, User user, String notes) throws Exception {
         return null;
     }
 }

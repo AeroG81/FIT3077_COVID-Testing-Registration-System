@@ -85,7 +85,7 @@ public class HomeBookingLayout extends VerticalLayout {
                     User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
                     ObjectNode mappedResponse = null;
                     try {
-                        HttpResponse<String> response = new SystemBookingMethod().addBooking(startTime.getValue().toString(),user,notes.getValue());
+                        HttpResponse<String> response = new SystemBookingMethod().registerBooking(startTime.getValue().toString(),user,notes.getValue());
                         mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
                         TextArea label = new TextArea();
 

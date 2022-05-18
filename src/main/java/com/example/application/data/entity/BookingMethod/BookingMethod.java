@@ -17,7 +17,7 @@ public interface BookingMethod {
      * @return Http response from server
      * @throws Exception for Error in request
      */
-    HttpResponse<String> addBooking(TestingSite site, String startTime, User user, String notes) throws Exception;
+    HttpResponse<String> registerBooking(TestingSite site, String startTime, User user, String notes) throws Exception;
     /**
      * addBooking without Testing site
      * @param startTime booking appointment time
@@ -26,5 +26,5 @@ public interface BookingMethod {
      * @return Http response from server
      * @throws Exception for Error in request
      */
-    HttpResponse<String> addBooking(String startTime, User user, String notes) throws Exception;
+    HttpResponse<String> registerBooking(String startTime, User user, String notes) throws Exception;
 }

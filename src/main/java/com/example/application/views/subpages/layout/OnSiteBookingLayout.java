@@ -19,7 +19,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -134,7 +133,7 @@ public class OnSiteBookingLayout extends VerticalLayout {
                     HttpResponse<String> response = null;
                     ObjectNode mappedResponse = null;
                     try {
-                        response = new SystemBookingMethod().addBooking(testingSite.getValue(), startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
+                        response = new SystemBookingMethod().registerBooking(testingSite.getValue(), startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
                         mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
                         if (response.statusCode()==201){
                             Notification noti = Notification.show("Application submitted");

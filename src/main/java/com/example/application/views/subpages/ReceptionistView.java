@@ -192,7 +192,7 @@ public class ReceptionistView extends VerticalLayout {
                 HttpResponse<String> response = null;
                 ObjectNode mappedResponse = null;
                 try {
-                    response = new FacilityBookingMethod().addBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue());
+                    response = new FacilityBookingMethod().registerBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue());
                     mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
                     testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0,testingSite.getValue().getWaitingTime().length()-3))+10)+"min");
                 } catch (Exception exception){

@@ -77,6 +77,19 @@ public class Address {
 
     /**
      * Getter
+     * @return street+street2 / street2
+     */
+    public String getStreets() {
+        if (street2 == "null"){
+            return street;
+        }
+        else {
+            return street + " "+ street2;
+        }
+    }
+
+    /**
+     * Getter
      * @return suburb
      */
     public String getSuburb() {

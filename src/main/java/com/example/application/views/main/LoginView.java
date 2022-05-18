@@ -76,7 +76,6 @@ public class LoginView extends HorizontalLayout {
         dialogLayout.add(new H1("Choose where you want to go: "));
         dialogLayout.add(new Hr());
 
-
         redirectToTestingSite = new Button("Browse Testing Sites");
         redirectToTestingSite.addClickListener(f -> {
                 redirectToTestingSite.getUI().ifPresent(ui -> ui.navigate("testingsite"));
