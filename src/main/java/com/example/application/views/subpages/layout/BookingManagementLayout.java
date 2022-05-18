@@ -6,7 +6,10 @@ import com.example.application.data.entity.Booking.HomeTestingBooking;
 import com.example.application.data.entity.Booking.OnSiteTestingBooking;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -18,6 +21,9 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.select.Select;
 
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
@@ -41,26 +47,69 @@ public class BookingManagementLayout extends VerticalLayout {
     private Booking selectedBooking = null;
     private BookingCollection bookingCollection = new BookingCollection();
     private Grid<Booking> grid = null;
+    private Select<String> historySelect = new Select<>();
+    private ArrayList<String> currentBookingHistory = new ArrayList<>();
+    private RadioButtonGroup<String> bookingOptions = new RadioButtonGroup<>();
+    private List<Booking> gridBookingData = bookingCollection.getActiveAndCancelledBooking();
 
     public BookingManagementLayout() {
+        this.configureRadioGroup();
         this.reloadForm();
+        this.configureStartTime();
         this.populateTestingSiteComboBox();
+        this.configureHistoryRevert();
         this.configureEditorForm();
+        this.configureEditorDialog();
+    }
+
+    private void configureRadioGroup(){
+        bookingOptions.setLabel("Show Booking");
+        bookingOptions.setItems("Show All", "Show Active and Cancelled");
+        bookingOptions.setValue("Show Active and Cancelled");
+        bookingOptions.addValueChangeListener(e->{
+            if (bookingOptions.getValue().equals("Show Active and Cancelled")){
+                gridBookingData = bookingCollection.getActiveAndCancelledBooking();
+            }
+            else{
+                gridBookingData = bookingCollection.getCollection();
+            }
+            this.reloadForm();
+        });
+    }
+
+    private void configureStartTime(){
         startTime.setMin(LocalDateTime.now());
         startTime.setMax(LocalDateTime.now().plusDays(90));
-        this.configureEditorDialog();
+    }
+
+    private void configureHistoryRevert(){
+        historySelect.setLabel("History");
+    }
+
+    private void updateRevertOptions() {
+        historySelect.clear();
+        currentBookingHistory.clear();
+        if (selectedBooking.getHistory().get(0) != null && !selectedBooking.getHistory().get(0).equals("null"))
+            currentBookingHistory.add(selectedBooking.getHistory().get(0));
+        if (selectedBooking.getHistory().get(1) != null && !selectedBooking.getHistory().get(1).equals("null"))
+            currentBookingHistory.add(selectedBooking.getHistory().get(1));
+        if (selectedBooking.getHistory().get(2) != null && !selectedBooking.getHistory().get(2).equals("null"))
+            currentBookingHistory.add(selectedBooking.getHistory().get(2));
+        currentBookingHistory.add(0, "current");
+        historySelect.setItems(currentBookingHistory);
+        historySelect.setValue("current");
     }
 
     private void configureEditorDialog() {
         HorizontalLayout buttonLayout = configureButtonLayout();
         editorDialog.add(editorForm, buttonLayout);
-        editorDialog.setWidth("1000px");
+        editorDialog.setWidth("1200px");
     }
 
     private HorizontalLayout configureButtonLayout() {
 
-        Button closeButton = new Button("Close");
-        closeButton.addClickListener(e -> editorDialog.close());
+        Button closeButton = new Button("Close",e -> editorDialog.close());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button saveButton = new Button("Save", e -> {
             if (isInvalidStatus(selectedBooking)) {
@@ -122,6 +171,7 @@ public class BookingManagementLayout extends VerticalLayout {
             }
             editorDialog.close();
         });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         Button deleteButton = new Button("Delete", e -> {
             try {
@@ -139,8 +189,49 @@ public class BookingManagementLayout extends VerticalLayout {
                 System.out.println("Receptionist Delete Failed " + exception);
             }
         });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-        HorizontalLayout buttonLayout = new HorizontalLayout(deleteButton, saveButton, closeButton);
+        Button historyRevertButton = new Button("Revert History",e -> {
+            if (!historySelect.getValue().equals("current")) {
+                List<String> additionalInfo = new ArrayList<>();
+                additionalInfo.add(0, selectedBooking.getQrcode());
+                if (selectedBooking.getClass().equals(HomeTestingBooking.class))
+                    additionalInfo.add(1, ((HomeTestingBooking) selectedBooking).getUrl());
+                int index = currentBookingHistory.indexOf(historySelect.getValue());
+                ObjectNode jsonNode = null;
+                try {
+                    jsonNode = new ObjectMapper().readValue(historySelect.getValue(), ObjectNode.class);
+                }
+                catch (Exception exception) {
+                    System.out.println("Unable to map select");
+                }
+                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
+                    Notification noti = Notification.show("History date is not a future date");
+                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+                else {
+                    try {
+                        HttpResponse<String> response = BookingCollection.revertBooking(selectedBooking.getBookingId(), additionalInfo, selectedBooking.getHistory(), historySelect.getValue(), index);
+                        if (response.statusCode()==200){
+                            Notification noti = Notification.show("Revert Success");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        }
+                        this.reloadForm();
+                    } catch (Exception exception) {
+                        Notification noti = Notification.show("Revert Failed");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        System.out.println("Error Reverting History |" + exception);
+                    }
+                }
+            }
+            else {
+                Notification noti = Notification.show("Please select a history version");
+                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            }
+        });
+        historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton,deleteButton, saveButton, closeButton);
         buttonLayout.setJustifyContentMode(JustifyContentMode.END);
         return buttonLayout;
     }
@@ -152,7 +243,8 @@ public class BookingManagementLayout extends VerticalLayout {
         editorForm.setColspan(pin, 2);
         editorForm.setColspan(qr, 2);
         editorForm.setColspan(url, 2);
-        editorForm.add(pin, qr, url, testingSite, startTime);
+        editorForm.setColspan(historySelect, 2);
+        editorForm.add(pin, qr, url, testingSite, startTime, historySelect);
     }
 
     private void populateTestingSiteComboBox() {
@@ -187,36 +279,37 @@ public class BookingManagementLayout extends VerticalLayout {
                 return ZonedDateTime.parse(o2.getLastUpdateTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getLastUpdateTime()).toLocalDateTime());
             }
         });
-        List<Booking> bookings = bookingCollection.getCollection();
-        bookings.sort(new Comparator<Booking>() {
+
+        gridBookingData.sort(new Comparator<Booking>() {
             @Override
             public int compare(Booking o1, Booking o2) {
                 return ZonedDateTime.parse(o2.getLastUpdateTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getLastUpdateTime()).toLocalDateTime());
             }
         });
-        grid.setItems(bookings);
+        grid.setItems(gridBookingData);
         grid.addSelectionListener(selection -> {
             Optional<Booking> optionalPerson = selection.getFirstSelectedItem();
             optionalPerson.ifPresent(booking -> {
-                pin.setText("PIN CODE: " + booking.getSmsPin());
-                qr.setText("QR CODE: " + booking.getQrcode());
-                startTime.setValue(ZonedDateTime.parse(booking.getStartTime()).toLocalDateTime());
-                if (booking.getClass().equals(OnSiteTestingBooking.class)) {
-                    testingSite.setValue(((OnSiteTestingBooking) booking).getTestingSite());
+                selectedBooking = booking;
+                pin.setText("PIN CODE: " + selectedBooking.getSmsPin());
+                qr.setText("QR CODE: " + selectedBooking.getQrcode());
+                startTime.setValue(ZonedDateTime.parse(selectedBooking.getStartTime()).toLocalDateTime());
+                if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)) {
+                    testingSite.setValue(((OnSiteTestingBooking) selectedBooking).getTestingSite());
                     url.setText("URL: " + null);
                     testingSite.setEnabled(true);
                 } else {
-                    url.setText("URL: " + ((HomeTestingBooking) booking).getUrl());
+                    url.setText("URL: " + ((HomeTestingBooking) selectedBooking).getUrl());
                     testingSite.setValue(null);
                     testingSite.setEnabled(false);
                 }
-                selectedBooking = booking;
+                this.updateRevertOptions();
                 editorDialog.open();
             });
         });
         this.removeAll();
         grid.setHeight("900px");
-        this.add(grid);
+        this.add(bookingOptions, grid);
     }
 
     /**
@@ -232,5 +325,4 @@ public class BookingManagementLayout extends VerticalLayout {
         }
         return valid;
     }
-
 }

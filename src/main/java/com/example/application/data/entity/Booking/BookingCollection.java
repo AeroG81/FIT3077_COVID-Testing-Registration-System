@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -195,6 +197,18 @@ public class BookingCollection {
             i++;
         }
         return booking;
+    }
+
+    public List<Booking> getActiveAndCancelledBooking(){
+        List<Booking> bookings = new ArrayList<>();
+        collection.forEach(booking -> {
+            if (!booking.getStatus().equals("COMPLETED")){
+                if (!(LocalDateTime.now().compareTo(ZonedDateTime.parse(booking.getStartTime()).toLocalDateTime()) > 0 && booking.getStatus().equals("INITIATED"))){
+                    bookings.add(booking);
+                }
+            }
+        });
+        return bookings;
     }
 
     public static HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, String newTime, String newSiteId) throws Exception {
