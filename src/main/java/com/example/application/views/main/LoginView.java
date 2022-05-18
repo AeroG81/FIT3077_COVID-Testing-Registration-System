@@ -30,7 +30,6 @@ public class LoginView extends HorizontalLayout {
     private PasswordField password = new PasswordField();
     private UserCollection uc = new UserCollection();
     private Button loginButton = new Button("Log In");
-    private Button redirectToTestingSite = new Button("Browse Testing Sites");
     private Button redirectToOnsiteInterview = new Button("Test Recommendation");
     private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
 
@@ -75,13 +74,6 @@ public class LoginView extends HorizontalLayout {
 
         dialogLayout.add(new H1("Choose where you want to go: "));
         dialogLayout.add(new Hr());
-
-        redirectToTestingSite = new Button("Browse Testing Sites");
-        redirectToTestingSite.addClickListener(f -> {
-                redirectToTestingSite.getUI().ifPresent(ui -> ui.navigate("testingsite"));
-                redirectOptions.close();
-            }
-        );
 
         redirectToOnsiteInterview = new Button("Test Recommendation");
         redirectToOnsiteInterview.addClickListener(g -> {
@@ -132,7 +124,6 @@ public class LoginView extends HorizontalLayout {
                     try {
                         if (uc.checkIsCustomer(user.getUserName())){
                             // add testing site and system booking route
-                            dialogLayout.add(redirectToTestingSite);
                             dialogLayout.add(redirectToSystemBooking);
                         }
                         if (uc.checkIsReceptionist(user.getUserName())){
