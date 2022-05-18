@@ -38,7 +38,7 @@ public class UserProfileView extends VerticalLayout {
                 if (UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))
                     UI.getCurrent().navigate("systembooking");
                 else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
-                    UI.getCurrent().navigate("onsitebooking");
+                    UI.getCurrent().navigate("receptionist");
                 else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
                     UI.getCurrent().navigate("onsiteinterview");
             }

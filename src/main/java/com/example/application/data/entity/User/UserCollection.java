@@ -34,7 +34,6 @@ public class UserCollection {
     public User verifyUserId(String username, String password){
         User user = null;
         if (verifyUserService(username,password)) {
-            System.out.println("Hi");
             int i = 0;
             boolean endLoop = false;
             while (i<collection.size() && !endLoop){

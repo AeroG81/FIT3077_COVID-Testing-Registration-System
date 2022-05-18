@@ -308,7 +308,7 @@ public class BookingManagementLayout extends VerticalLayout {
             });
         });
         this.removeAll();
-        grid.setHeight("900px");
+        grid.setHeight("750px");
         this.add(bookingOptions, grid);
     }
 
