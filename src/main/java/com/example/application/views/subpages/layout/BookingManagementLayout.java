@@ -116,7 +116,6 @@ public class BookingManagementLayout extends VerticalLayout {
                 Notification noti = Notification.show("Booking are CANCELLED, COMPLETED or EXPIRED, unable to update");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } else {
-
                 if (selectedBooking.getClass().equals(HomeTestingBooking.class) && (startTime.getValue().toLocalTime().getHour() < 8 || startTime.getValue().toLocalTime().getHour() >= 21)) {
                     Notification noti = Notification.show("Online testing only available during 0800 - 2100");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -192,7 +191,7 @@ public class BookingManagementLayout extends VerticalLayout {
         deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         Button historyRevertButton = new Button("Revert History",e -> {
-            if (!historySelect.getValue().equals("current")) {
+            if (!historySelect.getValue().equals("current") && !isInvalidStatus(selectedBooking)) {
                 List<String> additionalInfo = new ArrayList<>();
                 additionalInfo.add(0, selectedBooking.getQrcode());
                 if (selectedBooking.getClass().equals(HomeTestingBooking.class))
@@ -216,6 +215,9 @@ public class BookingManagementLayout extends VerticalLayout {
                             Notification noti = Notification.show("Revert Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         }
+                        else
+                            throw new Exception(response.body());
+                        editorDialog.close();
                         this.reloadForm();
                     } catch (Exception exception) {
                         Notification noti = Notification.show("Revert Failed");
@@ -225,7 +227,7 @@ public class BookingManagementLayout extends VerticalLayout {
                 }
             }
             else {
-                Notification noti = Notification.show("Please select a history version");
+                Notification noti = Notification.show("Please select a history version and ensure status is INITIATED");
                 noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
             }
         });
@@ -255,7 +257,7 @@ public class BookingManagementLayout extends VerticalLayout {
     private void reloadForm() {
         bookingCollection.refreshCollection();
         grid = new Grid<>(Booking.class, false);
-        grid.addColumn(b -> b.getCustomer().getGivenName()).setHeader("Given name").setTextAlign(ColumnTextAlign.START);
+        grid.addColumn(b -> b.getCustomer().getGivenName()).setHeader("Given name").setTextAlign(ColumnTextAlign.END);
         grid.addColumn(b -> b.getCustomer().getFamilyName()).setHeader("Family name").setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> b.getCustomer().getUserName()).setHeader("Username").setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> ZonedDateTime.parse(b.getStartTime()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm"))).setHeader("Booking DateTime").setAutoWidth(true).setTextAlign(ColumnTextAlign.END).setSortable(true).setComparator(new Comparator<Booking>() {
@@ -307,6 +309,7 @@ public class BookingManagementLayout extends VerticalLayout {
                 editorDialog.open();
             });
         });
+        grid.getElement().getStyle().set("font-family","Roboto Mono");
         this.removeAll();
         grid.setHeight("750px");
         this.add(bookingOptions, grid);

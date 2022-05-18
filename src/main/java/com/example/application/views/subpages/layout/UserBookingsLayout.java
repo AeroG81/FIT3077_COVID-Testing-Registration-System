@@ -93,6 +93,29 @@ public class UserBookingsLayout extends VerticalLayout {
     }
 
     private HorizontalLayout configureButtonLayout() {
+        Button cancelBooking = new Button("Cancel",e -> {
+            if (!isInvalidStatus(selectedBooking)){
+                try {
+                    HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
+                    if (response.statusCode() == 200){
+                        Notification noti = Notification.show("Cancellation Success");
+                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    }
+                    else
+                        throw new Exception(response.body());
+                    editorDialog.close();
+                    this.reloadForm();
+                }
+                catch (Exception exception) {
+                    System.out.println("Cancellation failed " + exception);
+                }
+            }
+            else {
+                Notification noti = Notification.show("Invalid Status, unable to Cancel Booking");
+                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        cancelBooking.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         Button closeButton = new Button("Close",e -> editorDialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -102,7 +125,6 @@ public class UserBookingsLayout extends VerticalLayout {
                 Notification noti = Notification.show("Booking are CANCELLED, COMPLETED or EXPIRED, unable to update");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             } else {
-
                 if (selectedBooking.getClass().equals(HomeTestingBooking.class) && (startTime.getValue().toLocalTime().getHour() < 8 || startTime.getValue().toLocalTime().getHour() >= 21)) {
                     Notification noti = Notification.show("Online testing only available during 0800 - 2100");
                     noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -159,9 +181,8 @@ public class UserBookingsLayout extends VerticalLayout {
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
-
         Button historyRevertButton = new Button("Revert History",e -> {
-            if (!historySelect.getValue().equals("current")) {
+            if (!historySelect.getValue().equals("current") && !isInvalidStatus(selectedBooking)) {
                 List<String> additionalInfo = new ArrayList<>();
                 additionalInfo.add(0, selectedBooking.getQrcode());
                 if (selectedBooking.getClass().equals(HomeTestingBooking.class))
@@ -185,6 +206,9 @@ public class UserBookingsLayout extends VerticalLayout {
                             Notification noti = Notification.show("Revert Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         }
+                        else
+                            throw new Exception(response.body());
+                        editorDialog.close();
                         this.reloadForm();
                     } catch (Exception exception) {
                         Notification noti = Notification.show("Revert Failed");
@@ -194,13 +218,13 @@ public class UserBookingsLayout extends VerticalLayout {
                 }
             }
             else {
-                Notification noti = Notification.show("Please select a history version");
+                Notification noti = Notification.show("Please select a history version and ensure status is INITIATED");
                 noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
             }
         });
         historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
-        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton, saveButton, closeButton);
+        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton, cancelBooking, saveButton, closeButton);
         buttonLayout.setJustifyContentMode(JustifyContentMode.END);
         return buttonLayout;
     }
