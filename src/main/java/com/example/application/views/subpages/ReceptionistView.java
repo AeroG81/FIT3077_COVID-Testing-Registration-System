@@ -5,10 +5,7 @@ import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.User;
 import com.example.application.data.entity.User.UserCollection;
-import com.example.application.views.subpages.layout.PinVerifyLayout;
-import com.example.application.views.subpages.layout.ProfileAvatarLayout;
-import com.example.application.views.subpages.layout.QrVerifyLayout;
-import com.example.application.views.subpages.layout.BookingManagementLayout;
+import com.example.application.views.subpages.layout.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
@@ -92,7 +89,8 @@ public class ReceptionistView extends VerticalLayout {
                 mainLayout.add(new BookingManagementLayout());
             }
         });
-
+        Dialog notification = new NotificationDialog();
+        notification.open();
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);

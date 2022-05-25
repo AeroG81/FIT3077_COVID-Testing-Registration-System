@@ -40,7 +40,7 @@ public class BookingManagementLayout extends VerticalLayout {
     private ComboBox<TestingSite> testingSite = new ComboBox<>("TestingSite");
     private DateTimePicker startTime = new DateTimePicker();
     private FormLayout editorForm = new FormLayout();
-    private Dialog editorDialog = new com.vaadin.flow.component.dialog.Dialog();
+    private Dialog editorDialog = new Dialog();
     private Label pin = new Label();
     private Label qr = new Label();
     private Label url = new Label();
