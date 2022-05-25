@@ -237,7 +237,31 @@ public class BookingManagementLayout extends VerticalLayout {
         });
         historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
-        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton,deleteButton, saveButton, closeButton);
+        Button cancelBookingButton = new Button("Cancel",e -> {
+            if (!isInvalidStatus(selectedBooking)){
+                try {
+                    HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
+                    if (response.statusCode() == 200){
+                        Notification noti = Notification.show("Cancellation Success");
+                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    }
+                    else
+                        throw new Exception(response.body());
+                    editorDialog.close();
+                    this.reloadForm();
+                }
+                catch (Exception exception) {
+                    System.out.println("Cancellation failed " + exception);
+                }
+            }
+            else {
+                Notification noti = Notification.show("Invalid Status, unable to Cancel Booking");
+                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        cancelBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(cancelBookingButton, deleteButton, historyRevertButton, saveButton, closeButton);
         buttonLayout.setJustifyContentMode(JustifyContentMode.END);
         return buttonLayout;
     }
