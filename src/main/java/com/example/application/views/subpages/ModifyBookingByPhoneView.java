@@ -73,6 +73,9 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
     private Button revertBookingButton = new Button("Revert previous version");
 
     private Button verifyUserButton = new Button("Verify User");
+
+    private Button redirectToBookingSiteButton = new Button("Book a Test");
+
     private MultiSelectListBox<String> bookingContent;
 
     private ArrayList<String> history = new ArrayList<>();
@@ -83,6 +86,8 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
     private final H3 bookingDetailsHeader = new H3("Booking Details");
 
     private final Hr hr1 = new Hr();
+
+    private final Hr h2 = new Hr();
 
     private String bookingIDList = "Booking ID: N/A";
     private String customerIDList ="Customer ID: N/A";
@@ -106,6 +111,7 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         this.populateVenuePicker();
         this.modifyBooking();
         this.revertBooking();
+        this.redirectToBookingSite();
 
         // Verifying Booking dialog
         bookingIDandPINDialog = new Dialog();
@@ -165,10 +171,13 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
                 verifyUserLayout,
                 pickVenueLayout,
                 pickDatetimeLayout,
-                revertBookingLayout);
+                revertBookingLayout,
+                h2,
+                redirectToBookingSiteButton
+                );
 
         mainLayoutPhoneCallLayout.setSizeFull();
-        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, title, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, revertBookingLayout);
+        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, title, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, revertBookingLayout, redirectToBookingSiteButton);
 
         add(bookingIDandPINDialog, mainLayoutPhoneCallLayout);
     }
@@ -531,5 +540,8 @@ public class ModifyBookingByPhoneView extends VerticalLayout {
         }
     }
 
-    
+    private void redirectToBookingSite() {
+        redirectToBookingSiteButton.addClickListener( e -> redirectToBookingSiteButton.getUI().ifPresent(ui -> ui.navigate("receptionist")));
+        redirectToBookingSiteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    }
 }
