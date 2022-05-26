@@ -168,7 +168,7 @@ public class BookingCollection {
         return userBookingMethod;
     }
 
-    /***
+    /**
      * Search through the booking collection to find the booking match with given booking id
      * @param bookingId
      * @return Corresponding booking if there is one, else null

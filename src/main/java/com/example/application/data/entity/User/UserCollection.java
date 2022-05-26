@@ -127,7 +127,7 @@ public class UserCollection {
         return null;
     }
 
-    public ArrayList<Receptionist> getReceptionists() throws Exception {
+    public ArrayList<Receptionist> getReceptionists(){
         ArrayList<Receptionist> receptionists = new ArrayList<>();
 
         for (User user: collection) {
@@ -139,7 +139,7 @@ public class UserCollection {
     }
 
     // Get notifications for receptionist by their ID
-    public ArrayList<String> getNotificationsByReceptionistId (String receptionistId) throws Exception {
+    public ArrayList<String> getNotificationsByReceptionistId (String receptionistId){
         ArrayList<Receptionist> receptionistList = this.getReceptionists();
 
         for (Receptionist rec: receptionistList){
