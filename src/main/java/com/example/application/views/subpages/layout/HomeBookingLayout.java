@@ -3,6 +3,7 @@ package com.example.application.views.subpages.layout;
 import com.example.application.data.entity.BookingMethod.SystemBookingMethod;
 import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
+import com.example.application.data.entity.User.UserNotifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.UI;
@@ -23,6 +24,7 @@ import com.vaadin.flow.server.VaadinSession;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * This is a layout for logged in user to book for home testing

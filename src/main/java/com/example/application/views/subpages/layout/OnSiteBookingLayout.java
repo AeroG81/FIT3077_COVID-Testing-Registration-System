@@ -5,6 +5,7 @@ import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.Customer;
 import com.example.application.data.entity.User.User;
+import com.example.application.data.entity.User.UserNotifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.UI;
@@ -25,6 +26,7 @@ import com.vaadin.flow.server.VaadinSession;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * This is a layout for logged in user to book for on site testing
@@ -139,6 +141,12 @@ public class OnSiteBookingLayout extends VerticalLayout {
                         response = new SystemBookingMethod().registerBooking(testingSite.getValue(), startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user, notes.getValue());
                         mappedResponse = new ObjectMapper().readValue(response.body(), ObjectNode.class);
                         if (response.statusCode()==201){
+
+                            String message = "CREATED - "+"Booking: "+ mappedResponse.get("id") +" | USER: "+ user.getUserName() + " " + startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
+                            ArrayList<String> testingSiteIds = new ArrayList<>();
+                            testingSiteIds.add(testingSite.getValue().getId());
+                            notifyReceptionists(message,testingSiteIds);
+
                             Notification noti = Notification.show("Application submitted");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         }
@@ -163,6 +171,23 @@ public class OnSiteBookingLayout extends VerticalLayout {
                 confirmDialog.open();
             }
         });
+    }
+
+    /**
+     * Helper method to notify receptionist based on the testing site
+     * @param notificationMessage
+     * @param testingSiteIds List of testing site IDs where the updated receptionists' notifications are updated
+     */
+    private void notifyReceptionists(String notificationMessage, ArrayList<String> testingSiteIds){
+        // Initialize observable
+        UserNotifier un = new UserNotifier();
+
+        // Updates all subscribed users working in testingSiteIds  with notification "updatednoti00" (can check in API interactive documentation)
+        try {
+            un.updateUsers(notificationMessage, testingSiteIds);
+        } catch (Exception exception){
+            System.out.println(exception);
+        }
     }
 
 }

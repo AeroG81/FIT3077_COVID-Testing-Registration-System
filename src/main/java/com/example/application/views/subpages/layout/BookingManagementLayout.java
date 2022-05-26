@@ -3,6 +3,7 @@ package com.example.application.views.subpages.layout;
 import com.example.application.data.entity.Booking.*;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
+import com.example.application.data.entity.User.UserNotifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
@@ -202,6 +203,13 @@ public class BookingManagementLayout extends VerticalLayout {
                     try {
                         HttpResponse<String> response = BookingCollection.updateBooking(selectedBooking.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
                         if (response.statusCode() == 200){
+                            if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
+                                String message = "UPDATED - "+"Booking: "+ selectedBooking.getBookingId() +" | USER: "+ selectedBooking.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getName() + " " + selectedBooking.getStartTime() + " TO " + testingSite.getValue().getName() + " " + startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
+                                ArrayList<String> testingSiteIds = new ArrayList<>();
+                                testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                                testingSiteIds.add(testingSite.getValue().getId());
+                                notifyReceptionists(message,testingSiteIds);
+                            }
                             Notification noti = Notification.show("Update Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         }
@@ -229,6 +237,12 @@ public class BookingManagementLayout extends VerticalLayout {
             try {
                 HttpResponse<String> response = BookingCollection.deleteBooking(selectedBooking.getBookingId());
                 if (response.statusCode() == 204) {
+                    if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
+                        String message = "DELETED - "+"Booking: "+ selectedBooking.getBookingId() +" | USER: "+ selectedBooking.getCustomer().getUserName() ;
+                        ArrayList<String> testingSiteIds = new ArrayList<>();
+                        testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                        notifyReceptionists(message,testingSiteIds);
+                    }
                     Notification noti = Notification.show("Delete Success");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } else
@@ -270,6 +284,14 @@ public class BookingManagementLayout extends VerticalLayout {
                     try {
                         HttpResponse<String> response = BookingCollection.revertBooking(selectedBooking.getBookingId(), additionalInfo, selectedBooking.getHistory(), historySelect.getValue(), index);
                         if (response.statusCode()==200){
+                            if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
+                                ObjectNode historyNodes = new ObjectMapper().readValue(historySelect.getValue(), ObjectNode.class);
+                                String message = "REVERTED - "+"Booking: "+ selectedBooking.getBookingId() +" | USER: "+ selectedBooking.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getName()+ " " + selectedBooking.getStartTime() + " TO " + historyNodes.get("testingsitename").asText() + " " + startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
+                                ArrayList<String> testingSiteIds = new ArrayList<>();
+                                testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                                testingSiteIds.add(historyNodes.get("testingsiteid").asText());
+                                notifyReceptionists(message,testingSiteIds);
+                            }
                             Notification noti = Notification.show("Revert Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         }
@@ -301,6 +323,12 @@ public class BookingManagementLayout extends VerticalLayout {
                 try {
                     HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
                     if (response.statusCode() == 200) {
+                        if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
+                            String message = "CANCELLED - "+"Booking: "+ selectedBooking.getBookingId() +" | USER: "+ selectedBooking.getCustomer().getUserName();
+                            ArrayList<String> testingSiteIds = new ArrayList<>();
+                            testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                            notifyReceptionists(message,testingSiteIds);
+                        }
                         Notification noti = Notification.show("Cancellation Success");
                         noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     } else
@@ -315,6 +343,23 @@ public class BookingManagementLayout extends VerticalLayout {
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+    }
+
+    /**
+     * Helper method to notify receptionist based on the testing site
+     * @param notificationMessage
+     * @param testingSiteIds List of testing site IDs where the updated receptionists' notifications are updated
+     */
+    private void notifyReceptionists(String notificationMessage, ArrayList<String> testingSiteIds){
+        // Initialize observable
+        UserNotifier un = new UserNotifier();
+
+        // Updates all subscribed users working in testingSiteIds  with notification "updatednoti00" (can check in API interactive documentation)
+        try {
+            un.updateUsers(notificationMessage, testingSiteIds);
+        } catch (Exception exception){
+            System.out.println(exception);
+        }
     }
 
     /**

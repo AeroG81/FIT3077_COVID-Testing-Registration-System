@@ -3,6 +3,7 @@ package com.example.application.views.subpages.layout;
 import com.example.application.data.entity.Booking.*;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
+import com.example.application.data.entity.User.UserNotifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.button.Button;
@@ -331,6 +332,7 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                     try {
                         HttpResponse<String> response = BookingCollection.revertBooking(bookingToModify.getBookingId(), additionalInfo, bookingToModify.getHistory(), selectPreviousBooking.getValue(), index);
                         if (response.statusCode() == 200) {
+
                             Notification noti = Notification.show("Revert Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                             bc = new BookingCollection();
@@ -505,6 +507,23 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Helper method to notify receptionist based on the testing site
+     * @param notificationMessage
+     * @param testingSiteIds List of testing site IDs where the updated receptionists' notifications are updated
+     */
+    private void notifyReceptionists(String notificationMessage, ArrayList<String> testingSiteIds){
+        // Initialize observable
+        UserNotifier un = new UserNotifier();
+
+        // Updates all subscribed users working in testingSiteIds  with notification "updatednoti00" (can check in API interactive documentation)
+        try {
+            un.updateUsers(notificationMessage, testingSiteIds);
+        } catch (Exception exception){
+            System.out.println(exception);
         }
     }
 

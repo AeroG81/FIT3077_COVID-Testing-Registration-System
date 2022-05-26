@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -66,6 +67,7 @@ public class NotificationDialog extends Dialog {
         notificationGrid = new Grid<>();
         notificationGrid.addColumn(Object::toString).setHeader("Notifications").setTextAlign(ColumnTextAlign.START);
         notificationGrid.setItems(notifications);
+        notificationGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
     /**

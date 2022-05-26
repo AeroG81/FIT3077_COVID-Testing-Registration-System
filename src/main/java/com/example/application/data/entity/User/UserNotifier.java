@@ -67,7 +67,6 @@ public class UserNotifier {
         for (User user : this.users ){
             user.update(this.notification, testingSiteIds);
         }
-
     }
 }
 

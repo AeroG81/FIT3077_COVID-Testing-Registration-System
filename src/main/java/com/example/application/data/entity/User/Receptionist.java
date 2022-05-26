@@ -84,7 +84,6 @@ public class Receptionist extends User {
             jsonString += "] }" + "}";
 
             String url = "https://fit3077.com/api/v2/user";
-
             new HttpHelper().patchService(url, jsonString, this.getId());
         }
     }
