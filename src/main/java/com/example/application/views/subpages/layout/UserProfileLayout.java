@@ -27,10 +27,6 @@ public class UserProfileLayout extends VerticalLayout {
         userFamilyName.setValue(UI.getCurrent().getSession().getAttribute("userFamilyName").toString());
         userName.setValue(UI.getCurrent().getSession().getAttribute("userName").toString());
         userPhoneNumber.setValue(Integer.parseInt(UI.getCurrent().getSession().getAttribute("userPhoneNumber").toString()));
-//        userGivenName.setEnabled(false);
-//        userFamilyName.setEnabled(false);
-//        userName.setEnabled(false);
-//        userPhoneNumber.setEnabled(false);
     }
 
     public void configureFormLayout(){

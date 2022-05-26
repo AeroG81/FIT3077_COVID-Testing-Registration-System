@@ -150,20 +150,14 @@ public class UserCollection {
         return null;
     }
 
-    public HttpResponse<String> clearNotifications(String userId) throws Exception {
-        for (User user: collection){
-            if (user instanceof Receptionist) {
-                String jsonString = "{ \"additionalInfo\": {" +
-                        "\"testingSiteId\":\"" + ((Receptionist) user).getTestingSiteId() + "\"";
-                jsonString += ",\"notifications\": []";
-                jsonString += "}" + "}";
-
-                String url = "https://fit3077.com/api/v2/user";
-
-                return new HttpHelper().patchService(url, jsonString, user.getId());
-            }
-        }
-        return null;
+    // Clear notifications for receptionist by their ID
+    public static HttpResponse<String> clearNotifications(String userId, String testingSiteId) throws Exception {
+        String jsonString = "{ \"additionalInfo\": {" +
+                "\"testingSiteId\":\"" + testingSiteId + "\"";
+        jsonString += ",\"notifications\": []";
+        jsonString += "}" + "}";
+        String url = "https://fit3077.com/api/v2/user";
+        return new HttpHelper().patchService(url, jsonString, userId);
     }
 
     // Verifies is User exists in collection of Users using username and password
