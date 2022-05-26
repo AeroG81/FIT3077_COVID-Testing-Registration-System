@@ -11,6 +11,10 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 
+/**
+ * Profile Avatar layout that shows user profile
+ * Allow user to navigate to profile and sign out
+ */
 public class ProfileAvatarLayout extends HorizontalLayout {
 
     public ProfileAvatarLayout() {

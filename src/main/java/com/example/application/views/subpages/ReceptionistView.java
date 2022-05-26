@@ -12,7 +12,13 @@ import com.vaadin.flow.router.Route;
 @Route(value = "/receptionist")
 @PageTitle("OnSite")
 /**
- * This is the page for Receptionist to book user at site, verify PIN, verify QR for RAT-kit, manage all booking, modify booking when called by user.
+ * This is the page for Receptionist to
+ * book user at site,
+ * verify PIN,
+ * verify QR for RAT-kit,
+ * manage all booking,
+ * modify booking when called by user.
+ * Lastly with a profile avatar to go to profile tab
  */
 public class ReceptionistView extends VerticalLayout implements BeforeLeaveObserver {
 
@@ -56,6 +62,11 @@ public class ReceptionistView extends VerticalLayout implements BeforeLeaveObser
         setJustifyContentMode(JustifyContentMode.CENTER);
         add(new ProfileAvatarLayout(),mainTabs,mainLayout);
     }
+
+    /**
+     * Lifecycle event that occur before leaving the page
+     * @param event
+     */
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         BeforeLeaveEvent.ContinueNavigationAction action = event.postpone();

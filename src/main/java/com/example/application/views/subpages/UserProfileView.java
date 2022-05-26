@@ -14,7 +14,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "/userprofile")
 @PageTitle("Profile")
 /**
- * This is the page for User booking via System
+ * This is the page for showing user details and their existing booking
  */
 public class UserProfileView extends VerticalLayout {
     private final VerticalLayout mainLayout = new VerticalLayout();
@@ -24,7 +24,6 @@ public class UserProfileView extends VerticalLayout {
     private final Tabs mainTabs = new Tabs(tabUserProfile, tabActiveBookings, tabHomeBooking);
 
     public UserProfileView(){
-        removeAll();
         // Change layout based on selected tab
         mainLayout.add(new UserProfileLayout());
         mainTabs.addSelectedChangeListener(event -> {
@@ -45,7 +44,8 @@ public class UserProfileView extends VerticalLayout {
             }
         });
         if (!UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))
-            tabActiveBookings.setEnabled(false);
+            mainTabs.remove(tabActiveBookings);
+//            tabActiveBookings.setEnabled(false);
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);

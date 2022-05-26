@@ -9,8 +9,6 @@ import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.accordion.Accordion;
-import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -24,7 +22,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.select.Select;
 
 import java.net.http.HttpResponse;
@@ -36,7 +33,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * This is a grid layout that shows all the bookings made by a particular user
+ */
 public class UserBookingsLayout extends VerticalLayout {
 
     private TestingSiteCollection collection = new TestingSiteCollection();
@@ -63,15 +62,24 @@ public class UserBookingsLayout extends VerticalLayout {
         this.configureEditorDialog();
     }
 
+    /**
+     * Configure the datetime picker
+     */
     private void configureStartTime(){
         startTime.setMin(LocalDateTime.now());
         startTime.setMax(LocalDateTime.now().plusDays(90));
     }
 
+    /**
+     * Configure the history select component
+     */
     private void configureHistoryRevert(){
         historySelect.setLabel("History");
     }
 
+    /**
+     * Populate the history select component
+     */
     private void updateRevertOptions() {
         historySelect.clear();
         currentBookingHistory.clear();
@@ -86,12 +94,19 @@ public class UserBookingsLayout extends VerticalLayout {
         historySelect.setValue("current");
     }
 
+    /**
+     * Configure the editor dialog
+     */
     private void configureEditorDialog() {
         HorizontalLayout buttonLayout = configureButtonLayout();
         editorDialog.add(editorForm, buttonLayout);
         editorDialog.setWidth("1200px");
     }
 
+    /**
+     * Configure Button Layout with CANCEL, REVERT, SAVE and CLOSE
+     * @return a layout with buttons
+     */
     private HorizontalLayout configureButtonLayout() {
         Button cancelBooking = new Button("Cancel",e -> {
             if (!isInvalidStatus(selectedBooking)){
@@ -229,6 +244,9 @@ public class UserBookingsLayout extends VerticalLayout {
         return buttonLayout;
     }
 
+    /**
+     * Configure the form inside the editor dialog
+     */
     private void configureEditorForm() {
         editorForm.getElement().getStyle().set("font-family","Roboto Mono");
         editorForm.setResponsiveSteps(
@@ -241,11 +259,17 @@ public class UserBookingsLayout extends VerticalLayout {
         editorForm.add(pin, qr, url, testingSite, startTime, historySelect);
     }
 
+    /**
+     * Populate the testing site combo box
+     */
     private void populateTestingSiteComboBox() {
         testingSite.setItems(collection.getCollection());
         testingSite.setItemLabelGenerator(TestingSite::getName);
     }
 
+    /**
+     * reload the grid
+     */
     private void reloadForm() {
         bookingCollection.refreshCollection();
         gridBookingData = bookingCollection.getBookingsById(UI.getCurrent().getSession().getAttribute("userId").toString());

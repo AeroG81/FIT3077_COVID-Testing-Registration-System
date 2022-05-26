@@ -21,7 +21,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import java.net.http.HttpResponse;
 
 /**
- * QR verification Layout that can be reused for pages
+ * QR verification Layout that verify given qr code which can be reused for pages
  */
 public class QrVerifyLayout extends VerticalLayout {
     private Button submitVerification;

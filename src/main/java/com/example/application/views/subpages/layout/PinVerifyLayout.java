@@ -13,7 +13,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 
 /**
- * PIN verification Layout that can be reused for pages
+ * PIN verification Layout that verify PIN code which can be reused for pages
  */
 public class PinVerifyLayout extends VerticalLayout {
     private Button submitVerification;

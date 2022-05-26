@@ -30,8 +30,8 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * This is a layout for receptionist booking where receptionist can
- * create a new user for booking,
- * verify existing user for booking
+ * - create a new user for booking,
+ * - verify existing user for booking
  */
 public class ReceptionistBookingLayout extends VerticalLayout {
     private final TestingSiteCollection collection = new TestingSiteCollection();

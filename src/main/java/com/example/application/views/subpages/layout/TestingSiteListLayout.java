@@ -3,7 +3,6 @@ package com.example.application.views.subpages.layout;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -12,6 +11,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+/**
+ * This is a layout  contain a list that shows all existing Testing site
+ */
 public class TestingSiteListLayout extends VerticalLayout {
     Grid<TestingSite> grid = new Grid<>(TestingSite.class,false);
     TextField filterText = new TextField();
