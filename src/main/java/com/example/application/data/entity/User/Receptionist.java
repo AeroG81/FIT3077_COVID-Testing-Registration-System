@@ -28,7 +28,12 @@ public class Receptionist extends User{
     public void addNotifications(String notification) {
         this.notifications.add(notification);
     }
-    
+
+    @Override
+    public void update() {
+
+    }
+
     // Prints out Receptionist's attributes in JSON formatted String
     @Override
     public String toString() {
