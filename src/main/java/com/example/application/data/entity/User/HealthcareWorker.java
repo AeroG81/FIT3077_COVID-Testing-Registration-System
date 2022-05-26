@@ -11,4 +11,6 @@ public class HealthcareWorker extends User{
     public HealthcareWorker(String user_id, String userGivenName, String userFamilyName, String userName, String userPhoneNumber) {
         super(user_id, userGivenName, userFamilyName, userName, userPhoneNumber);
     }
+
+    public void update() {}
 }

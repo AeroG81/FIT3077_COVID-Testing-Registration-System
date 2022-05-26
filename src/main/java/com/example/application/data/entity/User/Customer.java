@@ -11,4 +11,7 @@ public class Customer extends User{
     public Customer(String user_id, String userGivenName, String userFamilyName, String userName, String userPhoneNumber) {
         super(user_id, userGivenName, userFamilyName, userName, userPhoneNumber);
     }
+
+    @Override
+    public void update() {}
 }

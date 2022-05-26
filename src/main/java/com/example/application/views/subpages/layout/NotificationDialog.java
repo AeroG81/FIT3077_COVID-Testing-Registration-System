@@ -18,6 +18,8 @@ import java.util.ArrayList;
 public class NotificationDialog extends Dialog {
     private Grid<String> notificationGrid = null;
 
+    private UserCollection userCollection = new UserCollection();
+
     public NotificationDialog (){
         populateGrid();
         HorizontalLayout buttonLayout = configureButtonLayout();
@@ -31,7 +33,7 @@ public class NotificationDialog extends Dialog {
     private HorizontalLayout configureButtonLayout() {
         Button closeButton = new Button("Clear All", e -> {
             try {
-                HttpResponse<String> response = UserCollection.clearNotifications(UI.getCurrent().getSession().getAttribute("userId").toString(),UI.getCurrent().getSession().getAttribute("testingSiteId").toString());
+                HttpResponse<String> response = userCollection.clearNotifications(UI.getCurrent().getSession().getAttribute("userId").toString(),UI.getCurrent().getSession().getAttribute("testingSiteId").toString());
                 if (response.statusCode()==200){
                     Notification noti = Notification.show("Notification cleared");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);

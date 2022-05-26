@@ -69,6 +69,8 @@ public abstract class User {
         return additionalInfo;
     }
 
+    public abstract void update();
+
     // Prints out User's attributes in JSON formatted String
     @Override
     public String toString() {

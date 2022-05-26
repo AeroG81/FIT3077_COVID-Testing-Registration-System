@@ -150,17 +150,19 @@ public class UserCollection {
         return null;
     }
 
-    public HttpResponse<String> clearNotifications(String userId) throws Exception {
+    public HttpResponse<String> clearNotifications(String userId, String testingSiteId) throws Exception {
         for (User user: collection){
             if (user instanceof Receptionist && user.getId().equals(userId)) {
-                String jsonString = "{ \"additionalInfo\": {" +
-                        "\"testingSiteId\":\"" + ((Receptionist) user).getTestingSiteId() + "\"";
-                jsonString += ",\"notifications\": []";
-                jsonString += "}" + "}";
+                if (((Receptionist) user).getTestingSiteId().equals(testingSiteId)) {
+                    String jsonString = "{ \"additionalInfo\": {" +
+                            "\"testingSiteId\":\"" + ((Receptionist) user).getTestingSiteId() + "\"";
+                    jsonString += ",\"notifications\": []";
+                    jsonString += "}" + "}";
 
-                String url = "https://fit3077.com/api/v2/user";
+                    String url = "https://fit3077.com/api/v2/user";
 
-                return new HttpHelper().patchService(url, jsonString, user.getId());
+                    return new HttpHelper().patchService(url, jsonString, user.getId());
+                }
             }
         }
         return null;
