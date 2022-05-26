@@ -39,11 +39,21 @@ public class HomeTestingBooking extends Booking {
         this.url = url;
     }
 
+    /**
+     * Constructor for HomeTestingBooking
+     * @param bookingId booking ID
+     * @param startTime booking appointment time
+     * @param user customer for the booking
+     * @param notes  notes provided for the booking
+     * @param status status of the booking
+     * @param smsPin PIN code to verify the booking
+     * @param qrcode QR code to verify the booking
+     * @param url url for the meeting with experts
+     */
     public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history, String lastUpdateTime) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
         this.url = url;
     }
-
 
     /**
      * Method to generate a URL for meeting

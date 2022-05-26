@@ -145,10 +145,18 @@ public abstract class Booking {
         return qrcode;
     }
 
+    /**
+     * Getter for history
+     * @return List of string contain history of booking
+     */
     public List<String> getHistory() {
         return history;
     }
 
+    /***
+     * Getter for time booking last updated
+     * @return string in time format
+     */
     public String getLastUpdateTime() {
         return lastUpdateTime;
     }
