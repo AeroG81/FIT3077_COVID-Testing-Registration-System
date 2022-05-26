@@ -1,5 +1,8 @@
 package com.example.application.data.entity.User;
 
+import com.example.application.data.entity.HttpHelper;
+
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
 public class Receptionist extends User{
@@ -26,11 +29,23 @@ public class Receptionist extends User{
         this.notifications.add(notification);
     }
 
-    public void clearNotifications(){
-        this.notifications.clear();
+    public HttpResponse<String> clearNotifications() throws Exception {
+        String jsonString = "{ \"additionalInfo\": {" +
+                "\"testingSiteId\":\"" + this.testingSiteId + "\"";
+        jsonString += ",\"notifications\": []";
+        jsonString += "}" + "}";
+
+        String url = "https://fit3077.com/api/v2/user";
+
+        return new HttpHelper().patchService(url, jsonString, this.getId());
     }
 
     public void updateNotifications(String notification) {
+
+    }
+
+    @Override
+    public void update() {
 
     }
 
