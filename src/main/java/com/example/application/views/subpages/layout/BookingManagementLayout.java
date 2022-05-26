@@ -34,6 +34,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This is a booking management layout which is a grid
+ * User will be able to modify bookings by CANCELLING, REVERTING, MODIFY, DELETE
+ * Details of the booking will also be shown to user.
+ */
 public class BookingManagementLayout extends VerticalLayout {
 
     private TestingSiteCollection collection = new TestingSiteCollection();
@@ -62,6 +67,9 @@ public class BookingManagementLayout extends VerticalLayout {
         this.configureEditorDialog();
     }
 
+    /**
+     * Configure radio group for user to select what data to show to user
+     */
     private void configureRadioGroup(){
         bookingOptions.setLabel("Show Booking");
         bookingOptions.setItems("Show All", "Show Active and Cancelled");
@@ -72,6 +80,9 @@ public class BookingManagementLayout extends VerticalLayout {
         });
     }
 
+    /**
+     * Refresh grid Data based on the radio selected by user
+     */
     private void refreshGridBasedOnRadio(){
         if (bookingOptions.getValue().equals("Show Active and Cancelled")){
             gridBookingData = bookingCollection.getActiveAndCancelledBooking();
@@ -81,15 +92,24 @@ public class BookingManagementLayout extends VerticalLayout {
         }
     }
 
+    /**
+     * Configure the datetime picker
+     */
     private void configureStartTime(){
         startTime.setMin(LocalDateTime.now());
         startTime.setMax(LocalDateTime.now().plusDays(90));
     }
 
+    /**
+     * Configure the history select component
+     */
     private void configureHistoryRevert(){
         historySelect.setLabel("History");
     }
 
+    /**
+     * Populate the history select component
+     */
     private void updateRevertOptions() {
         historySelect.clear();
         currentBookingHistory.clear();
@@ -104,12 +124,19 @@ public class BookingManagementLayout extends VerticalLayout {
         historySelect.setValue("current");
     }
 
+    /**
+     * Configure the editor dialog
+     */
     private void configureEditorDialog() {
         HorizontalLayout buttonLayout = configureButtonLayout();
         editorDialog.add(editorForm, buttonLayout);
         editorDialog.setWidth("1200px");
     }
 
+    /**
+     * Configure Button Layout with CANCEL, REVERT, DELETE, SAVE and CLOSE
+     * @return a layout with buttons
+     */
     private HorizontalLayout configureButtonLayout() {
 
         Button closeButton = new Button("Close",e -> editorDialog.close());
@@ -266,6 +293,9 @@ public class BookingManagementLayout extends VerticalLayout {
         return buttonLayout;
     }
 
+    /**
+     * Configure the form inside the editor dialog
+     */
     private void configureEditorForm() {
         editorForm.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 2)
@@ -277,11 +307,17 @@ public class BookingManagementLayout extends VerticalLayout {
         editorForm.add(pin, qr, url, testingSite, startTime, historySelect);
     }
 
+    /**
+     * Populate the testing site combo box
+     */
     private void populateTestingSiteComboBox() {
         testingSite.setItems(collection.getCollection());
         testingSite.setItemLabelGenerator(TestingSite::getName);
     }
 
+    /**
+     * reload the grid
+     */
     private void reloadForm() {
         bookingCollection.refreshCollection();
         grid = new Grid<>(Booking.class, false);

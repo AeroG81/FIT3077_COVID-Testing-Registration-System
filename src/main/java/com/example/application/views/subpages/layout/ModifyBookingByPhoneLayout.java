@@ -1,4 +1,4 @@
-package com.example.application.views.subpages;
+package com.example.application.views.subpages.layout;
 
 import com.example.application.data.entity.Booking.Booking;
 import com.example.application.data.entity.Booking.BookingCollection;
@@ -21,8 +21,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 
 import java.net.http.HttpResponse;
 import java.text.ParseException;
@@ -35,75 +33,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@PageTitle("Phone Call Booking Modification")
-@Route(value = "/phonecall")
-public class ModifyBookingByPhoneView extends VerticalLayout {
+/**
+ * This is a layout for receptionist to modify booking while the user called receptionist to make modification
+ */
+public class ModifyBookingByPhoneLayout extends VerticalLayout {
+
     private VerticalLayout bookingIDandPINDialogLayout = new VerticalLayout();
-
     private VerticalLayout mainLayoutPhoneCallLayout = new VerticalLayout();
-
     private HorizontalLayout verifyUserLayout = new HorizontalLayout();
-
     private HorizontalLayout pickVenueLayout = new HorizontalLayout();
-
     private HorizontalLayout pickDatetimeLayout = new HorizontalLayout();
-
     private HorizontalLayout revertBookingLayout = new HorizontalLayout();
-
     private Dialog bookingIDandPINDialog;
-
     private ComboBox<TestingSite> newBookingVenue = new ComboBox<>("Testing Sites");
-
     private DateTimePicker newBookingTime = new DateTimePicker();
-
     private TextField bookingIDTextField = new TextField();
-
     private TextField smsPinTextField = new TextField();
-
     private TextField customerUserIdTextField = new TextField();
-
     private H1 dialogHeader = new H1("Enter Customer's Booking ID and PIN: ");
-
     private Button verifyBookingIDandPINButton = new Button("Verify");
-
     private Button changeBookingButton = new Button("Modify Different Booking");
-
     private Button modifyBookingButton = new Button("Modify Booking");
-
     private Button revertBookingButton = new Button("Revert previous version");
-
     private Button verifyUserButton = new Button("Verify User");
-
     private Button redirectToBookingSiteButton = new Button("Book a Test");
-
     private MultiSelectListBox<String> bookingContent;
-
     private ArrayList<String> history = new ArrayList<>();
-
     private Select<String> selectPreviousBooking = new Select<>();
     private final H2 title = new H2("Modify Bookings Through Phone Calls");
-
     private final H3 bookingDetailsHeader = new H3("Booking Details");
-
     private final Hr hr1 = new Hr();
-
     private final Hr h2 = new Hr();
-
     private String bookingIDList = "Booking ID: N/A";
     private String customerIDList ="Customer ID: N/A";
     private String customerFullNameList = "Customer Full Name: N/A";
     private String bookingTestingSiteList = "Booking Testing Site: N/A";
     private String bookingStartTimeList = "Booking Start Time: N/A";
-
     LocalDateTime nowDateTime = LocalDateTime.now();
-
     BookingCollection bc = new BookingCollection();
-
     TestingSiteCollection tc = new TestingSiteCollection();
-
     Booking bookingToModify = null;
 
-    public ModifyBookingByPhoneView(){
+    public ModifyBookingByPhoneLayout(){
         this.changeBookingToModify();
         this.checkBookingIDandPIN();
         this.verifyUser();

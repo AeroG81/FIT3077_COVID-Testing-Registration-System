@@ -30,12 +30,9 @@ public class LoginView extends HorizontalLayout {
     private PasswordField password = new PasswordField();
     private UserCollection uc = new UserCollection();
     private Button loginButton = new Button("Log In");
-    private Button redirectToOnsiteInterview = new Button("Test Recommendation");
-    private Button redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
-
-    private Button redirectToPhoneCallModification = new Button("Modify a Booking");
-
-    private Button redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
+    private Button redirectToHealthcareWorkerView = new Button("Test Recommendation");
+    private Button redirectToReceptionistView = new Button("Make a Booking (On-site Tests only)");
+    private Button redirectToCustomerView = new Button("Make a Booking (On-site Tests and Online Tests)");
 
     /**
      * Populating the Page with username field, password field and submit button
@@ -75,30 +72,23 @@ public class LoginView extends HorizontalLayout {
         dialogLayout.add(new H1("Choose where you want to go: "));
         dialogLayout.add(new Hr());
 
-        redirectToOnsiteInterview = new Button("Test Recommendation");
-        redirectToOnsiteInterview.addClickListener(g -> {
-                redirectToOnsiteInterview.getUI().ifPresent(ui -> ui.navigate("onsiteinterview"));
+        redirectToHealthcareWorkerView = new Button("Test Recommendation");
+        redirectToHealthcareWorkerView.addClickListener(g -> {
+                redirectToHealthcareWorkerView.getUI().ifPresent(ui -> ui.navigate("onsiteinterview"));
                 redirectOptions.close();
             }
         );
 
-        redirectToOnsiteBooking = new Button("Make a Booking (On-site Tests only)");
-        redirectToOnsiteBooking.addClickListener(h -> {
-                redirectToOnsiteBooking.getUI().ifPresent(ui -> ui.navigate("receptionist"));
+        redirectToReceptionistView = new Button("Make a Booking (On-site Tests only)");
+        redirectToReceptionistView.addClickListener(h -> {
+                redirectToReceptionistView.getUI().ifPresent(ui -> ui.navigate("receptionist"));
                 redirectOptions.close();
             }
         );
 
-        redirectToSystemBooking = new Button("Make a Booking (On-site Tests and Online Tests)");
-        redirectToSystemBooking.addClickListener(i -> {
-                redirectToSystemBooking.getUI().ifPresent(ui -> ui.navigate("systembooking"));
-                redirectOptions.close();
-            }
-        );
-
-        redirectToPhoneCallModification = new Button("Modify a Booking");
-        redirectToPhoneCallModification.addClickListener(k -> {
-                redirectToPhoneCallModification.getUI().ifPresent(ui -> ui.navigate("phonecall"));
+        redirectToCustomerView = new Button("Make a Booking (On-site Tests and Online Tests)");
+        redirectToCustomerView.addClickListener(i -> {
+                redirectToCustomerView.getUI().ifPresent(ui -> ui.navigate("systembooking"));
                 redirectOptions.close();
             }
         );
@@ -115,34 +105,22 @@ public class LoginView extends HorizontalLayout {
                     UI.getCurrent().getSession().setAttribute("userFamilyName",user.getFamilyName());
                     UI.getCurrent().getSession().setAttribute("userName",user.getUserName());
                     UI.getCurrent().getSession().setAttribute("userPhoneNumber",user.getPhoneNumber());
-                    if (user.getClass().equals(Customer.class))
-                        UI.getCurrent().getSession().setAttribute("role",Role.CUSTOMER);
-                    else if (user.getClass().equals(HealthcareWorker.class))
+                    if (user.getClass().equals(Customer.class)) {
+                        UI.getCurrent().getSession().setAttribute("role", Role.CUSTOMER);
+                        UI.getCurrent().navigate("customer");
+                    }
+                    else if (user.getClass().equals(HealthcareWorker.class)){
                         UI.getCurrent().getSession().setAttribute("role",Role.HEALTHCAREWORKER);
+                        UI.getCurrent().navigate("healthcareworker");
+                    }
+
                     else if (user.getClass().equals(Receptionist.class)){
                         UI.getCurrent().getSession().setAttribute("role",Role.RECEPTIONIST);
                         UI.getCurrent().getSession().setAttribute("testingSiteId",((Receptionist) user).getTestingSiteId());
+                        UI.getCurrent().navigate("receptionist");
                     }
-                        try {
-                        if (uc.checkIsCustomer(user.getUserName())){
-                            // add testing site and system booking route
-                            dialogLayout.add(redirectToSystemBooking);
-                        }
-                        if (uc.checkIsReceptionist(user.getUserName())){
-                            // add onsite booking route
-                            dialogLayout.add(redirectToOnsiteBooking);
-                            dialogLayout.add(redirectToPhoneCallModification);
-                        }
-                        if (uc.checkIsHealthcareWorker(user.getUserName())){
-                            // add onsite interview route
-                            dialogLayout.add(redirectToOnsiteInterview);
-                        }
-
-                        redirectOptions.add(dialogLayout);
-                        redirectOptions.open();
-
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                    else {
+                        Notification.show("User has no role");
                     }
                 }
                 else {

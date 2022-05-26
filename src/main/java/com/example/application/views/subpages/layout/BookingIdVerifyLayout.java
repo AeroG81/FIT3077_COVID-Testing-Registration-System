@@ -12,6 +12,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 
+/**
+ * This is a layout for verifying booking id based on booking id given
+ */
 public class BookingIdVerifyLayout extends VerticalLayout {
     private Button submitVerification;
     private final TextField verifyBookingId = new TextField("Booking ID");

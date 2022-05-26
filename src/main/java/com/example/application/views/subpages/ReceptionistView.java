@@ -36,48 +36,24 @@ import java.time.format.DateTimeFormatter;
  * This is the page for Receptionist to book user at site
  */
 public class ReceptionistView extends VerticalLayout {
-    private final TestingSiteCollection collection = new TestingSiteCollection();
-    private ComboBox<TestingSite> testingSite;
-    private DateTimePicker startTime;
-    private final TextArea notes = new TextArea("Notes");
-    private final TextField userName = new TextField("Username");
-    private final PasswordField userPassword = new PasswordField("Password");;
-    private final TextField userGivenName = new TextField("Given Name");
-    private final TextField userFamilyName = new TextField("Family Name");
-    private final IntegerField userPhoneNumber = new IntegerField("Phone Number");
-    private Button submitRegistration;
-    private final FormLayout registrationCommonForm = new FormLayout();
-    private final Dialog dialog = new Dialog();
-    private final TextArea label = new TextArea();
-    private final VerticalLayout content = new VerticalLayout();
-    private final Tab tabExist = new Tab("Existing User");
-    private final Tab tabNew = new Tab("New User");
-    private final Tabs registrationSubTabs = new Tabs(tabExist, tabNew);
+
     private final Tab tabRegistration = new Tab("Registration");
     private final Tab tabVerifyPin = new Tab("Verify PIN") ;
     private final Tab tabScanQr = new Tab("RAT-kit verify QR");
     private final Tab tabBookings = new Tab("Booking Management");
-    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr,tabBookings);
+    private final Tab tabModifyByPhone = new Tab("Modify Booking By Phone");
+    private final Tabs mainTabs = new Tabs(tabRegistration,tabVerifyPin,tabScanQr,tabBookings,tabModifyByPhone);
     private final VerticalLayout mainLayout = new VerticalLayout();
 
     /**
      * Populating page with components based on tab selected
      */
     public ReceptionistView(){
-        this.configureRegistrationNotification();
-        this.configureRegistrationTabs();
-        this.configureDateTimePicker();
-        this.configureComboBox();
-        this.populateComboBox();
-        this.configureRegistrationButton();
-        this.configureRegistrationForm();
-
-        mainLayout.add(registrationSubTabs,content,registrationCommonForm);
+        mainLayout.add(new ReceptionistBookingLayout());
         mainTabs.addSelectedChangeListener(event -> {
-            this.clearFields();
             mainLayout.removeAll();
             if (event.getSelectedTab().equals(tabRegistration)) {
-                mainLayout.add(registrationSubTabs,content,registrationCommonForm);
+                mainLayout.add(new ReceptionistBookingLayout());
             }
             else if (event.getSelectedTab().equals(tabVerifyPin)) {
                 mainLayout.add(new PinVerifyLayout());
@@ -88,191 +64,17 @@ public class ReceptionistView extends VerticalLayout {
             else if (event.getSelectedTab().equals(tabBookings)) {
                 mainLayout.add(new BookingManagementLayout());
             }
+            else if (event.getSelectedTab().equals(tabModifyByPhone)) {
+                mainLayout.add(new ModifyBookingByPhoneLayout());
+            }
         });
-        Dialog notification = new NotificationDialog();
-        notification.open();
+        NotificationDialog notification = new NotificationDialog();
+        if (notification.newNotificationExist())
+            notification.open();
         setMargin(false);
         setPadding(true);
         setJustifyContentMode(JustifyContentMode.CENTER);
         add(new ProfileAvatarLayout(),mainTabs,mainLayout);
     }
 
-    /**
-     * Configuring Registration Form
-     */
-    private void configureRegistrationForm(){
-        registrationCommonForm.setColspan(notes, 2);
-        registrationCommonForm.setColspan(submitRegistration, 2);
-        registrationCommonForm.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0",1),
-                new FormLayout.ResponsiveStep("30%",2)
-        );
-        registrationCommonForm.add(
-                testingSite, startTime,
-                notes,
-                submitRegistration
-        );
-    }
-
-    /**
-     * Configuring Registration Tab
-     */
-    private void configureRegistrationTabs(){
-        // First form
-        FormLayout existingUserLayout = new FormLayout();
-        existingUserLayout.add(
-                userName, userPassword
-        );
-
-        // Second form
-        FormLayout newUserLayout = new FormLayout();
-
-        content.setSpacing(false);
-        content.add(existingUserLayout);
-        registrationSubTabs.addSelectedChangeListener(event -> {
-                    this.clearFields();
-                    content.removeAll();
-                    newUserLayout.removeAll();
-                    existingUserLayout.removeAll();
-                    if (event.getSelectedTab().equals(tabNew)){
-                        newUserLayout.add(
-                                userGivenName, userFamilyName,
-                                userName, userPhoneNumber,
-                                userPassword
-                        );
-                        newUserLayout.setColspan(userPassword, 2);
-                        content.add(newUserLayout);
-                    }
-                    else if (event.getSelectedTab().equals(tabExist)){
-                        existingUserLayout.add(
-                                userName, userPassword
-                        );
-                        existingUserLayout.setColspan(userPassword, 1);
-                        content.add(existingUserLayout);
-                    }
-                }
-        );
-    }
-
-    /**
-     * Configuring Registration Notification
-     */
-    private void configureRegistrationNotification(){
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
-        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(closeButton,label);
-    }
-
-    /**
-     * Configuring Registration Button
-     */
-    private void configureRegistrationButton(){
-        submitRegistration = new Button("Submit");
-        submitRegistration.setEnabled(false);
-        submitRegistration.addClickListener(e -> {
-            if (!validateFields()){
-                Notification.show("Booking time is not within operation hour");
-            }
-            else {
-                // Get User ID via http request
-                // if statement here to check the tab, post to verify or post to create
-                UserCollection collection = new UserCollection();
-                User user = null;
-                try {
-                    if (registrationSubTabs.getSelectedTab().equals(tabExist))
-                        user = collection.verifyUserId(userName.getValue(), userPassword.getValue());
-                    else
-                        user = collection.addUserService(userGivenName.getValue(), userFamilyName.getValue(), userName.getValue(), userPassword.getValue(), userPhoneNumber.getValue().toString(), true, false,false);
-                }
-                catch (Exception exception){
-                    Notification.show(exception.toString());
-                }
-                HttpResponse<String> response = null;
-                ObjectNode mappedResponse = null;
-                try {
-                    response = new FacilityBookingMethod().registerBooking(testingSite.getValue(),startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), user,notes.getValue());
-                    mappedResponse = new ObjectMapper().readValue(response.body(),ObjectNode.class);
-                    testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0,testingSite.getValue().getWaitingTime().length()-3))+10)+"min");
-                } catch (Exception exception){
-                    System.out.println("Error creating: " + exception);
-                }
-                if (mappedResponse!=null){
-                    label.setWidth("500px");
-                    label.setEnabled(false);
-                    label.clear();
-                    label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN: "+ mappedResponse.get("smsPin").asText());
-                    dialog.open();
-                    Notification noti = Notification.show("Application submitted");
-                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                }
-            }
-        });
-    }
-
-    /**
-     * Validate the fields in Registration tab layout
-     */
-    private boolean validateFields(){
-        boolean validation = true;
-        if(registrationSubTabs.getSelectedTab().equals(tabExist)){
-            if(userName.isEmpty() || userPassword.isEmpty()){
-                validation = false;
-            }
-        }
-        else if (registrationSubTabs.getSelectedTab().equals(tabNew)){
-            if(userName.isEmpty() || userPassword.isEmpty() || userGivenName.isEmpty() || userFamilyName.isEmpty() || userPhoneNumber.isEmpty()){
-                validation = false;
-            }
-        }
-        if (startTime.getValue().toLocalTime().getHour() < Integer.parseInt(testingSite.getValue().getOperationTime().substring(0,2)) || startTime.getValue().toLocalTime().getHour() >= Integer.parseInt(testingSite.getValue().getOperationTime().substring(7,9)))
-            validation = false;
-        return validation;
-    }
-
-    /**
-     * Clear out all fields
-     */
-    private void clearFields(){
-        userName.clear();
-        userPassword.clear();
-        userFamilyName.clear();
-        userGivenName.clear();
-        userPhoneNumber.clear();
-    }
-
-    /**
-     * Configuring Combo Box of Testing Site
-     */
-    private void configureComboBox(){
-        testingSite = new ComboBox<>("TestingSite");
-        testingSite.setRequired(true);
-        testingSite.addValueChangeListener(event -> {
-            if (testingSite.getValue() != null){
-                submitRegistration.setEnabled(true);
-            }
-            else {
-                submitRegistration.setEnabled(false);
-            }
-        });
-    }
-
-    /**
-     * Configuring Data Time Picker
-     */
-    private void configureDateTimePicker() {
-        startTime = new DateTimePicker();
-        startTime.setLabel("Appointment Date and Time");
-        startTime.setAutoOpen(true);
-        startTime.setMin(LocalDateTime.now());
-        startTime.setValue(LocalDateTime.now().plusDays(1));
-        startTime.setMax(LocalDateTime.now().plusDays(90));
-    }
-
-    /**
-     * Populate the combo box of testing site
-     */
-    private void populateComboBox(){
-        testingSite.setItems(collection.getCollection());
-        testingSite.setItemLabelGenerator(TestingSite::getName);
-    }
 }

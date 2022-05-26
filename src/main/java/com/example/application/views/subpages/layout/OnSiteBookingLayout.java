@@ -26,6 +26,9 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This is a layout for logged in user to book for on site testing
+ */
 public class OnSiteBookingLayout extends VerticalLayout {
     private final ConfirmDialog dialog = new ConfirmDialog();
     private final FormLayout siteTestingForm = new FormLayout();

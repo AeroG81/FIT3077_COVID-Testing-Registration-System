@@ -14,12 +14,12 @@ import com.vaadin.flow.router.Route;
 
 import com.vaadin.flow.component.notification.Notification;
 
-@Route(value = "/onsiteinterview")
+@Route(value = "/healthcareworker")
 @PageTitle("On-Site Interview  | Vaadin CRM")
 /**
  * This is the page where interview was conducted
  */
-public class OnSiteInterviewView extends VerticalLayout {
+public class HealthcareWorkerView extends VerticalLayout {
     private RadioButtonGroup<String> firstQuestion = new RadioButtonGroup<>();
     private RadioButtonGroup<String> secondQuestion = new RadioButtonGroup<>();
     private RadioButtonGroup<String> thirdQuestion = new RadioButtonGroup<>();
@@ -41,7 +41,7 @@ public class OnSiteInterviewView extends VerticalLayout {
     /**
      * Populating page with questions and choices
      */
-    public OnSiteInterviewView() {
+    public HealthcareWorkerView() {
         this.configureSubmitButton();
 
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

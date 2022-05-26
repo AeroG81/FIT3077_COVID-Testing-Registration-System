@@ -24,6 +24,7 @@ public class UserProfileView extends VerticalLayout {
     private final Tabs mainTabs = new Tabs(tabUserProfile, tabActiveBookings, tabHomeBooking);
 
     public UserProfileView(){
+        removeAll();
         // Change layout based on selected tab
         mainLayout.add(new UserProfileLayout());
         mainTabs.addSelectedChangeListener(event -> {
@@ -36,11 +37,11 @@ public class UserProfileView extends VerticalLayout {
             }
             else if (event.getSelectedTab().equals(tabHomeBooking)) {
                 if (UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))
-                    UI.getCurrent().navigate("systembooking");
+                    UI.getCurrent().navigate("customer");
                 else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
                     UI.getCurrent().navigate("receptionist");
-                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.RECEPTIONIST))
-                    UI.getCurrent().navigate("onsiteinterview");
+                else if (UI.getCurrent().getSession().getAttribute("role").equals(Role.HEALTHCAREWORKER))
+                    UI.getCurrent().navigate("healthcareworker");
             }
         });
         if (!UI.getCurrent().getSession().getAttribute("role").equals(Role.CUSTOMER))

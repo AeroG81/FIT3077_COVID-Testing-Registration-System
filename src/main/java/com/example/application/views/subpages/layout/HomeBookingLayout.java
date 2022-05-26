@@ -24,6 +24,9 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This is a layout for logged in user to book for home testing
+ */
 public class HomeBookingLayout extends VerticalLayout {
     private DateTimePicker startTime;
     private final TextArea notes = new TextArea("Notes");
@@ -31,6 +34,7 @@ public class HomeBookingLayout extends VerticalLayout {
     private final RadioButtonGroup<String> needTestKit = new RadioButtonGroup<>();
     private final ConfirmDialog dialog = new ConfirmDialog();
     private final FormLayout siteTestingForm = new FormLayout();
+
     public HomeBookingLayout(){
         this.configureDateTimePicker();
         this.configureRegistrationButton();

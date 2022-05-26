@@ -11,14 +11,18 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
-
+/**
+ * This is a dialog to notify receptionist with list of notifications
+ */
 public class NotificationDialog extends Dialog {
     private Grid<String> notificationGrid = null;
+    private ArrayList<String> notifications = new UserCollection().getNotificationsByReceptionistId(UI.getCurrent().getSession().getAttribute("userId").toString());
 
-    public NotificationDialog (){
+    public NotificationDialog() {
         populateGrid();
         HorizontalLayout buttonLayout = configureButtonLayout();
         add(notificationGrid, buttonLayout);
@@ -28,17 +32,22 @@ public class NotificationDialog extends Dialog {
         setResizable(true);
     }
 
+    /**
+     * Configure Dialog with a layout with button to close the dialog
+     *
+     * @return layout with button
+     */
     private HorizontalLayout configureButtonLayout() {
-        Button closeButton = new Button("Clear All", e -> {
+        String buttonTitle = (notifications.isEmpty()) ? "Close" : "Clear All";
+        Button closeButton = new Button(buttonTitle, e -> {
             try {
-                HttpResponse<String> response = UserCollection.clearNotifications(UI.getCurrent().getSession().getAttribute("userId").toString(),UI.getCurrent().getSession().getAttribute("testingSiteId").toString());
-                if (response.statusCode()==200){
+                HttpResponse<String> response = UserCollection.clearNotifications(UI.getCurrent().getSession().getAttribute("userId").toString(), UI.getCurrent().getSession().getAttribute("testingSiteId").toString());
+                if (response.statusCode() == 200) {
                     Notification noti = Notification.show("Notification cleared");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                }
-                else
+                } else
                     throw new Exception("Unable to clear notification");
-            } catch (Exception exception){
+            } catch (Exception exception) {
                 System.out.println(exception);
             }
             close();
@@ -50,12 +59,21 @@ public class NotificationDialog extends Dialog {
         return buttonLayout;
     }
 
+    /**
+     * Populate the notification grid
+     */
     private void populateGrid() {
         notificationGrid = new Grid<>();
         notificationGrid.addColumn(Object::toString).setHeader("Notifications").setTextAlign(ColumnTextAlign.START);
-        ArrayList<String> notifications = new UserCollection().getNotificationsByReceptionistId(UI.getCurrent().getSession().getAttribute("userId").toString());
         notificationGrid.setItems(notifications);
     }
 
+    /**
+     * Method to indicate if there is new notification
+     * @return true if there is new notifications else false
+     */
+    public boolean newNotificationExist() {
+        return !notifications.isEmpty();
+    }
 }
-// TODO Notification Dialog, Documentation, Design Rationale, Update notifications
+// TODO Documentation, Design Rationale, Update notifications
