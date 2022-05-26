@@ -1,13 +1,17 @@
 package com.example.application.data.entity.User;
 
 import com.example.application.data.entity.HttpHelper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vaadin.flow.router.NotFoundException;
 
 import java.net.http.HttpResponse;
 
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class UserCollection {
@@ -68,10 +72,16 @@ public class UserCollection {
             if(node.get("isCustomer").asBoolean())
                 user = new Customer(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             // Create FacilityStaff object if User is a Receptionist
-            else if (node.get("isReceptionist").asBoolean())
-                user = new Receptionist(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
+            if (node.get("isReceptionist").asBoolean()) {
+                ArrayList<String> notifications = new ArrayList<>();
+                for (int i = 0; i < node.get("additionalInfo").get("notifications").size(); i++) {
+                    notifications.add(node.get("additionalInfo").get("notifications").get(i).asText());
+                }
+
+                user = new Receptionist(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText(), node.get("additionalInfo").get("testingSiteId").asText(), notifications);
+            }
             // Create HealthcareWorker object if User is a HealthcareWorker
-            else if (node.get("isHealthcareWorker").asBoolean())
+            if (node.get("isHealthcareWorker").asBoolean())
                 user = new HealthcareWorker(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             if(user!=null)
                 collection.add(user);
@@ -144,6 +154,56 @@ public class UserCollection {
         return false;
     }
 
+    // Get user object by ID
+    public User getUserById(String userId) throws Exception {
+        for (User user: collection){
+            if (user.getId().equals(userId)){
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Receptionist> getReceptionists() throws Exception {
+        ArrayList<Receptionist> receptionists = new ArrayList<>();
+
+        String userUrl = "https://fit3077.com/api/v2/user";
+
+        HttpResponse<String> response = new HttpHelper().getService(userUrl);
+
+        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
+        if (response.statusCode() != 200) {
+            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
+        }
+
+        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
+        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
+
+        for (User user: collection) {
+            for (ObjectNode node : jsonNodes) {
+                if (node.get("isReceptionist").asBoolean() && node.get("id").asText().equals(user.getId())) {
+                    if (user instanceof Receptionist) {
+                        receptionists.add((Receptionist) user);
+                        break;
+                    }
+                }
+            }
+        }
+        return receptionists;
+    }
+
+    // Get notifications for receptionist by their ID
+    public ArrayList<String> getNotificationsByReceptionistId (String receptionistId) throws Exception {
+        ArrayList<Receptionist> receptionistList = this.getReceptionists();
+
+        for (Receptionist rec: receptionistList){
+            if (rec.getId().equals(receptionistId)){
+                return rec.getNotifications();
+            }
+        }
+        return null;
+    }
+
     // Verifies is User exists in collection of Users using username and password
     public boolean verifyUserService(String username, String password){
         boolean userIsValid;
@@ -212,8 +272,13 @@ public class UserCollection {
         User user = null;
         if(mappedResponse.get("isCustomer").asBoolean())
             user = new Customer(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
-        else if (mappedResponse.get("isReceptionist").asBoolean())
-            user = new Receptionist(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
+        else if (mappedResponse.get("isReceptionist").asBoolean()) {
+            ArrayList<String> notifications = new ArrayList<>();
+            for (int i = 0; i < mappedResponse.get("additionalInfo").get("notifications").size(); i++) {
+                notifications.add(mappedResponse.get("additionalInfo").get("notifications").get(i).asText());
+            }
+            user = new Receptionist(mappedResponse.get("id").asText(), mappedResponse.get("givenName").asText(), mappedResponse.get("familyName").asText(), mappedResponse.get("userName").asText(), mappedResponse.get("phoneNumber").asText(), mappedResponse.get("additionalInfo").get("testingSiteId").asText(), notifications);
+        }
         else if (mappedResponse.get("isHealthcareWorker").asBoolean())
             user = new HealthcareWorker(mappedResponse.get("id").asText(),mappedResponse.get("givenName").asText(),mappedResponse.get("familyName").asText(),mappedResponse.get("userName").asText(),mappedResponse.get("phoneNumber").asText());
         return user;

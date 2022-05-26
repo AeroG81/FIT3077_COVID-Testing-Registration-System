@@ -16,6 +16,7 @@ import com.example.application.data.entity.User.Receptionist;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.net.http.HttpResponse;
@@ -177,13 +178,19 @@ public class CovidTestCollection {
      * @param node node to identify the attribute
      * @return corresponding user
      */
-    private User createUser(JsonNode node){
+    private User createUser(JsonNode node) {
         User user = null;
         if (!node.asText().equals("null"))
             if (node.get("isCustomer").asBoolean())
                 user = new Customer(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
-            else if (node.get("isReceptionist").asBoolean())
-                user = new Receptionist(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
+            else if (node.get("isReceptionist").asBoolean()){
+                ArrayList<String> notifications = new ArrayList<>();
+                System.out.println(node.get("additionalInfo").get("notifications"));
+                for (int i = 0; i < node.get("additionalInfo").get("notifications").size(); i++) {
+                    notifications.add(node.get("additionalInfo").get("notifications").get(i).asText());
+                }
+                user = new Receptionist(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText(), node.get("additionalInfo").get("testingSiteId").asText(), notifications);
+            }
             else if (node.get("isHealthcareWorker").asBoolean())
                 user = new HealthcareWorker(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText());
         return user;

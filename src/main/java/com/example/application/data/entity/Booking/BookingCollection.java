@@ -39,7 +39,7 @@ public class BookingCollection {
         catch (Exception exception){
             System.out.println("Booking Collection Populate error " + exception);
         }
-    };
+    }
 
     /**
      * Getter for collection of bookings
@@ -83,8 +83,13 @@ public class BookingCollection {
         User user = null;
         if (userNode.get("isCustomer").asBoolean())
             user = new Customer(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
-        else if (userNode.get("isReceptionist").asBoolean())
-            user = new Receptionist(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
+        else if (userNode.get("isReceptionist").asBoolean()) {
+            ArrayList<String> notifications = new ArrayList<>();
+            for (int i = 0; i < userNode.get("notifications").size(); i++) {
+                notifications.add(userNode.get("notifications").get(i).asText());
+            }
+            user = new Receptionist(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText(), userNode.get("additionalInfo").get("testingSiteId").asText(), notifications);
+        }
         else if (userNode.get("isHealthcareWorker").asBoolean())
             user = new HealthcareWorker(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
         return user;
