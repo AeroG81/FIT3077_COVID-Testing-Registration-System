@@ -29,10 +29,6 @@ public class Receptionist extends User{
         this.notifications.add(notification);
     }
 
-    public void updateNotifications(String notification) {
-
-    }
-
     @Override
     public void update() {
 

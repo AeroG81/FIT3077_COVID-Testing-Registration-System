@@ -152,7 +152,7 @@ public class UserCollection {
 
     public HttpResponse<String> clearNotifications(String userId) throws Exception {
         for (User user: collection){
-            if (user instanceof Receptionist) {
+            if (user instanceof Receptionist && user.getId().equals(userId)) {
                 String jsonString = "{ \"additionalInfo\": {" +
                         "\"testingSiteId\":\"" + ((Receptionist) user).getTestingSiteId() + "\"";
                 jsonString += ",\"notifications\": []";
@@ -163,6 +163,36 @@ public class UserCollection {
                 return new HttpHelper().patchService(url, jsonString, user.getId());
             }
         }
+        return null;
+    }
+
+    public HttpResponse<String> updateNotifications(String userId, ArrayList<String> newNotifications) throws Exception {
+        for (User user: collection){
+            if (user instanceof Receptionist && user.getId().equals(userId)) {
+
+                String jsonString = "{ \"additionalInfo\":{" +
+                        "\"testingSiteId\":\"" + user.getId() + "\"";
+
+                jsonString += ",\"notifications\": [";
+
+                for (int i = 0; i < ((Receptionist) user).getNotifications().size() - 1; i++) {
+                    jsonString += "\"" + ((Receptionist) user).getNotifications().get(i) + "\",";
+                }
+                jsonString += "\"" + ((Receptionist) user).getNotifications().get(((Receptionist) user).getNotifications().size()-1) + "\"";
+
+                for (int i = 0; i < newNotifications.size() - 1; i++) {
+                    jsonString += ",\"" + newNotifications.get(i) + "\"";
+                }
+                jsonString += ",\"" + newNotifications.get(newNotifications.size() - 1) + "\"";
+
+                jsonString += "] }" + "}";
+
+                String url = "https://fit3077.com/api/v2/user";
+
+                return new HttpHelper().patchService(url, jsonString, userId);
+            }
+        }
+
         return null;
     }
 
