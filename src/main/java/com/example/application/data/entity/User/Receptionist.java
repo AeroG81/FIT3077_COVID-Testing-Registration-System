@@ -29,17 +29,6 @@ public class Receptionist extends User{
         this.notifications.add(notification);
     }
 
-    public HttpResponse<String> clearNotifications() throws Exception {
-        String jsonString = "{ \"additionalInfo\": {" +
-                "\"testingSiteId\":\"" + this.testingSiteId + "\"";
-        jsonString += ",\"notifications\": []";
-        jsonString += "}" + "}";
-
-        String url = "https://fit3077.com/api/v2/user";
-
-        return new HttpHelper().patchService(url, jsonString, this.getId());
-    }
-
     public void updateNotifications(String notification) {
 
     }
