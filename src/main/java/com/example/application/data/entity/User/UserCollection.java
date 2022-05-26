@@ -1,25 +1,26 @@
 package com.example.application.data.entity.User;
 
 import com.example.application.data.entity.HttpHelper;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vaadin.flow.router.NotFoundException;
 
 import java.net.http.HttpResponse;
-
 import java.util.ArrayList;
-
-import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This is the user collection storing a list of User
+ */
 public class UserCollection {
 
-    // List of all Users from API
+    /**
+     * List of all Users from API
+     */
     private List<User> collection = new ArrayList<>();
 
-    // Constructor which GETS all users from API and stores into collection
+    /**
+     * Constructor of UserCollection
+     */
     public UserCollection(){
         try {
             getUsersService();
@@ -29,12 +30,20 @@ public class UserCollection {
         }
     }
 
-    // Returns collection of Users
+    /**
+     * Getter for collection of users
+     * @return collection of users
+     */
     public List<User> getCollection() {
         return collection;
     }
 
-    // Verifies if User is in the collection using username and password
+    /**
+     * Verifies if User is in the collection using username and password
+     * @param username user's username
+     * @param password user's password
+     * @return user if user is in the collection, null otherwise
+     */
     public User verifyUserId(String username, String password){
         User user = null;
         if (verifyUserService(username,password)) {
@@ -51,7 +60,10 @@ public class UserCollection {
         return user;
     }
 
-    // GETS all users from API
+    /**
+     * HTTP request to API to populate the list of users
+     * @throws Exception for Error in request
+     */
     public void getUsersService() throws Exception{
         String userUrl = "https://fit3077.com/api/v2/user";
 
@@ -87,46 +99,10 @@ public class UserCollection {
         }
     }
 
-    // Checks if User is a Customer/Customer using User's username
-    public boolean checkIsCustomer(String username) {
-        for (User user: collection) {
-            if (user.getUserName().equals(username) && user instanceof Customer) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Checks if User is a Receptionist/FacilityStaff using User's username
-    public boolean checkIsReceptionist(String username) {
-        for (User user: collection) {
-            if (user.getUserName().equals(username) && user instanceof Receptionist) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Checks if User is a HealthcareWorker/HealthcareWorker using User's username
-    public boolean checkIsHealthcareWorker(String username) {
-        for (User user: collection) {
-            if (user.getUserName().equals(username) && user instanceof HealthcareWorker) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Get user object by ID
-    public User getUserById(String userId) throws Exception {
-        for (User user: collection){
-            if (user.getId().equals(userId)){
-                return user;
-            }
-        }
-        return null;
-    }
-
+    /**
+     * Getter for list of only Receptionist type
+     * @return list of only Receptionist type
+     */
     public ArrayList<Receptionist> getReceptionists(){
         ArrayList<Receptionist> receptionists = new ArrayList<>();
 
@@ -138,7 +114,11 @@ public class UserCollection {
         return receptionists;
     }
 
-    // Get notifications for receptionist by their ID
+    /**
+     * Get notifications for receptionist by their ID
+     * @param receptionistId receptionist's ID
+     * @return the notification of receptionist with ID provided
+     */
     public ArrayList<String> getNotificationsByReceptionistId (String receptionistId){
         ArrayList<Receptionist> receptionistList = this.getReceptionists();
 
@@ -150,6 +130,13 @@ public class UserCollection {
         return null;
     }
 
+    /**
+     * Static method to clear notifications of receptionists who work at a testing side specified by the ID
+     * @param userId receptionist's ID
+     * @param testingSiteId ID of testing site the receptionist works at
+     * @return response from API
+     * @throws Exception for Error in request
+     */
     public static HttpResponse<String> clearNotifications(String userId, String testingSiteId) throws Exception {
         String jsonString = "{ \"additionalInfo\": {" +
                 "\"testingSiteId\":\"" + testingSiteId+ "\"";
@@ -161,37 +148,12 @@ public class UserCollection {
         return new HttpHelper().patchService(url, jsonString, userId);
     }
 
-    public HttpResponse<String> updateNotifications(String userId, ArrayList<String> newNotifications) throws Exception {
-        for (User user: collection){
-            if (user instanceof Receptionist && user.getId().equals(userId)) {
-
-                String jsonString = "{ \"additionalInfo\":{" +
-                        "\"testingSiteId\":\"" + user.getId() + "\"";
-
-                jsonString += ",\"notifications\": [";
-
-                for (int i = 0; i < ((Receptionist) user).getNotifications().size() - 1; i++) {
-                    jsonString += "\"" + ((Receptionist) user).getNotifications().get(i) + "\",";
-                }
-                jsonString += "\"" + ((Receptionist) user).getNotifications().get(((Receptionist) user).getNotifications().size()-1) + "\"";
-
-                for (int i = 0; i < newNotifications.size() - 1; i++) {
-                    jsonString += ",\"" + newNotifications.get(i) + "\"";
-                }
-                jsonString += ",\"" + newNotifications.get(newNotifications.size() - 1) + "\"";
-
-                jsonString += "] }" + "}";
-
-                String url = "https://fit3077.com/api/v2/user";
-
-                return new HttpHelper().patchService(url, jsonString, userId);
-            }
-        }
-
-        return null;
-    }
-
-    // Verifies is User exists in collection of Users using username and password
+    /**
+     * Verifies is User exists in collection of Users using username and password
+     * @param username user's username
+     * @param password user's password
+     * @return boolean true if user exists, false otherwise
+     */
     public boolean verifyUserService(String username, String password){
         boolean userIsValid;
         String jsonString = "{"+
@@ -203,12 +165,7 @@ public class UserCollection {
 
         try {
             HttpResponse<String> response = new HttpHelper().postService(url,jsonString);
-            if (response.statusCode()==200){
-                userIsValid = true;
-            }
-            else{
-                userIsValid = false;
-            }
+            userIsValid = response.statusCode() == 200;
         }
         catch (Exception e){
             System.out.println(e);
@@ -217,7 +174,20 @@ public class UserCollection {
         return userIsValid;
     }
 
-    // POSTS and stores a User to the API  (with additional info)
+    /**
+     * POSTS and stores a User to the API  (with additional info)
+     * @param givenName user's given name
+     * @param familyName user's family name
+     * @param userName user's username
+     * @param password user's password
+     * @param phoneNumber user's phone number
+     * @param isCustomer true if user is a customer, false otherwise
+     * @param isAdmin true if user is a receptionist, false otherwise
+     * @param isHealthCareWorker true if user is a healthcare worker, false otherwise
+     * @param additionalInfo user's additional info
+     * @return newly added User
+     * @throws Exception for Error in request
+     */
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker, String additionalInfo) throws Exception{
         String url = "https://fit3077.com/api/v2/user";
         String jsonString = "{" +
@@ -236,7 +206,19 @@ public class UserCollection {
         return createUser(mappedResponse);
     }
 
-    // POSTS and stores a User to the API  (without additional info)
+    /**
+     * POSTS and stores a User to the API  (without additional info)
+     * @param givenName user's given name
+     * @param familyName user's family name
+     * @param userName user's username
+     * @param password user's password
+     * @param phoneNumber user's phone number
+     * @param isCustomer true if user is a customer, false otherwise
+     * @param isAdmin true if user is a receptionist, false otherwise
+     * @param isHealthCareWorker true if user is a healthcare worker, false otherwise
+     * @return newly added User
+     * @throws Exception for Error in request
+     */
     public User addUserService(String givenName,String familyName, String userName, String password, String phoneNumber, boolean isCustomer, boolean isAdmin, boolean isHealthCareWorker) throws Exception{
         String url = "https://fit3077.com/api/v2/user";
         String jsonString = "{" +
@@ -254,7 +236,11 @@ public class UserCollection {
         return createUser(mappedResponse);
     }
 
-    // Create a User using response from API
+    /**
+     * Create a User using response from API
+     * @param mappedResponse user node retrieved from the API
+     * @return user if user can be created, null otherwise
+     */
     private User createUser(ObjectNode mappedResponse){
         User user = null;
         if(mappedResponse.get("isCustomer").asBoolean())
