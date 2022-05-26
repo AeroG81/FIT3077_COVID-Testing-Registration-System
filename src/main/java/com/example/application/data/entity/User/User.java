@@ -39,53 +39,34 @@ public abstract class User {
         this.additionalInfo = null;
     }
 
-    // Getters and Setters
+    // Getters for user id
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    // Getters for user givenName
     public String getGivenName() {
         return givenName;
     }
 
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
+    // Getters for user familyName
     public String getFamilyName() {
         return familyName;
     }
 
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
+    // Getters for user userName
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
+    // Getters for user phoneNumber
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    // Getters for user additionalInfo
     public String getAdditionalInfo() {
         return additionalInfo;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
     }
 
     // Prints out User's attributes in JSON formatted String

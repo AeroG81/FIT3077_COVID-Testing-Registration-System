@@ -94,8 +94,8 @@ public class CovidTestCollection {
 
 
         HttpResponse<String> response = new HttpHelper().postService(testingSiteUrl,jsonString);
-//        if (response.statusCode()==201 && (bookingId != null && !bookingId.isBlank()))
-//            BookingCollection.completeBooking(bookingId);
+        if (response.statusCode()==201 && (bookingId != null && !bookingId.isBlank()))
+            BookingCollection.completeBooking(bookingId);
         return response;
     }
 
@@ -140,6 +140,11 @@ public class CovidTestCollection {
         }
     }
 
+    /**
+     * Helper method to create Testing Type based on node
+     * @param node
+     * @return Testing Type
+     */
     private TestingType createTestingType(ObjectNode node) {
         TestingType type = null;
         if (node.get("type").asText().equals("PCR"))
@@ -149,6 +154,13 @@ public class CovidTestCollection {
         return type;
     }
 
+    /**
+     * Helper method to create Booking based on HTTP response
+     * @param bookingNode
+     * @param bookingCustomer
+     * @param history
+     * @return Booking object based on data given
+     */
     private Booking createBooking(JsonNode bookingNode, User bookingCustomer, List<String> history) {
         Booking booking;
         if (!bookingNode.get("testingSite").asText().equals("null")) {
@@ -161,6 +173,11 @@ public class CovidTestCollection {
         return booking;
     }
 
+    /**
+     * Helper method to create history based on the history node
+     * @param historyNode
+     * @return A list with size of 3 along with history
+     */
     private List<String> createHistory(JsonNode historyNode){
         List<String> history = Arrays.asList(new String[3]);
         if (historyNode==null)

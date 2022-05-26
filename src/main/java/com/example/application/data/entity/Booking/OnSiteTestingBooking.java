@@ -40,6 +40,17 @@ public class OnSiteTestingBooking extends Booking {
         this.testingSite = site;
     }
 
+    /**
+     * Constructor for OnSiteTestingBooking
+     * @param bookingId booking ID
+     * @param site site of the booking
+     * @param startTime booking appointment time
+     * @param user customer for the booking
+     * @param notes  notes provided for the booking
+     * @param status status of the booking
+     * @param smsPin PIN code to verify the booking
+     * @param qrcode QR code to verify the booking
+     */
     public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history, String lastUpdateTime) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
         this.testingSite = site;
