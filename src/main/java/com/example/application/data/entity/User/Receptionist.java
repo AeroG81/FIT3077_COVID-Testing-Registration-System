@@ -10,25 +10,16 @@ public class Receptionist extends User{
     // Constructor with additional info
     public Receptionist(String user_id, String userGivenName, String userFamilyName, String userName, String userPhoneNumber, String testingSiteId, ArrayList<String> notifications) {
         super(user_id, userGivenName, userFamilyName, userName, userPhoneNumber);
-        System.out.println(notifications);
-        this.setTestingSiteId(testingSiteId);
-        this.setNotifications(notifications);
+        this.testingSiteId = testingSiteId;
+        this.notifications = notifications;
     }
 
     public String getTestingSiteId() {
         return testingSiteId;
     }
 
-    public void setTestingSiteId(String testingSiteId) {
-        this.testingSiteId = testingSiteId;
-    }
-
     public ArrayList<String> getNotifications() {
         return notifications;
-    }
-
-    public void setNotifications(ArrayList<String> notifications) {
-        this.notifications = notifications;
     }
 
     public void addNotifications(String notification) {
@@ -37,6 +28,10 @@ public class Receptionist extends User{
 
     public void clearNotifications(){
         this.notifications.clear();
+    }
+
+    public void updateNotifications(String notification) {
+
     }
 
     // Prints out Receptionist's attributes in JSON formatted String

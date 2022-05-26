@@ -72,16 +72,15 @@ public class UserCollection {
             if(node.get("isCustomer").asBoolean())
                 user = new Customer(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             // Create FacilityStaff object if User is a Receptionist
-            if (node.get("isReceptionist").asBoolean()) {
+            else if (node.get("isReceptionist").asBoolean()) {
                 ArrayList<String> notifications = new ArrayList<>();
                 for (int i = 0; i < node.get("additionalInfo").get("notifications").size(); i++) {
                     notifications.add(node.get("additionalInfo").get("notifications").get(i).asText());
                 }
-
                 user = new Receptionist(node.get("id").asText(), node.get("givenName").asText(), node.get("familyName").asText(), node.get("userName").asText(), node.get("phoneNumber").asText(), node.get("additionalInfo").get("testingSiteId").asText(), notifications);
             }
             // Create HealthcareWorker object if User is a HealthcareWorker
-            if (node.get("isHealthcareWorker").asBoolean())
+            else if (node.get("isHealthcareWorker").asBoolean())
                 user = new HealthcareWorker(node.get("id").asText(),node.get("givenName").asText(),node.get("familyName").asText(),node.get("userName").asText(),node.get("phoneNumber").asText());
             if(user!=null)
                 collection.add(user);
@@ -89,66 +88,30 @@ public class UserCollection {
     }
 
     // Checks if User is a Customer/Customer using User's username
-    public boolean checkIsCustomer(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v2/user";
-
-        HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
-        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
-        if (response.statusCode() != 200) {
-            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
-        }
-
-        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
-        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
-
-        for (ObjectNode node: jsonNodes) {
-            if (node.get("userName").asText().equals(username)) {
-                return node.get("isCustomer").asBoolean();
+    public boolean checkIsCustomer(String username) {
+        for (User user: collection) {
+            if (user.getUserName().equals(username) && user instanceof Customer) {
+                return true;
             }
         }
         return false;
     }
 
     // Checks if User is a Receptionist/FacilityStaff using User's username
-    public boolean checkIsReceptionist(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v2/user";
-
-        HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
-        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
-        if (response.statusCode() != 200) {
-            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
-        }
-
-        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
-        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
-
-        for (ObjectNode node: jsonNodes) {
-            if (node.get("userName").asText().equals(username)) {
-                return node.get("isReceptionist").asBoolean();
+    public boolean checkIsReceptionist(String username) {
+        for (User user: collection) {
+            if (user.getUserName().equals(username) && user instanceof Receptionist) {
+                return true;
             }
         }
         return false;
     }
 
     // Checks if User is a HealthcareWorker/HealthcareWorker using User's username
-    public boolean checkIsHealthcareWorker(String username) throws Exception {
-        String userUrl = "https://fit3077.com/api/v2/user";
-
-        HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
-        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
-        if (response.statusCode() != 200) {
-            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
-        }
-
-        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
-        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
-
-        for (ObjectNode node: jsonNodes) {
-            if (node.get("userName").asText().equals(username)) {
-                return node.get("isHealthcareWorker").asBoolean();
+    public boolean checkIsHealthcareWorker(String username) {
+        for (User user: collection) {
+            if (user.getUserName().equals(username) && user instanceof HealthcareWorker) {
+                return true;
             }
         }
         return false;
@@ -167,26 +130,9 @@ public class UserCollection {
     public ArrayList<Receptionist> getReceptionists() throws Exception {
         ArrayList<Receptionist> receptionists = new ArrayList<>();
 
-        String userUrl = "https://fit3077.com/api/v2/user";
-
-        HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
-        // Error checking for this sample code. You can check the status code of your request, as part of performing error handling in your assignment.
-        if (response.statusCode() != 200) {
-            throw new Exception("Please specify your API key in line 21 to continue using this sample code.");
-        }
-
-        // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
-        ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
-
         for (User user: collection) {
-            for (ObjectNode node : jsonNodes) {
-                if (node.get("isReceptionist").asBoolean() && node.get("id").asText().equals(user.getId())) {
-                    if (user instanceof Receptionist) {
-                        receptionists.add((Receptionist) user);
-                        break;
-                    }
-                }
+            if (user instanceof Receptionist) {
+                receptionists.add((Receptionist) user);
             }
         }
         return receptionists;
