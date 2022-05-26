@@ -1,10 +1,7 @@
 package com.example.application.data.entity.CovidTest;
 
 
-import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.OnSiteTestingBooking;
-import com.example.application.data.entity.Booking.HomeTestingBooking;
+import com.example.application.data.entity.Booking.*;
 import com.example.application.data.entity.HttpHelper;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingType.PCR;
@@ -125,7 +122,7 @@ public class CovidTestCollection {
             JsonNode patientNode = node.get("patient");
             JsonNode administererNode = node.get("administerer");
             
-            List<String> history = createHistory(historyNode);
+            List<BookingMemento> history = BookingCollection.createHistory(historyNode);
             
             User patient = this.createUser(patientNode);
             User administerer = this.createUser(administererNode);
@@ -161,7 +158,7 @@ public class CovidTestCollection {
      * @param history
      * @return Booking object based on data given
      */
-    private Booking createBooking(JsonNode bookingNode, User bookingCustomer, List<String> history) {
+    private Booking createBooking(JsonNode bookingNode, User bookingCustomer, List<BookingMemento> history) {
         Booking booking;
         if (!bookingNode.get("testingSite").asText().equals("null")) {
             JsonNode testingSiteNode = bookingNode.get("testingSite");
@@ -171,23 +168,6 @@ public class CovidTestCollection {
             booking = new HomeTestingBooking(bookingNode.get("id").asText(), bookingNode.get("startTime").asText(), bookingCustomer, bookingNode.get("notes").asText(), bookingNode.get("status").asText(), bookingNode.get("smsPin").asText(), bookingNode.get("additionalInfo").get("qrcode").asText(), bookingNode.get("additionalInfo").get("url").asText(), history);
         }
         return booking;
-    }
-
-    /**
-     * Helper method to create history based on the history node
-     * @param historyNode
-     * @return A list with size of 3 along with history
-     */
-    private List<String> createHistory(JsonNode historyNode){
-        List<String> history = Arrays.asList(new String[3]);
-        if (historyNode==null)
-            history = null;
-        else if (historyNode.isArray()) {
-            history.set(0,historyNode.get(0).toPrettyString());
-            history.set(1,historyNode.get(1).toPrettyString());
-            history.set(2,historyNode.get(2).toPrettyString());
-        }
-        return history;
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.example.application.views.subpages.layout;
 
-import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.HomeTestingBooking;
-import com.example.application.data.entity.Booking.OnSiteTestingBooking;
+import com.example.application.data.entity.Booking.*;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -233,11 +230,11 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                 revertBookingButton.setEnabled(true);
 
                 if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
-                    history.add(bookingToModify.getHistory().get(0));
+                    history.add(bookingToModify.getHistory().get(0).toString());
                 if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
-                    history.add(bookingToModify.getHistory().get(1));
+                    history.add(bookingToModify.getHistory().get(1).toString());
                 if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
-                    history.add(bookingToModify.getHistory().get(2));
+                    history.add(bookingToModify.getHistory().get(2).toString());
                 history.add(0, "current");
                 selectPreviousBooking.clear();
                 selectPreviousBooking.setItems(history);
@@ -390,11 +387,11 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
 
                 if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
-                    history.add(bookingToModify.getHistory().get(0));
+                    history.add(bookingToModify.getHistory().get(0).toString());
                 if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
-                    history.add(bookingToModify.getHistory().get(1));
+                    history.add(bookingToModify.getHistory().get(1).toString());
                 if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
-                    history.add(bookingToModify.getHistory().get(2));
+                    history.add(bookingToModify.getHistory().get(2).toString());
                 history.add(0, "current");
                 selectPreviousBooking.clear();
                 selectPreviousBooking.setItems(history);
@@ -420,11 +417,11 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                 bookingContent.setItems(bookingIDList, customerIDList, customerFullNameList, bookingTestingSiteList, bookingStartTimeList);
 
                 if (bookingToModify.getHistory().get(0) != null && !bookingToModify.getHistory().get(0).equals("null"))
-                    history.add(bookingToModify.getHistory().get(0));
+                    history.add(bookingToModify.getHistory().get(0).toString());
                 if (bookingToModify.getHistory().get(1) != null && !bookingToModify.getHistory().get(1).equals("null"))
-                    history.add(bookingToModify.getHistory().get(1));
+                    history.add(bookingToModify.getHistory().get(1).toString());
                 if (bookingToModify.getHistory().get(2) != null && !bookingToModify.getHistory().get(2).equals("null"))
-                    history.add(bookingToModify.getHistory().get(2));
+                    history.add(bookingToModify.getHistory().get(2).toString());
                 history.add(0, "current");
                 selectPreviousBooking.clear();
                 selectPreviousBooking.setItems(history);
@@ -450,12 +447,12 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
             else {
                 List<String> additionalInfo = new ArrayList<>();
                 additionalInfo.add(0, bookingToModify.getQrcode());
-                String content = "";
+                BookingMemento content;
                 String newSiteId = null;
 
                 additionalInfo.add(1, ((HomeTestingBooking) bookingToModify).getUrl());
-                content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + bookingToModify.getStartTime() + "\" } ";
-                List<String> history = bookingToModify.getHistory();
+                content = bookingToModify.getMemento();
+                List<BookingMemento> history = bookingToModify.getHistory();
                 try {
                     HttpResponse<String> response = BookingCollection.updateBooking(bookingToModify.getBookingId(), additionalInfo, history, content, newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
                     if (response.statusCode() == 200){
@@ -488,11 +485,11 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                 } else {
                     List<String> additionalInfo = new ArrayList<>();
                     additionalInfo.add(0, bookingToModify.getQrcode());
-                    String content = "";
+                    BookingMemento content ;
                     String newSiteId = "";
-                    content = "{" + "\"testingsitename\":\"" + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName() + "\", \"testingsiteid\":\"" + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getId() + "\", \"starttime\": \"" + bookingToModify.getStartTime() + "\" } ";
+                    content = bookingToModify.getMemento();
                     newSiteId = newBookingVenue.getValue().getId();
-                    List<String> history = bookingToModify.getHistory();
+                    List<BookingMemento> history = bookingToModify.getHistory();
 
                     try {
                         HttpResponse<String> response = BookingCollection.updateBooking(bookingToModify.getBookingId(), additionalInfo, history, content, newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);

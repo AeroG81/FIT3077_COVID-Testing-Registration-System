@@ -16,7 +16,7 @@ public abstract class Booking {
     private String status;
     private String smsPin;
     private String qrcode;
-    private List<String> history;
+    private List<BookingMemento> history;
     private String lastUpdateTime;
 
     /**
@@ -33,7 +33,7 @@ public abstract class Booking {
         this.status = null;
         this.smsPin = null;
         qrcode = UUID.randomUUID().toString();
-        this.history = Arrays.asList(new String[3]);
+        this.history = Arrays.asList(new BookingMemento[3]);
         this.lastUpdateTime = null;
     }
 
@@ -47,7 +47,7 @@ public abstract class Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<String> history) {
+    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<BookingMemento> history) {
         this.bookingId = bookingId;
         this.startTime = startTime;
         this.customer = customer;
@@ -55,7 +55,7 @@ public abstract class Booking {
         this.status = status;
         this.smsPin = smsPin;
         this.qrcode = qrcode;
-        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new String[3]));
+        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new BookingMemento[3]));
         this.lastUpdateTime = null;
     }
 
@@ -69,7 +69,7 @@ public abstract class Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<String> history, String lastUpdateTime) {
+    public Booking(String bookingId, String startTime, User customer, String notes, String status, String smsPin, String qrcode, List<BookingMemento> history, String lastUpdateTime) {
         this.bookingId = bookingId;
         this.startTime = startTime;
         this.customer = customer;
@@ -77,7 +77,7 @@ public abstract class Booking {
         this.status = status;
         this.smsPin = smsPin;
         this.qrcode = qrcode;
-        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new String[3]));
+        this.history = Objects.requireNonNullElseGet(history, () -> Arrays.asList(new BookingMemento[3]));
         this.lastUpdateTime = lastUpdateTime;
     }
 
@@ -149,17 +149,37 @@ public abstract class Booking {
      * Getter for history
      * @return List of string contain history of booking
      */
-    public List<String> getHistory() {
+    public List<BookingMemento> getHistory() {
         return history;
     }
 
-    /***
+    /**
      * Getter for time booking last updated
      * @return string in time format
      */
     public String getLastUpdateTime() {
         return lastUpdateTime;
     }
+
+    /**
+     * Setter for booking start time
+     * @param startTime
+     */
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * Memento Design Pattern
+     * @return
+     */
+    public abstract BookingMemento getMemento();
+
+    /**
+     * Memento Design Pattern
+     * @return
+     */
+    public abstract void setMemento(BookingMemento memento);
 
     /**
      * toString method
@@ -174,4 +194,71 @@ public abstract class Booking {
                 ", \nstatus= '" + status + '\'' +
                 ", \nsmsPin= '" + smsPin + '\'';
     }
+
+    /**
+     * Memento Design Pattern
+     * @return
+     */
+    protected static class BookingMementoInternal implements BookingMemento {
+        private String testingSiteId;
+        private String testingSiteName;
+        private String startTime;
+
+        BookingMementoInternal(String testingSiteId,String testingSiteName,String startTime){
+            setTestingSiteId(testingSiteId);
+            setTestingSiteName(testingSiteName);
+            setStartTime(startTime);
+        }
+
+        BookingMementoInternal(){
+            setTestingSiteId(null);
+            setTestingSiteName(null);
+            setStartTime(null);
+        }
+
+        public String getTestingSiteId() {
+            return testingSiteId;
+        }
+
+        public void setTestingSiteId(String testingSiteId) {
+            this.testingSiteId = testingSiteId;
+        }
+
+        public String getTestingSiteName() {
+            return testingSiteName;
+        }
+
+        public void setTestingSiteName(String testingSiteName) {
+            this.testingSiteName = testingSiteName;
+        }
+
+        public String getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+
+        @Override
+        public String toString() {
+            String jsonString = "{";
+            if (testingSiteId.equals("null"))
+                jsonString += "\"testingsiteid\":" + null ;
+            else
+                jsonString += "\"testingsiteid\":\"" + testingSiteId +"\"" ;
+
+            if (testingSiteName.equals("null"))
+                jsonString += ",\"testingsitename\":" + null ;
+            else
+                jsonString += ",\"testingsitename\":\"" + testingSiteName +"\"" ;
+
+            jsonString += ",\"starttime\":\"" + startTime +"\"}";
+            return jsonString;
+        }
+    }
 }
+
+
+
+

@@ -37,7 +37,7 @@ public class BookingCollection {
             getBookingsService();
         }
         catch (Exception exception){
-            System.out.println("Booking Collection Populate error " + exception);
+            System.out.println("Booking Collection Populate error " + exception.toString());
         }
     }
 
@@ -57,16 +57,13 @@ public class BookingCollection {
         String userUrl = "https://fit3077.com/api/v2/booking";
 
         HttpResponse<String> response = new HttpHelper().getService(userUrl);
-
         // The GET /user endpoint returns a JSON array, so we can loop through the response as we could with a normal array/list.
         ObjectNode[] jsonNodes = new ObjectMapper().readValue(response.body(), ObjectNode[].class);
         for (ObjectNode node : jsonNodes) {
             JsonNode userNode = node.get("customer");
             User user = createUser(userNode);
-
             JsonNode historyNode = node.get("additionalInfo").get("history");
-            List<String> history = createHistory(historyNode);
-
+            List<BookingMemento> history = createHistory(historyNode);
             Booking booking;
             if (!node.get("testingSite").asText().equals("null")) {
                 JsonNode testingSiteNode = node.get("testingSite");
@@ -90,9 +87,10 @@ public class BookingCollection {
             user = new Customer(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText());
         else if (userNode.get("isReceptionist").asBoolean()) {
             ArrayList<String> notifications = new ArrayList<>();
-            for (int i = 0; i < userNode.get("notifications").size(); i++) {
-                notifications.add(userNode.get("notifications").get(i).asText());
-            }
+            if (userNode.get("additionalInfo").get("notifications")!=null)
+                for (int i = 0; i < userNode.get("additionalInfo").get("notifications").size(); i++) {
+                    notifications.add(userNode.get("additionalInfo").get("notifications").get(i).asText());
+                }
             user = new Receptionist(userNode.get("id").asText(), userNode.get("givenName").asText(), userNode.get("familyName").asText(), userNode.get("userName").asText(), userNode.get("phoneNumber").asText(), userNode.get("additionalInfo").get("testingSiteId").asText(), notifications);
         }
         else if (userNode.get("isHealthcareWorker").asBoolean())
@@ -105,14 +103,23 @@ public class BookingCollection {
      * @param historyNode
      * @return A list with size of 3 along with history
      */
-    private List<String> createHistory(JsonNode historyNode){
-        List<String> history = Arrays.asList(new String[3]);
+    public static List<BookingMemento> createHistory(JsonNode historyNode){
+        List<BookingMemento> history = Arrays.asList(new BookingMemento[3]);
         if (historyNode==null)
             history = null;
         else if (historyNode.isArray()) {
-            history.set(0,historyNode.get(0).toPrettyString());
-            history.set(1,historyNode.get(1).toPrettyString());
-            history.set(2,historyNode.get(2).toPrettyString());
+            if (historyNode.get(0)!=null && !historyNode.get(0).asText().equals("null"))
+                history.set(0, new Booking.BookingMementoInternal(historyNode.get(0).get("testingsiteid").asText(),historyNode.get(0).get("testingsitename").asText(),historyNode.get(0).get("starttime").asText()));
+            else
+                history.set(0, null);
+            if (historyNode.get(1)!=null && !historyNode.get(1).asText().equals("null"))
+                history.set(1, new Booking.BookingMementoInternal(historyNode.get(1).get("testingsiteid").asText(),historyNode.get(1).get("testingsitename").asText(),historyNode.get(1).get("starttime").asText()));
+            else
+                history.set(1, null);
+            if (historyNode.get(2)!=null && !historyNode.get(2).asText().equals("null"))
+                history.set(2, new Booking.BookingMementoInternal(historyNode.get(2).get("testingsiteid").asText(),historyNode.get(2).get("testingsitename").asText(),historyNode.get(2).get("starttime").asText()));
+            else
+                history.set(2, null);
         }
         return history;
     }
@@ -245,7 +252,7 @@ public class BookingCollection {
      * @return HttpResponse
      * @throws Exception if there is an error sending HTTP request
      */
-    public static HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, String newTime, String newSiteId) throws Exception {
+    public static HttpResponse<String> updateBooking(String bookingId, List<String> additionalInfo, List<BookingMemento> history, BookingMemento previousContent, String newTime, String newSiteId) throws Exception {
         /*
          * additionalInfo[0] = qrcode
          * additionalInfo[1] = url (if exist)
@@ -264,7 +271,7 @@ public class BookingCollection {
         if (additionalInfo.size() > 1)
             jsonString += ",\"url\": \"" + additionalInfo.get(1) + "\"";
 
-        jsonString += ",\"history\": " + history;
+        jsonString += ",\"history\": " + Arrays.toString(history.toArray());
         jsonString += "}" + "}";
 
         String url = "https://fit3077.com/api/v2/booking";
@@ -277,7 +284,7 @@ public class BookingCollection {
      * @param history  list of history
      * @param previousContent most recent modification history version
      */
-    private static void updateHistory(List<String> history, String previousContent){
+    private static void updateHistory(List<BookingMemento> history, BookingMemento previousContent){
         if (history.get(0) == null) {
             history.set(0, previousContent);
         } else if ((history.get(0) != null && history.get(1) == null)) {
@@ -300,7 +307,7 @@ public class BookingCollection {
      * @return HttpResponse
      * @throws Exception if there is an error sending HTTP request
      */
-    public static HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<String> history, String previousContent, int index) throws Exception {
+    public static HttpResponse<String> revertBooking(String bookingId, List<String> additionalInfo, List<BookingMemento> history, String previousContent, int index) throws Exception {
         /*
          * additionalInfo[0] = qrcode
          * additionalInfo[1] = url (if exist)
@@ -333,7 +340,7 @@ public class BookingCollection {
      * @param history list of history
      * @param index index of history that the booking will revert to
      */
-    private static void revertHistory(List<String> history, int index){
+    private static void revertHistory(List<BookingMemento> history, int index){
         if (index == 1) {
             history.set(0, history.get(1));
             history.set(1, history.get(2));

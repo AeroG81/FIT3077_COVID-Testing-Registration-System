@@ -1,6 +1,7 @@
 package com.example.application.data.entity.Booking;
 
 import com.example.application.data.entity.TestingSite.TestingSite;
+import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.example.application.data.entity.User.User;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -35,7 +36,7 @@ public class OnSiteTestingBooking extends Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history) {
+    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<BookingMemento> history) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
         this.testingSite = site;
     }
@@ -51,7 +52,7 @@ public class OnSiteTestingBooking extends Booking {
      * @param smsPin PIN code to verify the booking
      * @param qrcode QR code to verify the booking
      */
-    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<String> history, String lastUpdateTime) {
+    public OnSiteTestingBooking(String bookingId, TestingSite site, String startTime, User user, String notes, String status, String smsPin, String qrcode, List<BookingMemento> history, String lastUpdateTime) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
         this.testingSite = site;
     }
@@ -73,6 +74,22 @@ public class OnSiteTestingBooking extends Booking {
                 "\n\"qrcode\":\"" + super.getQrcode() + "\"" +
                 "}";
     }
+
+    public BookingMemento getMemento(){
+        BookingMementoInternal state = new BookingMementoInternal();
+        state.setStartTime(super.getStartTime());
+        state.setTestingSiteId(testingSite.getId());
+        state.setTestingSiteName(testingSite.getName());
+        return state;
+    };
+
+    public void setMemento(BookingMemento memento){
+        BookingMementoInternal state = (BookingMementoInternal) memento;
+        super.setStartTime(state.getStartTime());
+        TestingSiteCollection collection = new TestingSiteCollection();
+        testingSite.setId(state.getTestingSiteId());
+        testingSite.setName(state.getTestingSiteName());
+    };
 
     /**
      * toString method

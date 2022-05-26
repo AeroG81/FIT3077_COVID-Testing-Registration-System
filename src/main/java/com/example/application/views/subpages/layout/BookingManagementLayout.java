@@ -1,9 +1,6 @@
 package com.example.application.views.subpages.layout;
 
-import com.example.application.data.entity.Booking.Booking;
-import com.example.application.data.entity.Booking.BookingCollection;
-import com.example.application.data.entity.Booking.HomeTestingBooking;
-import com.example.application.data.entity.Booking.OnSiteTestingBooking;
+import com.example.application.data.entity.Booking.*;
 import com.example.application.data.entity.TestingSite.TestingSite;
 import com.example.application.data.entity.TestingSite.TestingSiteCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +13,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -113,11 +111,11 @@ public class BookingManagementLayout extends VerticalLayout {
         historySelect.clear();
         currentBookingHistory.clear();
         if (selectedBooking.getHistory().get(0) != null && !selectedBooking.getHistory().get(0).equals("null"))
-            currentBookingHistory.add(selectedBooking.getHistory().get(0));
+            currentBookingHistory.add(selectedBooking.getHistory().get(0).toString());
         if (selectedBooking.getHistory().get(1) != null && !selectedBooking.getHistory().get(1).equals("null"))
-            currentBookingHistory.add(selectedBooking.getHistory().get(1));
+            currentBookingHistory.add(selectedBooking.getHistory().get(1).toString());
         if (selectedBooking.getHistory().get(2) != null && !selectedBooking.getHistory().get(2).equals("null"))
-            currentBookingHistory.add(selectedBooking.getHistory().get(2));
+            currentBookingHistory.add(selectedBooking.getHistory().get(2).toString());
         currentBookingHistory.add(0, "current");
         historySelect.setItems(currentBookingHistory);
         historySelect.setValue("current");
@@ -191,17 +189,15 @@ public class BookingManagementLayout extends VerticalLayout {
                     additionalInfo.add(0, selectedBooking.getQrcode());
                     if (selectedBooking.getClass().equals(HomeTestingBooking.class))
                         additionalInfo.add(1, ((HomeTestingBooking) selectedBooking).getUrl());
-                    String content;
+                    BookingMemento content = selectedBooking.getMemento();
                     String newSiteId;
                     if (this.selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
-                        content = "{" + "\"testingsitename\":\"" + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getName()  + "\", \"testingsiteid\":\"" + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getId() + "\", \"starttime\": \"" + selectedBooking.getStartTime() + "\" } ";
                         newSiteId = testingSite.getValue().getId();
                     } else {
-                        content = "{"  + "\"testingsitename\":" + null  + ", \"testingsiteid\":" + null + ", \"starttime\": \"" + selectedBooking.getStartTime() + "\" } ";
                         newSiteId = null;
                     }
 
-                    List<String> history = selectedBooking.getHistory();
+                    List<BookingMemento> history = selectedBooking.getHistory();
 
                     try {
                         HttpResponse<String> response = BookingCollection.updateBooking(selectedBooking.getBookingId(), additionalInfo, history, content, startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
@@ -358,7 +354,7 @@ public class BookingManagementLayout extends VerticalLayout {
                 return ZonedDateTime.parse(o2.getStartTime()).toLocalDateTime().compareTo(ZonedDateTime.parse(o1.getStartTime()).toLocalDateTime());
             }
         });
-        grid.addColumn(b -> { if (b.getClass().equals(OnSiteTestingBooking.class)) { return ((OnSiteTestingBooking) b).getTestingSite().getName(); } else { return "-"; }}).setHeader("Testing site").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
+        grid.addColumn(b -> { if (b.getClass().equals(OnSiteTestingBooking.class)) { return ((OnSiteTestingBooking) b).getTestingSite().getName(); } else { return "-"; }}).setHeader("Testing site").setWidth("300px").setTextAlign(ColumnTextAlign.START);
         grid.addColumn(b -> b.getSmsPin()).setHeader("PIN");
         grid.addColumn(b -> b.getQrcode()).setHeader("QR").setAutoWidth(true);
         grid.addColumn(b -> {
@@ -402,8 +398,9 @@ public class BookingManagementLayout extends VerticalLayout {
             });
         });
         grid.getElement().getStyle().set("font-family","Roboto Mono");
-        this.removeAll();
         grid.setHeight("750px");
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        this.removeAll();
         this.add(bookingOptions, grid);
     }
 

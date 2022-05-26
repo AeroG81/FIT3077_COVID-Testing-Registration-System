@@ -34,7 +34,7 @@ public class HomeTestingBooking extends Booking {
      * @param qrcode QR code to verify the booking
      * @param url url for the meeting with experts
      */
-    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history) {
+    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<BookingMemento> history) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history);
         this.url = url;
     }
@@ -50,7 +50,7 @@ public class HomeTestingBooking extends Booking {
      * @param qrcode QR code to verify the booking
      * @param url url for the meeting with experts
      */
-    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<String> history, String lastUpdateTime) {
+    public HomeTestingBooking(String bookingId, String startTime, User user, String notes, String status, String smsPin, String qrcode, String url, List<BookingMemento> history, String lastUpdateTime) {
         super(bookingId, startTime, user, notes, status, smsPin, qrcode, history, lastUpdateTime);
         this.url = url;
     }
@@ -80,6 +80,20 @@ public class HomeTestingBooking extends Booking {
     public String getUrl() {
         return url;
     }
+
+    public BookingMemento getMemento(){
+        BookingMementoInternal state = new BookingMementoInternal();
+        state.setStartTime(super.getStartTime());
+        state.setTestingSiteId(null);
+        state.setTestingSiteName(null);
+        return state;
+    };
+
+    public void setMemento(BookingMemento memento){
+        BookingMementoInternal state = (BookingMementoInternal) memento;
+        super.setStartTime(state.getStartTime());
+    };
+
 
     /**
      * toString method
