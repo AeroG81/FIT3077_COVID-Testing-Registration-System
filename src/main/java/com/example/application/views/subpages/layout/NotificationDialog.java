@@ -1,6 +1,5 @@
 package com.example.application.views.subpages.layout;
 
-import com.example.application.data.entity.User.Receptionist;
 import com.example.application.data.entity.User.UserCollection;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -8,11 +7,12 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class NotificationDialog extends Dialog {
@@ -29,7 +29,18 @@ public class NotificationDialog extends Dialog {
     }
 
     private HorizontalLayout configureButtonLayout() {
-        Button closeButton = new Button("Read All", e -> {
+        Button closeButton = new Button("Clear All", e -> {
+            try {
+                HttpResponse<String> response = UserCollection.clearNotifications(UI.getCurrent().getSession().getAttribute("userId").toString(),UI.getCurrent().getSession().getAttribute("testingSiteId").toString());
+                if (response.statusCode()==200){
+                    Notification noti = Notification.show("Notification cleared");
+                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                }
+                else
+                    throw new Exception("Unable to clear notification");
+            } catch (Exception exception){
+                System.out.println(exception);
+            }
             close();
         });
         closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
