@@ -108,34 +108,77 @@ public class UserBookingsLayout extends VerticalLayout {
      * @return a layout with buttons
      */
     private HorizontalLayout configureButtonLayout() {
-        Button cancelBooking = new Button("Cancel",e -> {
-            if (!isInvalidStatus(selectedBooking)){
-                try {
-                    HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
-                    if (response.statusCode() == 200){
-                        Notification noti = Notification.show("Cancellation Success");
-                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    }
-                    else
-                        throw new Exception(response.body());
-                    editorDialog.close();
-                    this.reloadForm();
-                }
-                catch (Exception exception) {
-                    System.out.println("Cancellation failed " + exception);
-                }
-            }
-            else {
-                Notification noti = Notification.show("Invalid Status, unable to Cancel Booking");
-                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
+        Button cancelBooking = getCancelBooking();
         cancelBooking.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         Button closeButton = new Button("Close",e -> editorDialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button saveButton = new Button("Save", e -> {
+        Button saveButton = getSaveButton();
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+
+        Button historyRevertButton = getHistoryRevertButton();
+        historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton, cancelBooking, saveButton, closeButton);
+        buttonLayout.setJustifyContentMode(JustifyContentMode.END);
+        return buttonLayout;
+    }
+
+    /**
+     * Helper method to create Revert History Button
+     * @return Revert History Button with logic
+     */
+    private Button getHistoryRevertButton(){
+        return new Button("Revert History",e -> {
+            if (!historySelect.getValue().equals("current") && !isInvalidStatus(selectedBooking)) {
+                List<String> additionalInfo = new ArrayList<>();
+                additionalInfo.add(0, selectedBooking.getQrcode());
+                if (selectedBooking.getClass().equals(HomeTestingBooking.class))
+                    additionalInfo.add(1, ((HomeTestingBooking) selectedBooking).getUrl());
+                int index = currentBookingHistory.indexOf(historySelect.getValue());
+                ObjectNode jsonNode = null;
+                try {
+                    jsonNode = new ObjectMapper().readValue(historySelect.getValue(), ObjectNode.class);
+                }
+                catch (Exception exception) {
+                    System.out.println("Unable to map select");
+                }
+                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
+                    Notification noti = Notification.show("History date is not a future date");
+                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+                else {
+                    try {
+                        HttpResponse<String> response = BookingCollection.revertBooking(selectedBooking.getBookingId(), additionalInfo, selectedBooking.getHistory(), historySelect.getValue(), index);
+                        if (response.statusCode()==200){
+                            Notification noti = Notification.show("Revert Success");
+                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                        }
+                        else
+                            throw new Exception(response.body());
+                        editorDialog.close();
+                        this.reloadForm();
+                    } catch (Exception exception) {
+                        Notification noti = Notification.show("Revert Failed");
+                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        System.out.println("Error Reverting History |" + exception);
+                    }
+                }
+            }
+            else {
+                Notification noti = Notification.show("Please select a history version and ensure status is INITIATED");
+                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            }
+        });
+    }
+
+    /**
+     * Helper method to create Save Button
+     * @return Save Button with logic
+     */
+    private Button getSaveButton(){
+        return new Button("Save", e -> {
             if (isInvalidStatus(selectedBooking)) {
                 Notification noti = Notification.show("Booking are CANCELLED, COMPLETED or EXPIRED, unable to update");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -194,54 +237,32 @@ public class UserBookingsLayout extends VerticalLayout {
             }
             editorDialog.close();
         });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+    }
 
-        Button historyRevertButton = new Button("Revert History",e -> {
-            if (!historySelect.getValue().equals("current") && !isInvalidStatus(selectedBooking)) {
-                List<String> additionalInfo = new ArrayList<>();
-                additionalInfo.add(0, selectedBooking.getQrcode());
-                if (selectedBooking.getClass().equals(HomeTestingBooking.class))
-                    additionalInfo.add(1, ((HomeTestingBooking) selectedBooking).getUrl());
-                int index = currentBookingHistory.indexOf(historySelect.getValue());
-                ObjectNode jsonNode = null;
+    /**
+     * Helper method to create Cancel Button
+     * @return Cancel Button with logic
+     */
+    private Button getCancelBooking() {
+        return new Button("Cancel", e -> {
+            if (!isInvalidStatus(selectedBooking)) {
                 try {
-                    jsonNode = new ObjectMapper().readValue(historySelect.getValue(), ObjectNode.class);
+                    HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
+                    if (response.statusCode() == 200) {
+                        Notification noti = Notification.show("Cancellation Success");
+                        noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    } else
+                        throw new Exception(response.body());
+                    editorDialog.close();
+                    this.reloadForm();
+                } catch (Exception exception) {
+                    System.out.println("Cancellation failed " + exception);
                 }
-                catch (Exception exception) {
-                    System.out.println("Unable to map select");
-                }
-                if (ZonedDateTime.parse(jsonNode.get("starttime").asText()).toLocalDateTime().compareTo(LocalDateTime.now())<0){
-                    Notification noti = Notification.show("History date is not a future date");
-                    noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                }
-                else {
-                    try {
-                        HttpResponse<String> response = BookingCollection.revertBooking(selectedBooking.getBookingId(), additionalInfo, selectedBooking.getHistory(), historySelect.getValue(), index);
-                        if (response.statusCode()==200){
-                            Notification noti = Notification.show("Revert Success");
-                            noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                        }
-                        else
-                            throw new Exception(response.body());
-                        editorDialog.close();
-                        this.reloadForm();
-                    } catch (Exception exception) {
-                        Notification noti = Notification.show("Revert Failed");
-                        noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                        System.out.println("Error Reverting History |" + exception);
-                    }
-                }
-            }
-            else {
-                Notification noti = Notification.show("Please select a history version and ensure status is INITIATED");
-                noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            } else {
+                Notification noti = Notification.show("Invalid Status, unable to Cancel Booking");
+                noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
-        historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(historyRevertButton, cancelBooking, saveButton, closeButton);
-        buttonLayout.setJustifyContentMode(JustifyContentMode.END);
-        return buttonLayout;
     }
 
     /**

@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
  * This is a layout for logged in user to book for on site testing
  */
 public class OnSiteBookingLayout extends VerticalLayout {
-    private final ConfirmDialog dialog = new ConfirmDialog();
+    private final ConfirmDialog confirmDialog = new ConfirmDialog();
     private final FormLayout siteTestingForm = new FormLayout();
     private final TextArea notes = new TextArea("Notes");
     private final TestingSiteCollection collection = new TestingSiteCollection();
@@ -125,12 +125,12 @@ public class OnSiteBookingLayout extends VerticalLayout {
                 Notification.show("Booking time is not within operation hour");
             }
             else {
-                dialog.setHeader("Confirm Appointment");
-                dialog.setText("Do you want to book an online testing appointment at " + startTime.getValue().toLocalDate() + " " + startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
-                dialog.setRejectable(true);
-                dialog.setRejectText("Discard");
-                dialog.setConfirmText("Save");
-                dialog.addConfirmListener(event -> {
+                confirmDialog.setHeader("Confirm Appointment");
+                confirmDialog.setText("Do you want to book an online testing appointment at " + startTime.getValue().toLocalDate() + " " + startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                confirmDialog.setRejectable(true);
+                confirmDialog.setRejectText("Discard");
+                confirmDialog.setConfirmText("Save");
+                confirmDialog.addConfirmListener(event -> {
                     VaadinSession ui = UI.getCurrent().getSession();
                     User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
                     HttpResponse<String> response = null;
@@ -160,7 +160,7 @@ public class OnSiteBookingLayout extends VerticalLayout {
                     responseDialog.add(closeButton,label);
                     responseDialog.open();
                 });
-                dialog.open();
+                confirmDialog.open();
             }
         });
     }

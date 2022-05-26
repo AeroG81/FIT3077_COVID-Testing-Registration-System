@@ -52,6 +52,13 @@ public class QrVerifyLayout extends VerticalLayout {
         });
         submitVerification = new Button("Verify");
         submitVerification.setEnabled(false);
+        attachListenerToSubmitVerificationButton();
+    }
+
+    /**
+     * Helper method to attach listener with logic to the button
+     */
+    private void attachListenerToSubmitVerificationButton() {
         submitVerification.addClickListener(e -> {
             if (!qrString.isEmpty() && !qrString.isInvalid()){
                 BookingCollection bookingCollection = new BookingCollection();

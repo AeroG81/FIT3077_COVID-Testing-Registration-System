@@ -32,7 +32,7 @@ public class HomeBookingLayout extends VerticalLayout {
     private final TextArea notes = new TextArea("Notes");
     private Button submitRegistration;
     private final RadioButtonGroup<String> needTestKit = new RadioButtonGroup<>();
-    private final ConfirmDialog dialog = new ConfirmDialog();
+    private final ConfirmDialog confirmDialog = new ConfirmDialog();
     private final FormLayout siteTestingForm = new FormLayout();
 
     public HomeBookingLayout(){
@@ -78,12 +78,12 @@ public class HomeBookingLayout extends VerticalLayout {
                 Notification.show("Online testing only available during 0800 - 2100");
             }
             else {
-                dialog.setHeader("Confirm Appointment");
-                dialog.setText("Do you want to book an online testing appointment at "+startTime.getValue().toLocalDate()+ " " +startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
-                dialog.setRejectable(true);
-                dialog.setRejectText("Discard");
-                dialog.setConfirmText("Save");
-                dialog.addConfirmListener(event -> {
+                confirmDialog.setHeader("Confirm Appointment");
+                confirmDialog.setText("Do you want to book an online testing appointment at "+startTime.getValue().toLocalDate()+ " " +startTime.getValue().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                confirmDialog.setRejectable(true);
+                confirmDialog.setRejectText("Discard");
+                confirmDialog.setConfirmText("Save");
+                confirmDialog.addConfirmListener(event -> {
                     // send POST to make booking
                     VaadinSession ui = UI.getCurrent().getSession();
                     User user = new Customer(ui.getAttribute("userId").toString(), ui.getAttribute("userGivenName").toString(), ui.getAttribute("userFamilyName").toString(), ui.getAttribute("userName").toString(), ui.getAttribute("userPhoneNumber").toString());
@@ -122,7 +122,7 @@ public class HomeBookingLayout extends VerticalLayout {
                         System.out.println(exception);
                     }
                 });
-                dialog.open();
+                confirmDialog.open();
             }
         });
     }

@@ -22,7 +22,6 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.select.Select;
 
 import java.net.http.HttpResponse;
@@ -142,7 +141,29 @@ public class BookingManagementLayout extends VerticalLayout {
         Button closeButton = new Button("Close",e -> editorDialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button saveButton = new Button("Save", e -> {
+        Button saveButton = getSaveButton();
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+
+        Button deleteButton = getDeleteButton();
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+        Button historyRevertButton = getHistoryRevertButton();
+        historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+        Button cancelBookingButton = getCancelBookingButton();
+        cancelBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(cancelBookingButton, deleteButton, historyRevertButton, saveButton, closeButton);
+        buttonLayout.setJustifyContentMode(JustifyContentMode.END);
+        return buttonLayout;
+    }
+
+    /**
+     * Helper method to create Save Button
+     * @return Save Button with logic
+     */
+    private Button getSaveButton(){
+        return new Button("Save", e -> {
             if (isInvalidStatus(selectedBooking)) {
                 Notification noti = Notification.show("Booking are CANCELLED, COMPLETED or EXPIRED, unable to update");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -201,9 +222,14 @@ public class BookingManagementLayout extends VerticalLayout {
             }
             editorDialog.close();
         });
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+    }
 
-        Button deleteButton = new Button("Delete", e -> {
+    /**
+     * Helper method to create Delete Button
+     * @return Delete Button with logic
+     */
+    private Button getDeleteButton() {
+        return new Button("Delete", e -> {
             try {
                 HttpResponse<String> response = BookingCollection.deleteBooking(selectedBooking.getBookingId());
                 if (response.statusCode() == 204) {
@@ -219,9 +245,14 @@ public class BookingManagementLayout extends VerticalLayout {
                 System.out.println("Receptionist Delete Failed " + exception);
             }
         });
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+    }
 
-        Button historyRevertButton = new Button("Revert History",e -> {
+    /**
+     * Helper method to create Revert History Button
+     * @return Revert History Button with logic
+     */
+    private Button getHistoryRevertButton() {
+        return new Button("Revert History",e -> {
             if (!historySelect.getValue().equals("current") && !isInvalidStatus(selectedBooking)) {
                 List<String> additionalInfo = new ArrayList<>();
                 additionalInfo.add(0, selectedBooking.getQrcode());
@@ -262,35 +293,32 @@ public class BookingManagementLayout extends VerticalLayout {
                 noti.addThemeVariants(NotificationVariant.LUMO_PRIMARY);
             }
         });
-        historyRevertButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+    }
 
-        Button cancelBookingButton = new Button("Cancel",e -> {
-            if (!isInvalidStatus(selectedBooking)){
+    /**
+     * Helper method to create Cancel Button
+     * @return Cancel Button with logic
+     */
+    private Button getCancelBookingButton() {
+        return new Button("Cancel", e -> {
+            if (!isInvalidStatus(selectedBooking)) {
                 try {
                     HttpResponse<String> response = BookingCollection.cancelBooking(selectedBooking.getBookingId());
-                    if (response.statusCode() == 200){
+                    if (response.statusCode() == 200) {
                         Notification noti = Notification.show("Cancellation Success");
                         noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    }
-                    else
+                    } else
                         throw new Exception(response.body());
                     editorDialog.close();
                     this.reloadForm();
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     System.out.println("Cancellation failed " + exception);
                 }
-            }
-            else {
+            } else {
                 Notification noti = Notification.show("Invalid Status, unable to Cancel Booking");
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
-        cancelBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout(cancelBookingButton, deleteButton, historyRevertButton, saveButton, closeButton);
-        buttonLayout.setJustifyContentMode(JustifyContentMode.END);
-        return buttonLayout;
     }
 
     /**

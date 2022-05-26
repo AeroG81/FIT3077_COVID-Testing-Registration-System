@@ -18,18 +18,18 @@ import com.vaadin.flow.component.textfield.TextArea;
 public class PinVerifyLayout extends VerticalLayout {
     private Button submitVerification;
     private final IntegerField verifyPin = new IntegerField("PIN");
-    private final Dialog dialog = new Dialog();
+    private final Dialog feedbackDialog = new Dialog();
     private final TextArea label = new TextArea();
 
     /**
      * populate the layout with components
      */
     public PinVerifyLayout(){
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
+        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> feedbackDialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(closeButton,label);
+        feedbackDialog.add(closeButton,label);
         this.configureVerifyButton();
-        add(verifyPin,submitVerification,dialog);
+        add(verifyPin,submitVerification, feedbackDialog);
     }
 
     /**
@@ -52,7 +52,7 @@ public class PinVerifyLayout extends VerticalLayout {
                 if (userBooking !=null){
                     label.setWidth("500px");
                     label.setValue(userBooking.toString());
-                    dialog.open();
+                    feedbackDialog.open();
                 }
                 else {
                     Notification noti = Notification.show("Error! Invalid PIN");

@@ -45,12 +45,12 @@ public class ReceptionistBookingLayout extends VerticalLayout {
     private final IntegerField userPhoneNumber = new IntegerField("Phone Number");
     private Button submitRegistration;
     private final FormLayout registrationCommonForm = new FormLayout();
-    private final Dialog dialog = new Dialog();
-    private final TextArea label = new TextArea();
+    private final Dialog bookingFeedbackDialog = new Dialog();
+    private final TextArea bookingFeedbackContent = new TextArea();
     private final VerticalLayout content = new VerticalLayout();
-    private final Tab tabExist = new Tab("Existing User");
-    private final Tab tabNew = new Tab("New User");
-    private final Tabs registrationSubTabs = new Tabs(tabExist, tabNew);
+    private final Tab tabExistUser = new Tab("Existing User");
+    private final Tab tabNewUser = new Tab("New User");
+    private final Tabs registrationSubTabs = new Tabs(tabExistUser, tabNewUser);
 
     public ReceptionistBookingLayout(){
         this.clearFields();
@@ -101,7 +101,7 @@ public class ReceptionistBookingLayout extends VerticalLayout {
                     content.removeAll();
                     newUserLayout.removeAll();
                     existingUserLayout.removeAll();
-                    if (event.getSelectedTab().equals(tabNew)){
+                    if (event.getSelectedTab().equals(tabNewUser)){
                         newUserLayout.add(
                                 userGivenName, userFamilyName,
                                 userName, userPhoneNumber,
@@ -110,7 +110,7 @@ public class ReceptionistBookingLayout extends VerticalLayout {
                         newUserLayout.setColspan(userPassword, 2);
                         content.add(newUserLayout);
                     }
-                    else if (event.getSelectedTab().equals(tabExist)){
+                    else if (event.getSelectedTab().equals(tabExistUser)){
                         existingUserLayout.add(
                                 userName, userPassword
                         );
@@ -125,9 +125,9 @@ public class ReceptionistBookingLayout extends VerticalLayout {
      * Configuring Registration Notification
      */
     private void configureRegistrationNotification(){
-        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
+        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> bookingFeedbackDialog.close());
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        dialog.add(closeButton,label);
+        bookingFeedbackDialog.add(closeButton, bookingFeedbackContent);
     }
 
     /**
@@ -146,7 +146,7 @@ public class ReceptionistBookingLayout extends VerticalLayout {
                 UserCollection collection = new UserCollection();
                 User user = null;
                 try {
-                    if (registrationSubTabs.getSelectedTab().equals(tabExist))
+                    if (registrationSubTabs.getSelectedTab().equals(tabExistUser))
                         user = collection.verifyUserId(userName.getValue(), userPassword.getValue());
                     else
                         user = collection.addUserService(userGivenName.getValue(), userFamilyName.getValue(), userName.getValue(), userPassword.getValue(), userPhoneNumber.getValue().toString(), true, false,false);
@@ -164,11 +164,11 @@ public class ReceptionistBookingLayout extends VerticalLayout {
                     System.out.println("Error creating: " + exception);
                 }
                 if (mappedResponse!=null){
-                    label.setWidth("500px");
-                    label.setEnabled(false);
-                    label.clear();
-                    label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN: "+ mappedResponse.get("smsPin").asText());
-                    dialog.open();
+                    bookingFeedbackContent.setWidth("500px");
+                    bookingFeedbackContent.setEnabled(false);
+                    bookingFeedbackContent.clear();
+                    bookingFeedbackContent.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN: "+ mappedResponse.get("smsPin").asText());
+                    bookingFeedbackDialog.open();
                     Notification noti = Notification.show("Application submitted");
                     noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 }
@@ -181,12 +181,12 @@ public class ReceptionistBookingLayout extends VerticalLayout {
      */
     private boolean validateFields(){
         boolean validation = true;
-        if(registrationSubTabs.getSelectedTab().equals(tabExist)){
+        if(registrationSubTabs.getSelectedTab().equals(tabExistUser)){
             if(userName.isEmpty() || userPassword.isEmpty()){
                 validation = false;
             }
         }
-        else if (registrationSubTabs.getSelectedTab().equals(tabNew)){
+        else if (registrationSubTabs.getSelectedTab().equals(tabNewUser)){
             if(userName.isEmpty() || userPassword.isEmpty() || userGivenName.isEmpty() || userFamilyName.isEmpty() || userPhoneNumber.isEmpty()){
                 validation = false;
             }

@@ -23,7 +23,6 @@ public class CustomerView extends VerticalLayout {
     private final Tab tabVerifyPin = new Tab("Verify PIN");
     private final Tab tabVerifyBookingId = new Tab("Verify Booking ID");
     private final Tab tabTestingSites = new Tab("Testing Sites");
-
     private final Tabs mainTabs = new Tabs(tabHomeBooking, tabSiteBooking, tabVerifyPin, tabVerifyBookingId, tabTestingSites);
 
     /**
