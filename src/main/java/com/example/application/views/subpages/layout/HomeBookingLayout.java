@@ -106,14 +106,14 @@ public class HomeBookingLayout extends VerticalLayout {
                         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                         responseDialog.add(closeButton,label);
 
-                        if (response.statusCode()==200){
+                        if (response.statusCode()==201){
                             Notification noti = Notification.show("Application submitted");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                             this.clearFields();
                             responseDialog.open();
                         }
                         else
-                            throw new Exception("Appointment Adding Failed");
+                            throw new Exception("Appointment Adding Failed "+ response.body());
 
                     }
                     catch (Exception exception) {

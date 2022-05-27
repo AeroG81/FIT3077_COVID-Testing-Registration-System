@@ -521,8 +521,12 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                         if (response.statusCode() == 200) {
                             String message = "UPDATED - "+"Booking: "+ bookingToModify.getBookingId() +" | USER: "+ bookingToModify.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName() + " " + bookingToModify.getStartTime() + " TO " + newBookingVenue.getValue().getName() + " " + newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
                             ArrayList<String> testingSiteIds = new ArrayList<>();
-                            testingSiteIds.add(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId());
-                            testingSiteIds.add(newBookingVenue.getValue().getId());
+                            if (newBookingVenue.getValue().getId().equals(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId()))
+                                testingSiteIds.add(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId());
+                            else {
+                                testingSiteIds.add(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId());
+                                testingSiteIds.add(newBookingVenue.getValue().getId());
+                            }
                             notifyReceptionists(message,testingSiteIds);
 
                             Notification noti = Notification.show("Update Success");

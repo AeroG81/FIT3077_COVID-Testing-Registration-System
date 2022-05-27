@@ -206,8 +206,12 @@ public class BookingManagementLayout extends VerticalLayout {
                             if (selectedBooking.getClass().equals(OnSiteTestingBooking.class)){
                                 String message = "UPDATED - "+"Booking: "+ selectedBooking.getBookingId() +" | USER: "+ selectedBooking.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) selectedBooking).getTestingSite().getName() + " " + selectedBooking.getStartTime() + " TO " + testingSite.getValue().getName() + " " + startTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
                                 ArrayList<String> testingSiteIds = new ArrayList<>();
-                                testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
-                                testingSiteIds.add(testingSite.getValue().getId());
+                                if (testingSite.getValue().getId().equals(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId()))
+                                    testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                                else {
+                                    testingSiteIds.add(((OnSiteTestingBooking) selectedBooking).getTestingSite().getId());
+                                    testingSiteIds.add(testingSite.getValue().getId());
+                                }
                                 notifyReceptionists(message,testingSiteIds);
                             }
                             Notification noti = Notification.show("Update Success");

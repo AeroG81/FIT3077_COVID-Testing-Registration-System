@@ -161,7 +161,7 @@ public class OnSiteBookingLayout extends VerticalLayout {
                     Dialog responseDialog = new Dialog();
                     label.setWidth("500px");
                     label.clear();
-                    label.setValue("PIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText());
+                    label.setValue("Booking ID: "+ mappedResponse.get("id").asText() + "\nPIN code: "+mappedResponse.get("smsPin").asText()+"\nQR code: "+mappedResponse.get("additionalInfo").get("qrcode").asText());
                     testingSite.getValue().setWaitingTime((Integer.parseInt(testingSite.getValue().getWaitingTime().substring(0, testingSite.getValue().getWaitingTime().length() - 3)) + 10) + "min");
                     Button closeButton = new Button(new Icon("lumo", "cross"), (ev) -> responseDialog.close());
                     closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
