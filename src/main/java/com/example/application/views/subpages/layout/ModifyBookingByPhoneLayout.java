@@ -68,6 +68,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
     TestingSiteCollection tc = new TestingSiteCollection();
     Booking bookingToModify = null;
 
+    /**
+     * Constructor
+     */
     public ModifyBookingByPhoneLayout(){
         this.changeBookingToModify();
         this.checkBookingIDandPIN();
@@ -100,7 +103,6 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
 
         changeBookingButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-        // Verify customer's identity
         customerUserIdTextField.setLabel("1. Enter Customer's ID");
         customerUserIdTextField.setRequired(true);
         customerUserIdTextField.setClearButtonVisible(true);
@@ -142,6 +144,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         add(bookingIDandPINDialog, mainLayoutPhoneCallLayout);
     }
 
+    /**
+     * Configure button changeBookingButton to change the booking the user wants to modify
+     */
     private void changeBookingToModify(){
         changeBookingButton.addClickListener(e-> {
             bookingIDandPINDialog.open();
@@ -164,6 +169,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         });
     }
 
+    /**
+     * Configure button verifyBookingIDandPINButton to verify if booking ID and PIN are valid
+     */
     private void checkBookingIDandPIN(){
         verifyBookingIDandPINButton.addClickListener(e -> {
             bookingToModify = bc.verifyBookingIdandPin(bookingIDTextField.getValue(), smsPinTextField.getValue());
@@ -210,6 +218,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         });
     }
 
+    /**
+     * Configure button verifyUserButton to verify user by its user ID
+     */
     private void verifyUser() {
         verifyUserButton.addClickListener(e -> {
             if (Objects.equals(bookingToModify.getCustomer().getId(), customerUserIdTextField.getValue())) {
@@ -298,6 +309,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         return valid;
     }
 
+    /**
+     * Configure button revertBookingButton to revert booking to one of the previous booking modifications
+     */
     private void revertBooking(){
         revertBookingButton.addClickListener(e -> {
             if (!selectPreviousBooking.getValue().equals("current")) {
@@ -365,6 +379,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         });
     }
 
+    /**
+     * Configure button modifyBookingButton to modify bookings with new time and new testing site (only for onsitetesting)
+     */
     private void modifyBooking(){
         modifyBookingButton.addClickListener(e -> {
             history = new ArrayList<>();
@@ -432,6 +449,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         });
     }
 
+    /**
+     * Modify online bookings where only time is modified
+     */
     private void modifyOnlineBooking() {
         if (isInvalidStatus(bookingToModify)) {
             Notification noti = Notification.show("Booking cannot be modified");
@@ -472,6 +492,9 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         }
     }
 
+    /**
+     * Modify onsite bookings where time and testing site are modified
+     */
     private void modifyOnSiteBooking() {
         if (isInvalidStatus(bookingToModify)) {
             Notification noti = Notification.show("Booking cannot be modified");
