@@ -54,14 +54,10 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
     private Button modifyBookingButton = new Button("Modify Booking");
     private Button revertBookingButton = new Button("Revert previous version");
     private Button verifyUserButton = new Button("Verify User");
-    private Button redirectToBookingSiteButton = new Button("Book a Test");
     private MultiSelectListBox<String> bookingContent;
     private ArrayList<String> history = new ArrayList<>();
     private Select<String> selectPreviousBooking = new Select<>();
-    private final H2 title = new H2("Modify Bookings Through Phone Calls");
     private final H3 bookingDetailsHeader = new H3("Booking Details");
-    private final Hr hr1 = new Hr();
-    private final Hr h2 = new Hr();
     private String bookingIDList = "Booking ID: N/A";
     private String customerIDList ="Customer ID: N/A";
     private String customerFullNameList = "Customer Full Name: N/A";
@@ -80,7 +76,6 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         this.populateVenuePicker();
         this.modifyBooking();
         this.revertBooking();
-        this.redirectToBookingSite();
 
         // Verifying Booking dialog
         bookingIDandPINDialog = new Dialog();
@@ -132,21 +127,17 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         revertBookingLayout.setAlignItems(Alignment.END);
 
         mainLayoutPhoneCallLayout.add(
-                title,
-                hr1,
                 bookingDetailsHeader,
                 bookingContent,
                 changeBookingButton,
                 verifyUserLayout,
                 pickVenueLayout,
                 pickDatetimeLayout,
-                revertBookingLayout,
-                h2,
-                redirectToBookingSiteButton
+                revertBookingLayout
                 );
 
         mainLayoutPhoneCallLayout.setSizeFull();
-        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, title, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, revertBookingLayout, redirectToBookingSiteButton);
+        mainLayoutPhoneCallLayout.setHorizontalComponentAlignment(Alignment.CENTER, bookingDetailsHeader, bookingContent, changeBookingButton, verifyUserLayout, pickVenueLayout, pickDatetimeLayout, revertBookingLayout);
 
         add(bookingIDandPINDialog, mainLayoutPhoneCallLayout);
     }
@@ -278,7 +269,6 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         newBookingVenue.addValueChangeListener(f -> {
             try {
                 newBookingTime.setMin(LocalDateTime.of(nowDateTime.getYear(), nowDateTime.getMonthValue(), nowDateTime.getDayOfMonth(), twentyFourDateFormat.parse(newBookingVenue.getValue().getOpenTime()).getHours(), twentyFourDateFormat.parse(newBookingVenue.getValue().getOpenTime()).getMinutes()));
-                newBookingTime.setMax(LocalDateTime.of(nowDateTime.getYear(), nowDateTime.getMonthValue(), nowDateTime.getDayOfMonth(), twentyFourDateFormat.parse(newBookingVenue.getValue().getCloseTime()).getHours(), twentyFourDateFormat.parse(newBookingVenue.getValue().getCloseTime()).getMinutes()));
                 newBookingTime.setValue(LocalDateTime.of(nowDateTime.getYear(), nowDateTime.getMonthValue(), nowDateTime.getDayOfMonth(), nowDateTime.getHour() ,0).plusHours(1));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
@@ -335,6 +325,16 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
 
                             Notification noti = Notification.show("Revert Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
+                            if (bookingToModify.getClass().equals(OnSiteTestingBooking.class)){
+                                ObjectNode historyNodes = new ObjectMapper().readValue(selectPreviousBooking.getValue(), ObjectNode.class);
+                                String message = "REVERTED - "+"Booking: "+ bookingToModify.getBookingId() +" | USER: "+ bookingToModify.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName()+ " " + bookingToModify.getStartTime() + " TO " + historyNodes.get("testingsitename").asText() + " " + newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
+                                ArrayList<String> testingSiteIds = new ArrayList<>();
+                                testingSiteIds.add(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId());
+                                testingSiteIds.add(historyNodes.get("testingsiteid").asText());
+                                notifyReceptionists(message,testingSiteIds);
+                            }
+
                             bc = new BookingCollection();
                             bookingToModify = bc.getBookingsByBookingId(bookingToModify.getBookingId());
 
@@ -496,6 +496,12 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
                     try {
                         HttpResponse<String> response = BookingCollection.updateBooking(bookingToModify.getBookingId(), additionalInfo, history, content, newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME), newSiteId);
                         if (response.statusCode() == 200) {
+                            String message = "UPDATED - "+"Booking: "+ bookingToModify.getBookingId() +" | USER: "+ bookingToModify.getCustomer().getUserName() + " | FROM " + ((OnSiteTestingBooking) bookingToModify).getTestingSite().getName() + " " + bookingToModify.getStartTime() + " TO " + newBookingVenue.getValue().getName() + " " + newBookingTime.getValue().format(DateTimeFormatter.ISO_DATE_TIME);
+                            ArrayList<String> testingSiteIds = new ArrayList<>();
+                            testingSiteIds.add(((OnSiteTestingBooking) bookingToModify).getTestingSite().getId());
+                            testingSiteIds.add(newBookingVenue.getValue().getId());
+                            notifyReceptionists(message,testingSiteIds);
+
                             Notification noti = Notification.show("Update Success");
                             noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                         } else
@@ -512,7 +518,7 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
 
     /**
      * Helper method to notify receptionist based on the testing site
-     * @param notificationMessage
+     * @param notificationMessage a notification to be added to receptionist's list of notifications
      * @param testingSiteIds List of testing site IDs where the updated receptionists' notifications are updated
      */
     private void notifyReceptionists(String notificationMessage, ArrayList<String> testingSiteIds){
@@ -525,10 +531,5 @@ public class ModifyBookingByPhoneLayout extends VerticalLayout {
         } catch (Exception exception){
             System.out.println(exception);
         }
-    }
-
-    private void redirectToBookingSite() {
-        redirectToBookingSiteButton.addClickListener( e -> redirectToBookingSiteButton.getUI().ifPresent(ui -> ui.navigate("receptionist")));
-        redirectToBookingSiteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 }
