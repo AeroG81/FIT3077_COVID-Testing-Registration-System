@@ -81,19 +81,26 @@ public class HomeTestingBooking extends Booking {
         return url;
     }
 
+    /**
+     * Memento Design Pattern
+     * @return
+     */
     public BookingMemento getMemento(){
         BookingMementoInternal state = new BookingMementoInternal();
         state.setStartTime(super.getStartTime());
         state.setTestingSiteId(null);
         state.setTestingSiteName(null);
         return state;
-    };
+    }
 
+    /**
+     * Memento Design Pattern
+     * @return
+     */
     public void setMemento(BookingMemento memento){
         BookingMementoInternal state = (BookingMementoInternal) memento;
         super.setStartTime(state.getStartTime());
-    };
-
+    }
 
     /**
      * toString method

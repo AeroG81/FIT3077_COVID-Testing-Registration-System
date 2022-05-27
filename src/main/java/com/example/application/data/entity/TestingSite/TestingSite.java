@@ -145,10 +145,16 @@ public class TestingSite {
         this.waitingTime = waitingTime;
     }
 
+    /**
+     * Setter of testing site id
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Setter of testing site name
+     */
     public void setName(String name) {
         this.name = name;
     }

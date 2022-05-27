@@ -30,6 +30,9 @@ public class BookingCollection {
         this.refreshCollection();
     }
 
+    /**
+     * Refresh the collection data by sending GET to API again
+     */
     public void refreshCollection(){
         collection.clear();
         try {
@@ -242,7 +245,7 @@ public class BookingCollection {
     }
 
     /**
-     * Update the booking
+     * Send HTTP request to APU to update the booking
      * @param bookingId
      * @param additionalInfo qrcode, and url if there is one
      * @param history
@@ -281,6 +284,7 @@ public class BookingCollection {
 
     /**
      * Update current history list with a new history version
+     * SAVE step in memento design pattern
      * @param history  list of history
      * @param previousContent most recent modification history version
      */
@@ -337,6 +341,7 @@ public class BookingCollection {
 
     /**
      * Update current history list to previous version
+     * UNDO of memento design pattern
      * @param history list of history
      * @param index index of history that the booking will revert to
      */

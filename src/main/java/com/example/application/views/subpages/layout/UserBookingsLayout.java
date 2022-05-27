@@ -374,8 +374,9 @@ public class UserBookingsLayout extends VerticalLayout {
             });
         });
         grid.getElement().getStyle().set("font-family","Roboto Mono");
-        this.removeAll();
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         grid.setHeight("750px");
+        this.removeAll();
         this.add(grid);
     }
 

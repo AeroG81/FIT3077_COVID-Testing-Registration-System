@@ -10,7 +10,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "/receptionist")
-@PageTitle("OnSite")
+@PageTitle("Receptionist")
 /**
  * This is the page for Receptionist to
  * book user at site,

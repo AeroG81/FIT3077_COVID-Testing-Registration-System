@@ -15,7 +15,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.notification.Notification;
 
 @Route(value = "/healthcareworker")
-@PageTitle("On-Site Interview  | Vaadin CRM")
+@PageTitle("Healthcare Worker")
 /**
  * This is the page where interview was conducted
  */

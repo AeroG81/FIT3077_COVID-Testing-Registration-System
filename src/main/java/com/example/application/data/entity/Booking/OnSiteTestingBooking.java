@@ -75,21 +75,28 @@ public class OnSiteTestingBooking extends Booking {
                 "}";
     }
 
+    /**
+     * Memento Design Pattern
+     * @return
+     */
     public BookingMemento getMemento(){
         BookingMementoInternal state = new BookingMementoInternal();
         state.setStartTime(super.getStartTime());
         state.setTestingSiteId(testingSite.getId());
         state.setTestingSiteName(testingSite.getName());
         return state;
-    };
+    }
 
+    /**
+     * Memento Design Pattern
+     * @return
+     */
     public void setMemento(BookingMemento memento){
         BookingMementoInternal state = (BookingMementoInternal) memento;
         super.setStartTime(state.getStartTime());
-        TestingSiteCollection collection = new TestingSiteCollection();
         testingSite.setId(state.getTestingSiteId());
         testingSite.setName(state.getTestingSiteName());
-    };
+    }
 
     /**
      * toString method

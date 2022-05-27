@@ -78,4 +78,3 @@ public class NotificationDialog extends Dialog {
         return !notifications.isEmpty();
     }
 }
-// TODO Design Rationale, Update notifications, Update Class diagram, Implement Memento (If possible)

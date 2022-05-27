@@ -1,7 +1,6 @@
 package com.example.application.views.subpages;
 
 import com.example.application.views.subpages.layout.*;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -9,7 +8,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "/customer")
-@PageTitle("System")
+@PageTitle("Customer")
 /**
  * This is the page for User booking via System
  * Including home testing booking, on site testing booking, PIN verification, Booking ID verification
