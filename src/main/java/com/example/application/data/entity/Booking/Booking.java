@@ -243,12 +243,12 @@ public abstract class Booking {
         @Override
         public String toString() {
             String jsonString = "{";
-            if (testingSiteId.equals("null"))
+            if (testingSiteId == null || testingSiteId.equals("null"))
                 jsonString += "\"testingsiteid\":" + null ;
             else
                 jsonString += "\"testingsiteid\":\"" + testingSiteId +"\"" ;
 
-            if (testingSiteName.equals("null"))
+            if (testingSiteId == null || testingSiteName.equals("null"))
                 jsonString += ",\"testingsitename\":" + null ;
             else
                 jsonString += ",\"testingsitename\":\"" + testingSiteName +"\"" ;
